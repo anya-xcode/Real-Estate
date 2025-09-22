@@ -1,0 +1,49 @@
+real-estate-website/
+│
+├─ README.md
+├─ .gitignore
+├─ package.json (if using Node.js)
+├─ backend/               # Backend code
+│   ├─ server.js / index.js
+│   ├─ routes/
+│   │   ├─ authRoutes.js
+│   │   ├─ propertyRoutes.js
+│   │   └─ messageRoutes.js
+│   ├─ controllers/
+│   │   ├─ authController.js
+│   │   ├─ propertyController.js
+│   │   └─ messageController.js
+│   ├─ models/
+│   │   ├─ User.js
+│   │   ├─ Property.js
+│   │   └─ Message.js
+│   ├─ middleware/
+│   │   └─ authMiddleware.js
+│   └─ config/
+│       └─ db.js
+│
+├─ frontend/              # Frontend code
+│   ├─ package.json
+│   ├─ public/
+│   │   └─ index.html
+│   └─ src/
+│       ├─ App.jsx
+│       ├─ index.js
+│       ├─ components/
+│       │   ├─ Navbar.jsx
+│       │   ├─ Footer.jsx
+│       │   ├─ PropertyCard.jsx
+│       │   └─ MessageForm.jsx
+│       ├─ pages/
+│       │   ├─ Home.jsx
+│       │   ├─ BrowseProperties.jsx
+│       │   ├─ PropertyDetail.jsx
+│       │   ├─ Dashboard.jsx
+│       │   ├─ Login.jsx
+│       │   ├─ Signup.jsx
+│       │   ├─ AboutContact.jsx
+│       │   └─ Admin.jsx
+│       └─ utils/
+│           └─ api.js
+│
+└─ uploads/               # (Optional) store property images temporarily if not using cloud
