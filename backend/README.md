@@ -6,6 +6,7 @@ This is the backend API for the Real Estate listing platform with authentication
 
 - User registration (signup) with username, email, and password
 - User login with email and password
+- Google OAuth authentication
 - JWT-based authentication
 - Password hashing with bcrypt
 - Input validation
@@ -32,9 +33,45 @@ JWT_SECRET="your-super-secret-jwt-key-here"
 
 # Server Port
 PORT=5000
+
+# Frontend URL (for OAuth redirects)
+FRONTEND_URL="http://localhost:3000"
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GOOGLE_CALLBACK_URL="http://localhost:5000/api/auth/google/callback"
+
+# Session Secret
+SESSION_SECRET="your-session-secret-key"
 ```
 
-### 3. MySQL Database Setup
+### 3. Google OAuth Setup
+
+1. **Go to Google Cloud Console:**
+
+   - Visit [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+
+2. **Enable Google+ API:**
+
+   - Go to "APIs & Services" > "Library"
+   - Search for "Google+ API" and enable it
+
+3. **Create OAuth 2.0 Credentials:**
+
+   - Go to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "OAuth 2.0 Client IDs"
+   - Choose "Web application"
+   - Add authorized redirect URIs:
+     - `http://localhost:5000/api/auth/google/callback` (development)
+     - `https://yourdomain.com/api/auth/google/callback` (production)
+
+4. **Copy the credentials:**
+   - Copy the Client ID and Client Secret
+   - Add them to your `.env` file
+
+### 4. MySQL Database Setup
 
 1. **Install MySQL:**
 
@@ -69,7 +106,7 @@ PORT=5000
    npx prisma generate
    ```
 
-### 4. Start the Server
+### 5. Start the Server
 
 For development:
 
@@ -168,6 +205,26 @@ Authorization: Bearer <jwt_token>
 }
 ```
 
+### Google OAuth Routes
+
+#### GET /api/auth/google
+
+Initiate Google OAuth login.
+
+**Response:** Redirects to Google OAuth consent screen.
+
+#### GET /api/auth/google/callback
+
+Google OAuth callback (handled automatically).
+
+**Response:** Redirects to frontend with JWT token and user data.
+
+#### GET /api/auth/google/failure
+
+Google OAuth failure handler.
+
+**Response:** Redirects to frontend with error message.
+
 ### Health Check
 
 #### GET /api/health
@@ -208,9 +265,14 @@ Check if the server is running.
 The User model includes:
 
 - id (String, Primary Key) - CUID format
-- username (VARCHAR(50), Unique)
+- username (VARCHAR(50), Unique, Optional)
 - email (VARCHAR(255), Unique)
-- password (VARCHAR(255), Hashed)
+- password (VARCHAR(255), Hashed, Optional for OAuth users)
+- googleId (VARCHAR(255), Unique, Optional)
+- firstName (VARCHAR(100), Optional)
+- lastName (VARCHAR(100), Optional)
+- avatar (VARCHAR(500), Optional)
+- provider (VARCHAR(20), Default: "local") - "local" or "google"
 - createdAt (DATETIME)
 - updatedAt (DATETIME)
 
