@@ -11,7 +11,7 @@ const signup = async (req, res) => {
       return res.status(400).json({ 
         message: 'Validation failed', 
         errors: errors.array() 
-      });
+      })
     }
 
     const { username, email, password } = req.body
@@ -23,12 +23,12 @@ const signup = async (req, res) => {
           { username: username }
         ]
       }
-    });
+    })
 
     if (existingUser) {
       return res.status(400).json({ 
         message: 'User with this email or username already exists' 
-      });
+      })
     }
 
     const saltRounds = 10
@@ -46,7 +46,7 @@ const signup = async (req, res) => {
         email: true,
         createdAt: true
       }
-    });
+    })
 
     const token = jwt.sign(
       { userId: user.id },
@@ -58,13 +58,13 @@ const signup = async (req, res) => {
       message: 'User created successfully',
       user,
       token
-    });
+    })
 
   } catch (error) {
     console.error('Signup error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};
+}
 
 const login = async (req, res) => {
   try {
@@ -81,7 +81,7 @@ const login = async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { email }
-    });
+    })
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' })
@@ -96,7 +96,7 @@ const login = async (req, res) => {
       { userId: user.id },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
-    );
+    )
 
 
     const userData = {
@@ -116,7 +116,7 @@ const login = async (req, res) => {
     console.error('Login error:', error)
     res.status(500).json({ message: 'Internal server error' })
   }
-};
+}
 
 const getProfile = async (req, res) => {
   try {
@@ -140,10 +140,50 @@ const getProfile = async (req, res) => {
     console.error('Get profile error:', error)
     res.status(500).json({ message: 'Internal server error' })
   }
-};
+}
+
+const googleCallback = async (req, res) => {
+  try {
+    const user = req.user;
+    
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+  
+    const userData = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatar: user.avatar,
+      provider: user.provider,
+      createdAt: user.createdAt
+    }
+
+    
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+    res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(userData))}`)
+    
+  } catch (error) {
+    console.error('Google OAuth callback error:', error)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+    res.redirect(`${frontendUrl}/auth/error?message=Authentication failed`)
+  }
+}
+
+const googleFailure = (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+  res.redirect(`${frontendUrl}/auth/error?message=Authentication failed`)
+}
 
 module.exports = {
   signup,
   login,
-  getProfile
-};
+  getProfile,
+  googleCallback,
+  googleFailure
+}

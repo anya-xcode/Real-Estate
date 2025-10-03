@@ -1,6 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { signup, login, getProfile } = require('../controllers/propertyController');
+const passport = require('passport');
+const { signup, login, getProfile, googleCallback, googleFailure } = require('../controllers/propertyController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const router = express.Router();
@@ -37,5 +38,13 @@ const validateLogin = [
 router.post('/signup', validateSignup, signup);
 router.post('/login', validateLogin, login);
 router.get('/profile', authMiddleware, getProfile);
+
+// Google OAuth routes
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/api/auth/google/failure' }),
+  googleCallback
+);
+router.get('/google/failure', googleFailure);
 
 module.exports = router

@@ -15,9 +15,14 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  username  String   @unique @db.VarChar(50)
+  username  String?  @unique @db.VarChar(50)
   email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
+  password  String?  @db.VarChar(255)
+  googleId  String?  @unique @db.VarChar(255)
+  firstName String?  @db.VarChar(100)
+  lastName  String?  @db.VarChar(100)
+  avatar    String?  @db.VarChar(500)
+  provider  String   @default("local") @db.VarChar(20) 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
