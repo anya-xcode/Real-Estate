@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './signin.css';
 
 export default function Signin() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  // accept username OR email as identifier
+  const [form, setForm] = useState({ identifier: '', password: '' });
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -12,17 +13,18 @@ export default function Signin() {
     e.preventDefault();
     setErrors([]);
     
-    if (!form.email || !form.password) {
+    if (!form.identifier || !form.password) {
       setErrors(['Please fill in all fields']);
       return;
     }
 
     setLoading(true);
     try {
+      // send identifier (username or email) and password
       const res = await fetch('http://localhost:5000/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ identifier: form.identifier, password: form.password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -55,10 +57,10 @@ export default function Signin() {
 
         <form className="signin-form" onSubmit={handleSubmit} noValidate>
           <input
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            type="text"
+            placeholder="Username or Email"
+            value={form.identifier}
+            onChange={(e) => setForm({ ...form, identifier: e.target.value })}
             required
           />
           <input
