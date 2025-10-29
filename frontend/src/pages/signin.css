@@ -78,6 +78,9 @@
   border-color: #ddd;
 }
 
+.social-button.google { width: 140px; height: 40px; border-radius: 8px; display: inline-flex; gap: 8px; padding: 0 12px; align-items: center }
+.social-button.google svg { margin-right: 6px }
+
 .signin-form {
   display: flex;
   flex-direction: column;

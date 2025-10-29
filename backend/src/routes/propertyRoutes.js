@@ -25,10 +25,22 @@ const validateSignup = [
 ];
 
 const validateLogin = [
-  body('email')
-    .isEmail()
-    .withMessage('Invalid email address')
-    .normalizeEmail(),
+
+  body('identifier')
+    .notEmpty()
+    .withMessage('Email or username is required')
+    .bail()
+    .custom((value) => {
+    
+      if (value.includes('@')) {
+      
+        const re = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+        if (!re.test(value)) {
+          throw new Error('Invalid email address')
+        }
+      }
+      return true
+    }),
   body('password')
     .notEmpty()
     .withMessage('Password is required'),
@@ -39,7 +51,7 @@ router.post('/signup', validateSignup, signup);
 router.post('/login', validateLogin, login);
 router.get('/profile', authMiddleware, getProfile);
 
-// Google OAuth routes
+
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback', 
   passport.authenticate('google', { failureRedirect: '/api/auth/google/failure' }),

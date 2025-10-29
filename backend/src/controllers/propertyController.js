@@ -76,12 +76,15 @@ const login = async (req, res) => {
       });
     }
 
-    const { email, password } = req.body
 
+    const { identifier, password } = req.body
 
-    const user = await prisma.user.findUnique({
-      where: { email }
-    })
+    let user;
+    if (identifier.includes('@')) {
+      user = await prisma.user.findUnique({ where: { email: identifier } })
+    } else {
+      user = await prisma.user.findUnique({ where: { username: identifier } })
+    }
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' })
