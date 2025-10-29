@@ -14,11 +14,9 @@ body {
 
 main {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: radial-gradient(circle at center, transparent, rgba(99, 102, 241, 0.1));
+  display: block;
+  padding: 2rem 0 4rem;
+  background: radial-gradient(circle at center, transparent, rgba(99, 102, 241, 0.04));
 }
 
 /* Header / Nav improvements */
@@ -27,13 +25,13 @@ main {
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 0 2rem;
-  background: rgba(18,18,18,0.98);
-  box-shadow: 0 4px 18px rgba(7, 7, 7, 0.25);
+  background: linear-gradient(180deg,#0b0b0b,#141414);
+  box-shadow: 0 8px 28px rgba(11,11,11,0.6);
   z-index: 1000;
 }
 
@@ -57,18 +55,18 @@ main {
 }
 
 .signup-link {
-  background: linear-gradient(90deg, #6b4ef2 0%, #4834d4 100%);
+  background: linear-gradient(90deg,#7b5cff,#5b35f0);
   color: white;
-  padding: 0.6rem 1.25rem;
-  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  border-radius: 14px;
   text-decoration: none;
-  box-shadow: 0 8px 18px rgba(72, 52, 212, 0.18);
-  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(75,40,200,0.22);
+  font-weight: 700;
 }
 
 .signup-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(72, 52, 212, 0.22);
+  box-shadow: 0 14px 36px rgba(75,40,200,0.26);
 }
 
 /* make sure main content isn't hidden behind fixed header */
