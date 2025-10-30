@@ -24,7 +24,7 @@ backend/.env (example)
 ```
 PORT=5001
 DATABASE_URL="<your-database-url>"
-FRONTEND_URL=http://localhost:5174
+FRONTEND_URL=http://localhost:5173
 SESSION_SECRET="your_secret"
 JWT_SECRET="your_secret"
 GOOGLE_CLIENT_ID="your_id"
@@ -80,7 +80,7 @@ cd frontend
 npm run dev
 ```
 
-Visit the Vite URL printed in the terminal (commonly `http://localhost:5174`). The frontend uses `VITE_API_URL` to talk to the backend.
+Visit the Vite URL printed in the terminal (commonly `http://localhost:5173`). The frontend uses `VITE_API_URL` to talk to the backend.
 
 
 ## Project purpose
