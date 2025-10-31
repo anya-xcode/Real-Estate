@@ -80,7 +80,7 @@ cd frontend
 npm run dev
 ```
 
-Visit the Vite URL printed in the terminal (commonly `http://localhost:5174`). The frontend uses `VITE_API_URL` to talk to the backend.
+Visit the Vite URL printed in the terminal (commonly `http://localhost:5173`). The frontend uses `VITE_API_URL` to talk to the backend.
 
 
 ## Project purpose
