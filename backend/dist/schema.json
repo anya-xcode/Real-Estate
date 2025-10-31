@@ -1,0 +1,784 @@
+{
+  "tables": {
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(50)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "googleId": {
+          "name": "googleId",
+          "type": "varchar(255)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar(100)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar(100)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "provider": {
+          "name": "provider",
+          "type": "varchar(20)",
+          "default": "local",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "default": "CURRENT_TIMESTAMP",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp(3)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "users_pkey": {
+          "name": "users_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        },
+        "users_username_key": {
+          "name": "users_username_key",
+          "unique": true,
+          "columns": [
+            "username"
+          ],
+          "type": ""
+        },
+        "users_email_key": {
+          "name": "users_email_key",
+          "unique": true,
+          "columns": [
+            "email"
+          ],
+          "type": ""
+        },
+        "users_googleId_key": {
+          "name": "users_googleId_key",
+          "unique": true,
+          "columns": [
+            "googleId"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "UNIQUE_username": {
+          "type": "UNIQUE",
+          "name": "UNIQUE_username",
+          "columnNames": [
+            "username"
+          ]
+        },
+        "UNIQUE_email": {
+          "type": "UNIQUE",
+          "name": "UNIQUE_email",
+          "columnNames": [
+            "email"
+          ]
+        },
+        "UNIQUE_googleId": {
+          "type": "UNIQUE",
+          "name": "UNIQUE_googleId",
+          "columnNames": [
+            "googleId"
+          ]
+        }
+      }
+    },
+    "properties": {
+      "name": "properties",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "price": {
+          "name": "price",
+          "type": "decimal(12,2)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "text",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "default": "CURRENT_TIMESTAMP",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp(3)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "properties_pkey": {
+          "name": "properties_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "UserProperties": {
+          "type": "FOREIGN KEY",
+          "name": "UserProperties",
+          "columnNames": [
+            "ownerId"
+          ],
+          "targetTableName": "users",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    },
+    "addresses": {
+      "name": "addresses",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "propertyId": {
+          "name": "propertyId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "street": {
+          "name": "street",
+          "type": "varchar(255)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(100)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "zipCode": {
+          "name": "zipCode",
+          "type": "varchar(20)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar(100)",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "addresses_pkey": {
+          "name": "addresses_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        },
+        "addresses_propertyId_key": {
+          "name": "addresses_propertyId_key",
+          "unique": true,
+          "columns": [
+            "propertyId"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "UNIQUE_propertyId": {
+          "type": "UNIQUE",
+          "name": "UNIQUE_propertyId",
+          "columnNames": [
+            "propertyId"
+          ]
+        },
+        "AddressToProperty": {
+          "type": "FOREIGN KEY",
+          "name": "AddressToProperty",
+          "columnNames": [
+            "propertyId"
+          ],
+          "targetTableName": "properties",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    },
+    "property_images": {
+      "name": "property_images",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "propertyId": {
+          "name": "propertyId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(1024)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "order": {
+          "name": "order",
+          "type": "integer",
+          "default": 0,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "isPrimary": {
+          "name": "isPrimary",
+          "type": "boolean",
+          "default": false,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "default": "CURRENT_TIMESTAMP",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "property_images_pkey": {
+          "name": "property_images_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "PropertyToPropertyImage": {
+          "type": "FOREIGN KEY",
+          "name": "PropertyToPropertyImage",
+          "columnNames": [
+            "propertyId"
+          ],
+          "targetTableName": "properties",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    },
+    "features": {
+      "name": "features",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "features_pkey": {
+          "name": "features_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        },
+        "features_name_key": {
+          "name": "features_name_key",
+          "unique": true,
+          "columns": [
+            "name"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "UNIQUE_name": {
+          "type": "UNIQUE",
+          "name": "UNIQUE_name",
+          "columnNames": [
+            "name"
+          ]
+        }
+      }
+    },
+    "property_features": {
+      "name": "property_features",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "propertyId": {
+          "name": "propertyId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "featureId": {
+          "name": "featureId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "property_features_pkey": {
+          "name": "property_features_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        },
+        "property_features_propertyId_featureId_key": {
+          "name": "property_features_propertyId_featureId_key",
+          "unique": true,
+          "columns": [
+            "propertyId",
+            "featureId"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "PropertyToPropertyFeature": {
+          "type": "FOREIGN KEY",
+          "name": "PropertyToPropertyFeature",
+          "columnNames": [
+            "propertyId"
+          ],
+          "targetTableName": "properties",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        },
+        "FeatureToPropertyFeature": {
+          "type": "FOREIGN KEY",
+          "name": "FeatureToPropertyFeature",
+          "columnNames": [
+            "featureId"
+          ],
+          "targetTableName": "features",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    },
+    "inquiries": {
+      "name": "inquiries",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "propertyId": {
+          "name": "propertyId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "default": "CURRENT_TIMESTAMP",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "inquiries_pkey": {
+          "name": "inquiries_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "InquiryToProperty": {
+          "type": "FOREIGN KEY",
+          "name": "InquiryToProperty",
+          "columnNames": [
+            "propertyId"
+          ],
+          "targetTableName": "properties",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        },
+        "InquiryToUser": {
+          "type": "FOREIGN KEY",
+          "name": "InquiryToUser",
+          "columnNames": [
+            "userId"
+          ],
+          "targetTableName": "users",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    },
+    "favorites": {
+      "name": "favorites",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "propertyId": {
+          "name": "propertyId",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "default": "CURRENT_TIMESTAMP",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": null,
+      "indexes": {
+        "favorites_pkey": {
+          "name": "favorites_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        },
+        "favorites_userId_propertyId_key": {
+          "name": "favorites_userId_propertyId_key",
+          "unique": true,
+          "columns": [
+            "userId",
+            "propertyId"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "FavoriteToUser": {
+          "type": "FOREIGN KEY",
+          "name": "FavoriteToUser",
+          "columnNames": [
+            "userId"
+          ],
+          "targetTableName": "users",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        },
+        "FavoriteToProperty": {
+          "type": "FOREIGN KEY",
+          "name": "FavoriteToProperty",
+          "columnNames": [
+            "propertyId"
+          ],
+          "targetTableName": "properties",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    }
+  },
+  "enums": {},
+  "extensions": {}
+}

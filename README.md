@@ -24,7 +24,7 @@ backend/.env (example)
 ```
 PORT=5001
 DATABASE_URL="<your-database-url>"
-FRONTEND_URL=http://localhost:5174
+FRONTEND_URL=http://localhost:5173
 SESSION_SECRET="your_secret"
 JWT_SECRET="your_secret"
 GOOGLE_CLIENT_ID="your_id"
