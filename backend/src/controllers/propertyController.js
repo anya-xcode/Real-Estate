@@ -162,7 +162,6 @@ const googleCallback = async (req, res) => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      avatar: user.avatar,
       provider: user.provider,
       createdAt: user.createdAt
     }

@@ -29,8 +29,7 @@ passport.use(new GoogleStrategy({
           googleId: profile.id,
           provider: 'google',
           firstName: profile.name.givenName,
-          lastName: profile.name.familyName,
-          avatar: profile.photos[0]?.value
+          lastName: profile.name.familyName
         }
       });
       return done(null, user)
@@ -42,9 +41,8 @@ passport.use(new GoogleStrategy({
         email: profile.emails[0].value,
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
-        avatar: profile.photos[0]?.value,
         provider: 'google',
-        username: profile.emails[0].value.split('@')[0] 
+        username: profile.emails[0].value.split('@')[0]
       }
     })
 
@@ -69,7 +67,6 @@ passport.deserializeUser(async (id, done) => {
         email: true,
         firstName: true,
         lastName: true,
-        avatar: true,
         provider: true
       }
     });
