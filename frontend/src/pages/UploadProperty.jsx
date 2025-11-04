@@ -1,0 +1,567 @@
+import React, { useState } from 'react'
+import './UploadProperty.css'
+
+export default function UploadProperty() {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    price: '',
+    type: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    beds: '',
+    baths: '',
+    area: '',
+    yearBuilt: '',
+    amenities: [],
+    images: [],
+    featured: false
+  })
+
+  const [previewImages, setPreviewImages] = useState([])
+  const [dragActive, setDragActive] = useState(false)
+
+  const propertyTypes = ['House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft', 'Condo', 'Townhouse']
+  
+  const amenitiesList = [
+    'Pool', 'Garage', 'Garden', 'Gym', 'Smart Home', 'Fireplace',
+    'Balcony', 'Parking', 'Security System', 'Air Conditioning',
+    'Heating', 'Dishwasher', 'Washer/Dryer', 'Hardwood Floors',
+    'High Ceilings', 'Walk-in Closet', 'Pet Friendly', 'Furnished'
+  ]
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+  }
+
+  const handleAmenityToggle = (amenity) => {
+    setFormData(prev => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenity)
+        ? prev.amenities.filter(a => a !== amenity)
+        : [...prev.amenities, amenity]
+    }))
+  }
+
+  const handleImageUpload = (files) => {
+    const newFiles = Array.from(files)
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file))
+    
+    setFormData(prev => ({
+      ...prev,
+      images: [...prev.images, ...newFiles]
+    }))
+    
+    setPreviewImages(prev => [...prev, ...newPreviews])
+  }
+
+  const handleFileInputChange = (e) => {
+    if (e.target.files) {
+      handleImageUpload(e.target.files)
+    }
+  }
+
+  const handleDrag = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageUpload(e.dataTransfer.files)
+    }
+  }
+
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }))
+    setPreviewImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const nextStep = () => {
+    if (currentStep < 4) {
+      setCurrentStep(prev => prev + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1)
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log('Form Data:', formData)
+    // Here you would send the data to your backend
+    alert('Property uploaded successfully! (This is a demo)')
+  }
+
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1:
+        return formData.title && formData.description && formData.type
+      case 2:
+        return formData.price && formData.address && formData.city
+      case 3:
+        return formData.beds && formData.baths && formData.area
+      case 4:
+        return formData.images.length > 0
+      default:
+        return false
+    }
+  }
+
+  return (
+    <div className="upload-property-page">
+      {/* Header */}
+      <div className="upload-header">
+        <div className="upload-header-content">
+          <h1 className="upload-title">List Your Property</h1>
+          <p className="upload-subtitle">Share your property with thousands of potential buyers</p>
+        </div>
+      </div>
+
+      {/* Progress Steps */}
+      <div className="progress-container">
+        <div className="progress-steps">
+          {[1, 2, 3, 4].map((step) => (
+            <div key={step} className="progress-step-wrapper">
+              <div className={`progress-step ${currentStep >= step ? 'active' : ''} ${currentStep > step ? 'completed' : ''}`}>
+                {currentStep > step ? (
+                  <svg className="check-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  <span>{step}</span>
+                )}
+              </div>
+              <p className="progress-label">
+                {step === 1 && 'Basic Info'}
+                {step === 2 && 'Location & Price'}
+                {step === 3 && 'Details'}
+                {step === 4 && 'Photos'}
+              </p>
+              {step < 4 && <div className={`progress-line ${currentStep > step ? 'completed' : ''}`} />}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="upload-form">
+        <div className="form-container">
+          {/* Step 1: Basic Info */}
+          {currentStep === 1 && (
+            <div className="form-step" key="step1">
+              <h2 className="step-title">Basic Information</h2>
+              <p className="step-description">Tell us about your property</p>
+
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label htmlFor="title" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Property Title *
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Modern Family House in Downtown"
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group full-width">
+                  <label htmlFor="type" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Property Type *
+                  </label>
+                  <select
+                    id="type"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    className="form-select"
+                    required
+                  >
+                    <option value="">Select property type</option>
+                    {propertyTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group full-width">
+                  <label htmlFor="description" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                    Description *
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Describe your property, its features, and what makes it special..."
+                    className="form-textarea"
+                    rows={5}
+                    required
+                  />
+                </div>
+
+                <div className="form-group full-width">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="featured"
+                      checked={formData.featured}
+                      onChange={handleInputChange}
+                      className="form-checkbox"
+                    />
+                    <span className="checkbox-text">Mark as Featured Property</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Location & Price */}
+          {currentStep === 2 && (
+            <div className="form-step" key="step2">
+              <h2 className="step-title">Location & Pricing</h2>
+              <p className="step-description">Where is your property located?</p>
+
+              <div className="form-grid">
+                <div className="form-group full-width">
+                  <label htmlFor="price" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Price (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 450000"
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group full-width">
+                  <label htmlFor="address" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Street Address *
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 123 Main Street"
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="city" className="form-label">City *</label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="e.g., New York"
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="state" className="form-label">State</label>
+                  <input
+                    type="text"
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    placeholder="e.g., NY"
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="zipCode" className="form-label">ZIP Code</label>
+                  <input
+                    type="text"
+                    id="zipCode"
+                    name="zipCode"
+                    value={formData.zipCode}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 10001"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Property Details */}
+          {currentStep === 3 && (
+            <div className="form-step" key="step3">
+              <h2 className="step-title">Property Details</h2>
+              <p className="step-description">Provide specific details about your property</p>
+
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="beds" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Bedrooms *
+                  </label>
+                  <input
+                    type="number"
+                    id="beds"
+                    name="beds"
+                    value={formData.beds}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 3"
+                    className="form-input"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="baths" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21v6H3V3h7.5z" />
+                    </svg>
+                    Bathrooms *
+                  </label>
+                  <input
+                    type="number"
+                    id="baths"
+                    name="baths"
+                    value={formData.baths}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 2"
+                    className="form-input"
+                    min="0"
+                    step="0.5"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="area" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                    Area (sqft) *
+                  </label>
+                  <input
+                    type="number"
+                    id="area"
+                    name="area"
+                    value={formData.area}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 2500"
+                    className="form-input"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="yearBuilt" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Year Built
+                  </label>
+                  <input
+                    type="number"
+                    id="yearBuilt"
+                    name="yearBuilt"
+                    value={formData.yearBuilt}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 2020"
+                    className="form-input"
+                    min="1800"
+                    max={new Date().getFullYear()}
+                  />
+                </div>
+
+                <div className="form-group full-width">
+                  <label className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Amenities
+                  </label>
+                  <div className="amenities-selector">
+                    {amenitiesList.map(amenity => (
+                      <button
+                        key={amenity}
+                        type="button"
+                        onClick={() => handleAmenityToggle(amenity)}
+                        className={`amenity-chip ${formData.amenities.includes(amenity) ? 'selected' : ''}`}
+                      >
+                        {formData.amenities.includes(amenity) && (
+                          <svg className="chip-check" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {amenity}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Photos */}
+          {currentStep === 4 && (
+            <div className="form-step" key="step4">
+              <h2 className="step-title">Property Photos</h2>
+              <p className="step-description">Upload high-quality images of your property</p>
+
+              <div className="upload-section">
+                {/* Drop Zone */}
+                <div
+                  className={`drop-zone ${dragActive ? 'active' : ''}`}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    type="file"
+                    id="fileInput"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileInputChange}
+                    className="file-input"
+                  />
+                  <label htmlFor="fileInput" className="drop-zone-label">
+                    <svg className="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <h3>Drag & Drop your images here</h3>
+                    <p>or click to browse</p>
+                    <span className="file-types">PNG, JPG, GIF up to 10MB</span>
+                  </label>
+                </div>
+
+                {/* Image Previews */}
+                {previewImages.length > 0 && (
+                  <div className="image-previews">
+                    <h3 className="previews-title">Uploaded Images ({previewImages.length})</h3>
+                    <div className="previews-grid">
+                      {previewImages.map((preview, index) => (
+                        <div key={index} className="preview-item">
+                          <img src={preview} alt={`Preview ${index + 1}`} className="preview-image" />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="remove-image"
+                          >
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                          {index === 0 && (
+                            <div className="primary-badge">Primary</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="form-navigation">
+            {currentStep > 1 && (
+              <button
+                type="button"
+                onClick={prevStep}
+                className="nav-button secondary"
+              >
+                <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Previous
+              </button>
+            )}
+
+            {currentStep < 4 ? (
+              <button
+                type="button"
+                onClick={nextStep}
+                disabled={!isStepValid()}
+                className="nav-button primary"
+              >
+                Next
+                <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!isStepValid()}
+                className="nav-button submit"
+              >
+                <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Submit Property
+              </button>
+            )}
+          </div>
+        </div>
+      </form>
+    </div>
+  )
+}
