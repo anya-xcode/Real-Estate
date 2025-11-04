@@ -4,6 +4,8 @@ import Home from './pages/Home'
 import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import AuthCallback from './pages/AuthCallback'
+import PropertyListing from './pages/PropertyListing'
+import UploadProperty from './pages/UploadProperty'
 import useAuth from './hooks/useAuth'
 
 function App() {
@@ -14,6 +16,10 @@ function App() {
         <header className="app-header">
           <nav className="app-nav">
             <Link to="/" className="nav-link">Home</Link>
+            <Link to="/properties" className="nav-link">Properties</Link>
+            {auth.user && (
+              <Link to="/upload" className="nav-link">List Property</Link>
+            )}
             {!auth.user ? (
               <>
                 <Link to="/signin" className="nav-link">Sign in</Link>
@@ -31,6 +37,8 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/properties" element={<PropertyListing />} />
+            <Route path="/upload" element={<UploadProperty />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
