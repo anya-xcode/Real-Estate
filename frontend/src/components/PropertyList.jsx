@@ -9,7 +9,7 @@ const dummyProperties = [
 		beds: 4,
 		baths: 3,
 		area: '2,800 sqft',
-		image: 'https://images.unsplash.com/photo-1560185127-6c5f3a6f6e97?auto=format&fit=crop&w=1200&q=60',
+		image: 'https://media.architecturaldigest.com/photos/55e78c2fcd709ad62e8feef9/16:9/w_656,h_369,c_limit/dam-images-resources-2012-01-modern-family-sets-modern-family-01-jay-gloria-pritchett.jpg',
 		type: 'House',
 		featured: true
 	},
@@ -33,7 +33,7 @@ const dummyProperties = [
 		beds: 3,
 		baths: 2,
 		area: '1,600 sqft',
-		image: 'https://images.unsplash.com/photo-1505691723518-36a6f4c7f6d6?auto=format&fit=crop&w=1200&q=60',
+		image: 'https://media.istockphoto.com/id/471826199/photo/french-brittany-typical-house.jpg?s=612x612&w=0&k=20&c=Izy6Ms8WytO21jJ2gtuUlylIDl38TMgZYcFZTncFAcM=',
 		type: 'Cottage',
 		featured: false
 	},
@@ -57,7 +57,7 @@ const dummyProperties = [
 		beds: 5,
 		baths: 4,
 		area: '4,200 sqft',
-		image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1309eb?auto=format&fit=crop&w=1200&q=60',
+		image: 'https://media.istockphoto.com/id/506903162/photo/luxurious-villa-with-pool.jpg?s=612x612&w=0&k=20&c=Ek2P0DQ9nHQero4m9mdDyCVMVq3TLnXigxNPcZbgX2E=',
 		type: 'Villa',
 		featured: false
 	},
@@ -102,6 +102,8 @@ export default function PropertyList({ showRibbon = false }) {
 						<img
 							src={property.image}
 							alt={property.title}
+							loading="lazy"
+							onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://via.placeholder.com/1200x800?text=Image+Unavailable'; }}
 							className="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110"
 						/>
 						
