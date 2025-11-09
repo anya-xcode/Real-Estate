@@ -135,30 +135,7 @@ export default function Home() {
 				</div>
 			</section>
 
-			{/* Features Section */}
-			<section className="features-section">
-				<div className="container">
-					<div className="section-header">
-						<span className="section-badge">Why Choose Us</span>
-						<h2 className="section-title">Your Trusted Real Estate Partner</h2>
-						<p className="section-subtitle">
-							We provide comprehensive real estate solutions with unmatched service quality
-						</p>
-					</div>
 
-					<div className="features-grid">
-						{features.map((feature, index) => (
-							<div key={index} className="feature-card">
-								<div className="feature-icon-wrapper">
-									{feature.icon}
-								</div>
-								<h3 className="feature-title">{feature.title}</h3>
-								<p className="feature-description">{feature.description}</p>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
 
 			{/* Featured Properties Section */}
 			<section className="properties-section">
@@ -219,6 +196,31 @@ export default function Home() {
 										</svg>
 									</button>
 								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* Features Section */}
+			<section className="features-section">
+				<div className="container">
+					<div className="section-header">
+						<span className="section-badge">Why Choose Us</span>
+						<h2 className="section-title">Your Trusted Real Estate Partner</h2>
+						<p className="section-subtitle">
+							We provide comprehensive real estate solutions with unmatched service quality
+						</p>
+					</div>
+
+					<div className="features-grid">
+						{features.map((feature, index) => (
+							<div key={index} className="feature-card">
+								<div className="feature-icon-wrapper">
+									{feature.icon}
+								</div>
+								<h3 className="feature-title">{feature.title}</h3>
+								<p className="feature-description">{feature.description}</p>
 							</div>
 						))}
 					</div>
@@ -305,6 +307,51 @@ export default function Home() {
 					</div>
 				</div>
 			</section>
+
+			{/* Footer Section */}
+			<footer className="site-footer" role="contentinfo">
+				<div className="container footer-container">
+					<div className="footer-top">
+						<div className="footer-brand">
+							<h3>Real Estate</h3>
+							<p>Helping you find the perfect property with trust and transparency.</p>
+						</div>
+
+						<nav className="footer-links" aria-label="Footer navigation">
+							<div className="link-group">
+								<h4>Company</h4>
+								<ul>
+									<li><a href="/about">About Us</a></li>
+									<li><a href="/careers">Careers</a></li>
+									<li><a href="/blog">Blog</a></li>
+								</ul>
+							</div>
+							<div className="link-group">
+								<h4>Support</h4>
+								<ul>
+									<li><a href="/help">Help Center</a></li>
+									<li><a href="/contact">Contact Us</a></li>
+									<li><a href="/privacy">Privacy Policy</a></li>
+								</ul>
+							</div>
+							<div className="contact-group">
+								<h4>Contact</h4>
+								<p>Email: <a href="mailto:support@realestate.com">support@realestate.com</a></p>
+								<p>Phone: <a href="tel:+919876543210">+91 98765 43210</a></p>
+							</div>
+						</nav>
+					</div>
+
+					<div className="footer-bottom">
+						<p className="footer-copy">© {new Date().getFullYear()} Real Estate. All rights reserved.</p>
+						<div className="socials" aria-hidden>
+							<a href="#" className="social-link">Facebook</a>
+							<a href="#" className="social-link">Twitter</a>
+							<a href="#" className="social-link">LinkedIn</a>
+						</div>
+					</div>
+				</div>
+			</footer>
 		</div>
 	)
 }
