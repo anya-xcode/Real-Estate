@@ -42,7 +42,8 @@
   background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80');
   background-size: cover;
   background-position: center;
-  opacity: 0.5;
+  /* reduce tint so image colors remain natural */
+  opacity: 0.35;
   animation: subtle-zoom 20s ease-in-out infinite;
   z-index: 1;
 }
@@ -52,10 +53,11 @@
   50% { transform: scale(1.05); }
 }
 
+/* Overlay: changed from purple/blue to a subtle neutral dark gradient to remove blue cast */
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.18) 100%);
   z-index: 2;
 }
 
