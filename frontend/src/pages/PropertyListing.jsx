@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import PropertyCard from '../components/PropertyCard'
 import ChatPanel from '../components/ChatPanel'
+import Footer from '../components/Footer'
 import './PropertyListing.css'
 
 const dummyProperties = [
@@ -272,6 +273,9 @@ export default function PropertyListing() {
         onClose={() => setIsChatOpen(false)}
         property={selectedProperty}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

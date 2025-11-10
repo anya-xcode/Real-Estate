@@ -7,11 +7,13 @@ import AuthCallback from './pages/AuthCallback'
 import PropertyListing from './pages/PropertyListing'
 import UploadProperty from './pages/UploadProperty'
 import useAuth from './hooks/useAuth'
+import ScrollToTop from './components/ScrollToTop'
 
 function App() {
   const auth = useAuth()
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div>
         <header className="app-header">
           <nav className="app-nav">

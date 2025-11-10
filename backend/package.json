@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.16.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
@@ -22,10 +21,13 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.5",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
-    "prisma": "^6.16.1"
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@prisma/client": "^6.19.0",
+    "i": "^0.3.7",
+    "nodemon": "^3.0.2",
+    "npm": "^11.6.2",
+    "prisma": "^6.19.0"
   }
 }
