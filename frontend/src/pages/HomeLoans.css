@@ -1,0 +1,412 @@
+.home-loans-page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* Hero Section */
+.loans-hero {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 80px 20px 60px;
+  text-align: center;
+}
+
+.loans-hero-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.02em;
+}
+
+.loans-hero-subtitle {
+  font-size: 18px;
+  color: #475569;
+  max-width: 600px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.loans-hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.loans-btn {
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 200ms;
+}
+
+.loans-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.loans-btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.loans-btn-secondary {
+  background: white;
+  color: #1e293b;
+  border: 2px solid #e2e8f0;
+}
+
+.loans-btn-secondary:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* Why Choose Us Section */
+.loans-why-section {
+  padding: 60px 20px;
+}
+
+.loans-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loans-card {
+  background: white;
+  padding: 40px 32px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 200ms, box-shadow 200ms;
+}
+
+.loans-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.loans-card-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+}
+
+.icon-illustration {
+  width: 100%;
+  height: 100%;
+}
+
+.loans-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+}
+
+.loans-card-text {
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.loans-card-btn {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: white;
+  color: #1e293b;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 200ms;
+}
+
+.loans-card-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* EMI Calculator Section */
+.loans-calculator-section {
+  padding: 60px 20px 80px;
+  background: white;
+}
+
+.calculator-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.calculator-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.calculator-subtitle {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* Eligibility Checker Section */
+.loans-eligibility-section {
+  padding: 60px 20px 80px;
+  background: #f8fafc;
+}
+
+/* Documents Required Section */
+.loans-documents-section {
+  padding: 60px 20px 80px;
+  background: white;
+}
+
+.documents-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.documents-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.documents-subtitle {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.document-card {
+  background: white;
+  padding: 32px 24px;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+  transition: all 200ms;
+}
+
+.document-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+}
+
+.document-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.document-icon svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.document-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+}
+
+.document-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.document-list li {
+  font-size: 14px;
+  color: #64748b;
+  padding: 6px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.document-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* Apply Form Section */
+.loans-apply-section {
+  padding: 60px 20px 80px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.apply-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.apply-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.apply-subtitle {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.apply-form {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-input,
+.form-textarea {
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 200ms;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 200ms;
+}
+
+.form-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.form-submit-btn .btn-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.form-note {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .loans-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .documents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .loans-hero-title {
+    font-size: 32px;
+  }
+
+  .loans-hero-subtitle {
+    font-size: 16px;
+  }
+
+  .loans-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-title,
+  .documents-title,
+  .apply-title {
+    font-size: 28px;
+  }
+
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .apply-form {
+    padding: 24px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

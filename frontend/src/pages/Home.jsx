@@ -140,8 +140,7 @@ export default function Home() {
 			<section className="properties-section">
 				<div className="container">
 					<div className="section-header">
-						<span className="section-badge">Featured Listings</span>
-						<h2 className="section-title">Handpicked Properties For You</h2>
+						<h1 className="section-title">Handpicked Properties For You</h1>
 						<p className="section-subtitle">
 							Explore our curated selection of premium properties
 						</p>
@@ -164,7 +163,6 @@ export default function Home() {
 			<section className="cities-section">
 				<div className="container">
 					<div className="section-header">
-						<span className="section-badge">Explore Locations</span>
 						<h2 className="section-title">Popular Cities</h2>
 						<p className="section-subtitle">
 							Discover properties in India's most sought-after cities

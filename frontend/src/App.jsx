@@ -6,6 +6,8 @@ import Signin from './pages/Signin'
 import AuthCallback from './pages/AuthCallback'
 import PropertyListing from './pages/PropertyListing'
 import UploadProperty from './pages/UploadProperty'
+import HomeLoans from './pages/HomeLoans'
+import Contact from './pages/Contact'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 
@@ -19,6 +21,8 @@ function App() {
           <nav className="app-nav">
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/properties" className="nav-link">Properties</Link>
+            <Link to="/home-loans" className="nav-link">Loans</Link>
+            <Link to="/contact" className="nav-link">Contact</Link>
             {auth.user && (
               <Link to="/upload" className="nav-link">List Property</Link>
             )}
@@ -40,6 +44,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/properties" element={<PropertyListing />} />
+            <Route path="/home-loans" element={<HomeLoans />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/upload" element={<UploadProperty />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />

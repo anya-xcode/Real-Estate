@@ -76,7 +76,16 @@ const dummyProperties = [
 ]
 
 export default function PropertyList({ showRibbon = false }) {
-	const [setHoveredCard] = useState(null)
+	const [hoveredCard, setHoveredCard] = useState(null)
+	const [likedProperties, setLikedProperties] = useState([])
+
+	const toggleLike = (propertyId) => {
+		setLikedProperties(prev => 
+			prev.includes(propertyId) 
+				? prev.filter(id => id !== propertyId)
+				: [...prev, propertyId]
+		)
+	}
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -119,8 +128,23 @@ export default function PropertyList({ showRibbon = false }) {
 
 						{/* Quick Actions */}
 						<div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-							<button className="bg-white/90 backdrop-blur-sm text-gray-800 p-2 rounded-full hover:bg-white transition-colors duration-200 shadow-lg">
-								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<button 
+								onClick={(e) => {
+									e.preventDefault()
+									toggleLike(property.id)
+								}}
+								className={`backdrop-blur-sm p-2 rounded-full transition-all duration-200 shadow-lg ${
+									likedProperties.includes(property.id)
+										? 'bg-red-500 text-white hover:bg-red-600'
+										: 'bg-white/90 text-gray-800 hover:bg-white'
+								}`}
+							>
+								<svg 
+									className="w-5 h-5" 
+									fill={likedProperties.includes(property.id) ? 'currentColor' : 'none'} 
+									stroke="currentColor" 
+									viewBox="0 0 24 24"
+								>
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
 								</svg>
 							</button>
@@ -183,8 +207,20 @@ export default function PropertyList({ showRibbon = false }) {
 							<button className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-200">
 								View Details
 							</button>
-							<button className="px-4 py-3 border-2 border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-600 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">
-								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<button 
+								onClick={() => toggleLike(property.id)}
+								className={`px-4 py-3 border-2 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 ${
+									likedProperties.includes(property.id)
+										? 'border-red-500 bg-red-500 text-white hover:bg-red-600 hover:border-red-600 focus:ring-red-200'
+										: 'border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-600 focus:ring-gray-200'
+								}`}
+							>
+								<svg 
+									className="w-5 h-5" 
+									fill={likedProperties.includes(property.id) ? 'currentColor' : 'none'} 
+									stroke="currentColor" 
+									viewBox="0 0 24 24"
+								>
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
 								</svg>
 							</button>
