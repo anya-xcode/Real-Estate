@@ -1330,7 +1330,51 @@
 }
 
 .features-section {
-  background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url('../assets/home2image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
+}
+
+.features-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.features-section .section-header {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.features-section .section-title {
+  color: #ffffff;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.features-section .section-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  max-width: 700px;
+  text-align: left;
+  margin-left: 0;
 }
 
 .properties-section {
@@ -2055,6 +2099,136 @@
   line-height: 1.6;
 }
 
+/* Modern Features Grid */
+.features-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-card-modern {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.feature-card-modern:hover {
+  transform: translateY(-12px);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.feature-icon-wrapper-modern {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.4s ease;
+}
+
+.feature-card-modern:hover .feature-icon-wrapper-modern {
+  transform: scale(1.1);
+}
+
+.icon-bg-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+}
+
+.feature-card-modern:hover .icon-bg-circle {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  transform: scale(1.2);
+}
+
+.feature-icon-wrapper-modern .feature-icon {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  color: #667eea;
+  stroke-width: 2.5;
+  transition: all 0.4s ease;
+}
+
+.feature-card-modern:hover .feature-icon-wrapper-modern .feature-icon {
+  color: #764ba2;
+  transform: scale(1.1);
+}
+
+.feature-content-modern {
+  width: 100%;
+}
+
+.feature-title-modern {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.feature-card-modern:hover .feature-title-modern {
+  color: #667eea;
+}
+
+.feature-description-modern {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.feature-card-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.feature-card-modern:hover .feature-card-glow {
+  opacity: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* View All Button */
 .view-all-btn {
   display: inline-flex;
@@ -2403,6 +2577,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .features-grid-modern {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
   .properties-section .grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2451,14 +2630,31 @@
   }
 
   .features-grid,
+  .features-grid-modern,
   .properties-section .grid,
   .cities-grid,
   .testimonials-grid {
     grid-template-columns: 1fr;
   }
 
+  .features-grid-modern {
+    gap: 1.25rem;
+  }
+
+  .feature-card-modern {
+    padding: 2rem 1.5rem;
+  }
+
   .section-title {
     font-size: 2rem;
+  }
+
+  .features-section .section-title {
+    font-size: 2rem;
+  }
+
+  .features-section .section-subtitle {
+    font-size: 1rem;
   }
 
   .cta-title {

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PropertyList from '../components/PropertyList'
 import './Home.css'
 import homeVideo from '../assets/homevideo.mp4'
+import home2Image from '../assets/home2image.jpg'
 import Insights from '../components/Insights'
 
 export default function Home() {
@@ -204,21 +205,26 @@ export default function Home() {
 			<section className="features-section">
 				<div className="container">
 					<div className="section-header">
-						<span className="section-badge">Why Choose Us</span>
-						<h2 className="section-title">Your Trusted Real Estate Partner</h2>
+						<h2 className="section-title">Why Choose Us</h2>
 						<p className="section-subtitle">
-							We provide comprehensive real estate solutions with unmatched service quality
+							Experience excellence in real estate with our comprehensive solutions and unmatched service quality
 						</p>
 					</div>
 
-					<div className="features-grid">
+					<div className="features-grid-modern">
 						{features.map((feature, index) => (
-							<div key={index} className="feature-card">
-								<div className="feature-icon-wrapper">
-									{feature.icon}
+							<div key={index} className="feature-card-modern" style={{ animationDelay: `${index * 0.1}s` }}>
+								<div className="feature-card-inner">
+									<div className="feature-icon-wrapper-modern">
+										{feature.icon}
+										<div className="icon-bg-circle"></div>
+									</div>
+									<div className="feature-content-modern">
+										<h3 className="feature-title-modern">{feature.title}</h3>
+										<p className="feature-description-modern">{feature.description}</p>
+									</div>
 								</div>
-								<h3 className="feature-title">{feature.title}</h3>
-								<p className="feature-description">{feature.description}</p>
+								<div className="feature-card-glow"></div>
 							</div>
 						))}
 					</div>
@@ -352,11 +358,6 @@ export default function Home() {
 
 					<div className="footer-bottom">
 						<p className="footer-copy">© {new Date().getFullYear()} Real Estate. All rights reserved.</p>
-						<div className="socials" aria-hidden>
-							<a href="#" className="social-link">Facebook</a>
-							<a href="#" className="social-link">Twitter</a>
-							<a href="#" className="social-link">LinkedIn</a>
-						</div>
 					</div>
 				</div>
 			</footer>
