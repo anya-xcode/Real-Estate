@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PropertyList from '../components/PropertyList'
 import './Home.css'
 import homeVideo from '../assets/homevideo.mp4'
+import Insights from '../components/Insights'
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState('Buy')
@@ -135,8 +136,6 @@ export default function Home() {
 				</div>
 			</section>
 
-
-
 			{/* Featured Properties Section */}
 			<section className="properties-section">
 				<div className="container">
@@ -202,6 +201,7 @@ export default function Home() {
 				</div>
 			</section>
 
+
 			{/* Features Section */}
 			<section className="features-section">
 				<div className="container">
@@ -226,6 +226,8 @@ export default function Home() {
 					</div>
 				</div>
 			</section>
+			{/* Insights Section (Real Estate Insights) */}
+			<Insights />
 
 			{/* Testimonials Section */}
 			<section className="testimonials-section">
