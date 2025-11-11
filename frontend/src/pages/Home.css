@@ -1364,13 +1364,10 @@
 }
 
 .section-title {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 800;
   color: #1a1a1a;
   margin-bottom: 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
 }
 
 .section-subtitle {
