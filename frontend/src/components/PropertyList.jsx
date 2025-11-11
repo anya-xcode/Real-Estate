@@ -125,35 +125,6 @@ export default function PropertyList({ showRibbon = false }) {
 								{property.type}
 							</span>
 						</div>
-
-						{/* Quick Actions */}
-						<div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-							<button 
-								onClick={(e) => {
-									e.preventDefault()
-									toggleLike(property.id)
-								}}
-								className={`backdrop-blur-sm p-2 rounded-full transition-all duration-200 shadow-lg ${
-									likedProperties.includes(property.id)
-										? 'bg-red-500 text-white hover:bg-red-600'
-										: 'bg-white/90 text-gray-800 hover:bg-white'
-								}`}
-							>
-								<svg 
-									className="w-5 h-5" 
-									fill={likedProperties.includes(property.id) ? 'currentColor' : 'none'} 
-									stroke="currentColor" 
-									viewBox="0 0 24 24"
-								>
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-								</svg>
-							</button>
-							<button className="bg-white/90 backdrop-blur-sm text-gray-800 p-2 rounded-full hover:bg-white transition-colors duration-200 shadow-lg">
-								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-								</svg>
-							</button>
-						</div>
 					</div>
 
 					{/* Card Content */}
@@ -211,14 +182,14 @@ export default function PropertyList({ showRibbon = false }) {
 								onClick={() => toggleLike(property.id)}
 								className={`px-4 py-3 border-2 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 ${
 									likedProperties.includes(property.id)
-										? 'border-red-500 bg-red-500 text-white hover:bg-red-600 hover:border-red-600 focus:ring-red-200'
-										: 'border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-600 focus:ring-gray-200'
+										? 'border-red-500 bg-white hover:bg-gray-50 focus:ring-red-200'
+										: 'border-gray-200 bg-white hover:border-red-400 focus:ring-gray-200'
 								}`}
 							>
 								<svg 
 									className="w-5 h-5" 
-									fill={likedProperties.includes(property.id) ? 'currentColor' : 'none'} 
-									stroke="currentColor" 
+									fill={likedProperties.includes(property.id) ? '#ef4444' : 'none'} 
+									stroke={likedProperties.includes(property.id) ? '#ef4444' : 'currentColor'}
 									viewBox="0 0 24 24"
 								>
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
