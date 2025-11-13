@@ -164,19 +164,6 @@ export default function PropertyListing() {
     <div className="property-listing-page">
       {/* Hero Section */}
       <section className="hero-section">
-        {/* Background Video */}
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-          className="hero-video"
-          poster="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80"
-        >
-          <source src="https://cdn.coverr.co/videos/coverr-aerial-view-of-beautiful-resort-2944/1080p.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <h1 className="hero-title">Find Your Dream Home</h1>

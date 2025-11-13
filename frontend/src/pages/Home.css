@@ -1391,7 +1391,7 @@
 
 /* Section Header */
 .section-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 4rem;
   animation: fadeInUp 0.8s ease-out;
 }
@@ -1421,8 +1421,55 @@
   font-size: 1.2rem;
   color: #666;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0;
+  margin-left: 0;
+  text-align: left;
   line-height: 1.6;
+}
+
+/* Section Header with Link - Properties Section */
+.properties-header-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 3rem;
+}
+
+.properties-heading {
+  display: flex;
+  flex-direction: column;
+}
+
+.properties-heading .section-title {
+  margin-bottom: 6px;
+}
+
+.properties-viewall {
+  color: #374151;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+.properties-viewall:hover {
+  color: #667eea;
+}
+
+.properties-arrow {
+  font-size: 16px;
+  opacity: 0.75;
+  transition: transform 0.3s ease;
+}
+
+.properties-viewall:hover .properties-arrow {
+  transform: translate(2px, -2px);
 }
 
 /* Property List Grid Styling */

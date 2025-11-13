@@ -140,23 +140,20 @@ export default function Home() {
 			{/* Featured Properties Section */}
 			<section className="properties-section">
 				<div className="container">
-					<div className="section-header">
-						<h1 className="section-title">Handpicked Properties For You</h1>
-						<p className="section-subtitle">
-							Explore our curated selection of premium properties
-						</p>
+					<div className="properties-header-top">
+						<div className="properties-heading">
+							<h1 className="section-title">Handpicked Properties For You</h1>
+							<p className="section-subtitle">
+								Explore our curated selection of premium properties
+							</p>
+						</div>
+						<Link to="/properties" className="properties-viewall">
+							View All
+							<span className="properties-arrow">↗</span>
+						</Link>
 					</div>
 					
 					<PropertyList />
-
-					<div className="text-center mt-12">
-						<Link to="/properties" className="view-all-btn">
-							<span>View All Properties</span>
-							<svg className="btn-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-							</svg>
-						</Link>
-					</div>
 				</div>
 			</section>
 
@@ -237,7 +234,6 @@ export default function Home() {
 			<section className="testimonials-section">
 				<div className="container">
 					<div className="section-header">
-						<span className="section-badge">Client Stories</span>
 						<h2 className="section-title">What Our Clients Say</h2>
 						<p className="section-subtitle">
 							Real experiences from real people

@@ -40,11 +40,6 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <p className="footer-copy">© {new Date().getFullYear()} Real Estate. All rights reserved.</p>
-          <div className="socials" aria-hidden>
-            <a href="#" className="social-link">Facebook</a>
-            <a href="#" className="social-link">Twitter</a>
-            <a href="#" className="social-link">LinkedIn</a>
-          </div>
         </div>
       </div>
     </footer>
