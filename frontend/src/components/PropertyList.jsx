@@ -244,7 +244,17 @@ export default function PropertyList({ showRibbon = false }) {
 							<div className="flex gap-3">
 								<button 
 									onClick={() => handleViewDetails(property)}
-									className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-200">
+									className="flex-1 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-purple-200"
+									style={{
+										background: 'linear-gradient(90deg, #7b5cff, #5b35f0)',
+										boxShadow: '0 10px 30px rgba(75, 40, 200, 0.22)'
+									}}
+									onMouseEnter={(e) => {
+										e.currentTarget.style.boxShadow = '0 14px 36px rgba(75, 40, 200, 0.26)'
+									}}
+									onMouseLeave={(e) => {
+										e.currentTarget.style.boxShadow = '0 10px 30px rgba(75, 40, 200, 0.22)'
+									}}>
 									View Details
 								</button>
 								<button 
