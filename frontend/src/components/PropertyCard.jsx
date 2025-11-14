@@ -14,6 +14,21 @@ export default function PropertyCard({ property, index, onConnectClick }) {
     }).format(price)
   }
 
+  const [isAvatarSquare, setIsAvatarSquare] = useState(false)
+
+  const onAvatarLoad = (e) => {
+    try {
+      const { naturalWidth: w, naturalHeight: h } = e.target
+      if (!w || !h) return
+      const ratio = w / h
+      setIsAvatarSquare(Math.abs(ratio - 1) <= 0.05)
+    } catch (err) {
+      // ignore
+    }
+  }
+
+  // No per-agent contain override; use automatic aspect detection only
+
   return (
     <>
       <article 
@@ -105,10 +120,13 @@ export default function PropertyCard({ property, index, onConnectClick }) {
 
           {/* Agent Info */}
           <div className="property-agent">
-            <img 
-              src={property.agent.avatar} 
+            <img
+              src={property.agent.avatar}
               alt={property.agent.name}
-              className="agent-avatar"
+              className={`agent-avatar ${isAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
+              onLoad={onAvatarLoad}
+              loading="lazy"
+              decoding="async"
             />
             <div className="agent-info">
               <p className="agent-name">{property.agent.name}</p>
