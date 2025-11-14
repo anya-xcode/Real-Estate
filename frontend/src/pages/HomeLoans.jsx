@@ -24,6 +24,20 @@ export default function HomeLoans() {
     alert('Thank you! We will contact you shortly.')
   }
 
+  const scrollToEligibility = () => {
+    const eligibilitySection = document.querySelector('.loans-eligibility-section')
+    if (eligibilitySection) {
+      eligibilitySection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const scrollToCalculator = () => {
+    const calculatorSection = document.querySelector('.loans-calculator-section')
+    if (calculatorSection) {
+      calculatorSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   return (
     <div className="home-loans-page">
       {/* Hero Section */}
@@ -35,8 +49,8 @@ export default function HomeLoans() {
           </p>
           
           <div className="loans-hero-buttons">
-            <button className="loans-btn loans-btn-primary">Check Eligibility</button>
-            <button className="loans-btn loans-btn-secondary">Calculate EMI</button>
+            <button className="loans-btn loans-btn-primary" onClick={scrollToEligibility}>Check Eligibility</button>
+            <button className="loans-btn loans-btn-secondary" onClick={scrollToCalculator}>Calculate EMI</button>
           </div>
         </div>
       </section>
