@@ -2,13 +2,16 @@
 
 .property-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
-  border: 1px solid transparent;
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s, border-color 0.28s;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   animation: fade-in-scale 0.6s ease-out backwards;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes fade-in-scale {
@@ -23,28 +26,28 @@
 }
 
 .property-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 26px 50px rgba(15, 23, 42, 0.12);
-  border-color: rgba(99,102,241,0.12);
+  transform: translateY(-10px) scale(1.01);
+  box-shadow: 0 30px 60px rgba(99, 102, 241, 0.15);
+  border-color: rgba(99,102,241,0.3);
 }
 
 /* Image Container */
 .property-image-container {
   position: relative;
-  height: 220px; /* compact height */
+  height: 220px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .property-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .property-card:hover .property-image {
-  transform: scale(1.03);
+  transform: scale(1.08);
 }
 
 .property-image-overlay {
@@ -158,25 +161,32 @@
 
 /* Card Content */
 .property-content {
-  padding: 1rem 1rem 1.25rem; /* tighten content spacing */
+  padding: 1rem 1rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Price */
 .property-price {
-  font-size: 1.35rem; /* compact price */
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #4338ca;
-  margin-bottom: 0.35rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
 }
 
 /* Title */
 .property-title {
-  font-size: 1.05rem; /* smaller title for compact cards */
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 0.35rem;
-  line-height: 1.25;
-  transition: color 0.2s ease;
+  line-height: 1.3;
+  transition: color 0.3s ease;
 }
 
 .property-card:hover .property-title {
@@ -189,8 +199,8 @@
   align-items: center;
   gap: 0.5rem;
   color: #6b7280;
-  font-size: 0.92rem;
-  margin-bottom: 0.9rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
 }
 
 .location-icon {
@@ -204,24 +214,28 @@
 .property-details {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem; /* tighter gap */
-  margin-bottom: 0.9rem;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .property-detail-item {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  gap: 0.4rem;
   flex: 1;
-  padding: 0.5rem; /* compact padding */
-  background: #f8fafc;
+  padding: 0.6rem 0.4rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-radius: 10px;
-  transition: transform 0.18s ease, box-shadow 0.18s;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.3s ease;
 }
 
 .property-detail-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .detail-icon {
@@ -240,21 +254,25 @@
 /* Divider */
 .property-divider {
   height: 1px;
-  background: linear-gradient(to right, transparent, #eaeef6, transparent);
-  margin: 0.75rem 0 0.9rem;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+  margin: 0 0 0.75rem;
 }
 
 /* Agent Info */
 .property-agent {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem;
+  background: linear-gradient(135deg, #faf5ff 0%, #f3f4f6 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .agent-avatar-placeholder {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -262,9 +280,10 @@
   font-weight: 700;
   color: white;
   background: linear-gradient(135deg, #667eea, #8b5cf6);
-  box-shadow: 0 6px 12px rgba(99,102,241,0.10);
+  box-shadow: 0 6px 12px rgba(99,102,241,0.2);
   flex-shrink: 0;
   font-size: 0.85rem;
+  border: 2px solid white;
 }
 
 .agent-avatar-placeholder[aria-hidden] {
@@ -277,24 +296,25 @@
 }
 
 .agent-name {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 0.95rem;
-  margin-bottom: 0.15rem;
-}
-
-.agent-name {
   font-weight: 700;
   color: #111827;
-  font-size: 0.92rem;
-  margin-bottom: 0.08rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.1rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .agent-label {
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   color: #6b7280;
+}
+
+/* Action Buttons - Always in One Line */
+.property-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
 }
 
 .action-button {
@@ -302,16 +322,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.85rem; /* slightly smaller */
+  gap: 0.4rem;
+  padding: 0.7rem 0.85rem;
   border: none;
   border-radius: 12px;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s, background 0.18s;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .action-button::before {
@@ -333,27 +354,29 @@
 }
 
 .action-button.primary {
-  background: linear-gradient(135deg, #5b6ff7, #7c53f2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.14);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
 
 .action-button.primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5568ea 0%, #6640a2 100%);
 }
 
 .action-button.secondary {
   background: white;
-  color: #5b6ff7;
-  border: 1.5px solid rgba(91,111,247,0.18);
+  color: #667eea;
+  border: 2px solid #667eea;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
 }
 
 .action-button.secondary:hover {
   background: #667eea;
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
 }
 
 .button-icon {
@@ -410,7 +433,7 @@
 
 @media (max-width: 480px) {
   .property-image-container {
-    height: 180px;
+    height: 200px;
   }
 
   .property-price {
@@ -422,10 +445,16 @@
   }
 
   .property-actions {
-    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .action-button {
-    width: 100%;
+    padding: 0.75rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .button-icon {
+    width: 18px;
+    height: 18px;
   }
 }

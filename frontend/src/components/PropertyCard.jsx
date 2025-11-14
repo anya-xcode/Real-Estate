@@ -120,7 +120,7 @@ export default function PropertyCard({ property, index, onConnectClick }) {
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - In One Line */}
           <div className="property-actions">
             <button 
               className="action-button primary"
