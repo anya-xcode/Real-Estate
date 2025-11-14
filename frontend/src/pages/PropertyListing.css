@@ -242,13 +242,14 @@
 
 /* Properties Section */
 .properties-section {
-  padding: 3rem 0 5rem;
+  padding: 2rem 0 3rem;
 }
 
 .properties-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
 }
 
 /* No Results */

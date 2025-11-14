@@ -8,13 +8,28 @@
 
 /* Header */
 .upload-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: transparent;
   padding: 4rem 2rem 3rem;
   position: relative;
   overflow: hidden;
 }
 
-/* Background Image */
+/* Background Image (static) */
+/* .upload-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../assets/listproperty1image.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.95;
+  z-index: 1;
+} */
+
 .upload-header::after {
   content: '';
   position: absolute;
@@ -22,22 +37,16 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=2000&q=80');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.15;
+  background-image: url('../assets/listproperty1image.jpg');
+  background-size: 100%;   /* zoomed out */
+  background-repeat: no-repeat;
+  background-position: top center;
+  opacity: 0.95;
   z-index: 1;
-  animation: parallax-bg 20s ease-in-out infinite;
 }
 
-@keyframes parallax-bg {
-  0%, 100% { 
-    transform: scale(1) translateY(0);
-  }
-  50% { 
-    transform: scale(1.05) translateY(-10px);
-  }
-}
+
+/* parallax animation removed to keep background static */
 
 .upload-header::before {
   content: '';
@@ -47,7 +56,8 @@
   right: 0;
   bottom: 0;
   background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-  opacity: 0.3;
+  /* reduce overlay strength so the photo appears clearer */
+  opacity: 0.18;
   z-index: 2;
 }
 

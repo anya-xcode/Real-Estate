@@ -103,13 +103,17 @@ export default function PropertyCard({ property, index, onConnectClick }) {
           {/* Divider */}
           <div className="property-divider"></div>
 
-          {/* Agent Info */}
+          {/* Agent Info - show name only (no photo) */}
           <div className="property-agent">
-            <img 
-              src={property.agent.avatar} 
-              alt={property.agent.name}
-              className="agent-avatar"
-            />
+            <div className="agent-avatar-placeholder" aria-hidden>
+              {(() => {
+                const parts = property.agent.name.split(' ').filter(Boolean)
+                const initials = (parts.length === 1)
+                  ? parts[0].slice(0,2).toUpperCase()
+                  : (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+                return initials
+              })()}
+            </div>
             <div className="agent-info">
               <p className="agent-name">{property.agent.name}</p>
               <p className="agent-label">Listing Agent</p>
