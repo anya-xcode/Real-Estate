@@ -138,12 +138,23 @@ export default function PropertyListing() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [filterType, setFilterType] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const propertyTypes = ['All', 'House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft']
 
-  // Filter and sort properties
+  // Filter and sort properties (includes search)
   const filteredProperties = dummyProperties
     .filter(property => filterType === 'All' || property.type === filterType)
+    .filter(property => {
+      if (!searchQuery || searchQuery.trim() === '') return true
+      const q = searchQuery.toLowerCase()
+      return (
+        property.title.toLowerCase().includes(q) ||
+        property.address.toLowerCase().includes(q) ||
+        property.type.toLowerCase().includes(q) ||
+        property.agent.name.toLowerCase().includes(q)
+      )
+    })
     .sort((a, b) => {
       if (sortBy === 'featured') {
         return b.featured - a.featured
@@ -177,11 +188,26 @@ export default function PropertyListing() {
               </svg>
               <input 
                 type="text" 
-                placeholder="Search by location, property name, or type..." 
+                placeholder="Search by location, property name, agent, or type..." 
                 className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search properties"
               />
+              {searchQuery && (
+                <button
+                  className="search-clear"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
             </div>
-            <button className="search-button">
+            <button
+              className="search-button"
+              onClick={() => { /* search executes live while typing; keep for accessibility */ }}
+            >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>

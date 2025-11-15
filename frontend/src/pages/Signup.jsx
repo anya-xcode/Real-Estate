@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth'
 import './signup.css';
 
@@ -10,6 +10,10 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const auth = useAuth()
+  const location = useLocation()
+
+  // show oauth error if redirected back from AuthCallback with an error
+  const oauthError = location?.state?.oauthError || null
 
   function validate() {
     const errs = [];
@@ -106,6 +110,19 @@ export default function Signup() {
         </div>
         
         {message && <div className="signup-success">{message}</div>}
+        {oauthError && (
+          <div className="signup-errors">
+            <p>{oauthError}</p>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+              <button
+                type="button"
+                onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'; window.location.href = `${API_URL}/api/auth/google` }}
+                className="social-button google"
+              >Retry Google</button>
+              <button type="button" onClick={() => navigate('/signup')}>Back to Sign up</button>
+            </div>
+          </div>
+        )}
         {errors.length > 0 && (
           <div className="signup-errors">
             <ul>
