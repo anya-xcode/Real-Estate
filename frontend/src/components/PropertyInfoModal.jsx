@@ -186,16 +186,18 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
               Contact Agent
             </h3>
             <div className="agent-card">
-                <img
-                  src={property.agent.avatar}
-                  alt={property.agent.name}
-                  className={`agent-card-avatar ${isAgentAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
-                  onLoad={onAgentAvatarLoad}
-                  loading="lazy"
-                  decoding="async"
-                />
+                {(property.owner?.avatar || property.agent?.avatar) && (
+                  <img
+                    src={property.owner?.avatar || property.agent?.avatar}
+                    alt={property.owner?.username || property.agent?.name || 'Owner'}
+                    className={`agent-card-avatar ${isAgentAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
+                    onLoad={onAgentAvatarLoad}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
               <div className="agent-card-info">
-                <p className="agent-card-name">{property.agent?.name || property.owner?.username || 'Property Owner'}</p>
+                <p className="agent-card-name">{property.owner?.username || property.agent?.name || 'Property Owner'}</p>
                 <p className="agent-card-title">Licensed Real Estate Agent</p>
                 <div className="agent-contact">
                   {(property.agent?.phone || property.owner?.phone) && (
