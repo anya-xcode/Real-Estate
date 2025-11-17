@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './PropertyInfoModal.css'
 
 export default function PropertyInfoModal({ isOpen, onClose, property }) {
@@ -30,6 +31,20 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
     }
     return property.address || 'Address not available'
   }
+
+  // Agent avatar aspect detection: if image is nearly square, render square class
+  const [isAgentAvatarSquare, setIsAgentAvatarSquare] = useState(false)
+  const onAgentAvatarLoad = (e) => {
+    try {
+      const { naturalWidth: w, naturalHeight: h } = e.target
+      if (!w || !h) return
+      const ratio = w / h
+      setIsAgentAvatarSquare(Math.abs(ratio - 1) <= 0.5)
+    } catch (err) {}
+  }
+
+  // No per-agent contain override; use automatic aspect detection only
+  const navigate = useNavigate()
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -171,11 +186,14 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
               Contact Agent
             </h3>
             <div className="agent-card">
-              <img 
-                src={property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/80?text=Agent'} 
-                alt={property.agent?.name || property.owner?.username || 'Agent'} 
-                className="agent-card-avatar" 
-              />
+                <img
+                  src={property.agent.avatar}
+                  alt={property.agent.name}
+                  className={`agent-card-avatar ${isAgentAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
+                  onLoad={onAgentAvatarLoad}
+                  loading="lazy"
+                  decoding="async"
+                />
               <div className="agent-card-info">
                 <p className="agent-card-name">{property.agent?.name || property.owner?.username || 'Property Owner'}</p>
                 <p className="agent-card-title">Licensed Real Estate Agent</p>
@@ -203,13 +221,19 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
 
           {/* Action Buttons */}
           <div className="modal-actions">
-            <button className="modal-action-button schedule">
+            <button
+              className="modal-action-button schedule"
+              onClick={() => navigate('/schedule-viewing', { state: { property } })}
+            >
               <svg className="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Schedule Viewing
             </button>
-            <button className="modal-action-button offer">
+            <button
+              className="modal-action-button offer"
+              onClick={() => navigate('/make-offer', { state: { property } })}
+            >
               <svg className="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>

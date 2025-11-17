@@ -26,6 +26,9 @@ function App() {
             {auth.user && (
               <Link to="/upload" className="nav-link">List Property</Link>
             )}
+            {auth.user && (
+              <Link to="/profile" className="nav-link">Profile</Link>
+            )}
             {!auth.user ? (
               <>
                 <Link to="/signin" className="nav-link">Sign in</Link>
@@ -48,6 +51,9 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/upload" element={<UploadProperty />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/schedule-viewing" element={<ScheduleViewing />} />
+            <Route path="/make-offer" element={<MakeOffer />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

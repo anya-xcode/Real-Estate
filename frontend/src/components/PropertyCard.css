@@ -293,6 +293,27 @@
 .agent-info {
   flex: 1;
   min-width: 0;
+/* Agent Info */
+.property-agent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Make avatar fill the square and show full bleed (cover) */
+.agent-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover; /* fill the box */
+  border: 3px solid #f3f4f6;
+  display: block;
+}
+
+.agent-info {
+  text-align: center;
 }
 
 .agent-name {
@@ -303,11 +324,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #0f172a;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 .agent-label {
   font-size: 0.8rem;
   color: #6b7280;
+  margin-top: 2px;
 }
 
 /* Action Buttons - Always in One Line */
@@ -457,4 +482,26 @@
     width: 18px;
     height: 18px;
   }
+}
+
+/* Avatar shape helper classes used by components to switch per-image */
+.square-avatar {
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+
+.rounded-avatar {
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+/* For agents whose images should not be cropped: show full image (letterbox) and slightly smaller */
+.agent-avatar.contain-avatar {
+  object-fit: contain !important;
+  width: 72px !important;
+  height: 72px !important;
+  padding: 4px !important;
+  background: linear-gradient(180deg, #f8fafc, #eef2f6) !important;
+  border-radius: 10px !important; /* keep a small radius to remain consistent */
+  box-shadow: 0 6px 16px rgba(2,6,23,0.06) !important;
 }

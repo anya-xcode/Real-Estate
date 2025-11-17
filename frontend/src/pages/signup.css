@@ -194,3 +194,94 @@
   text-align: center;
   cursor: pointer;
 }
+
+/* Field error */
+.field-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-top: -0.25rem;
+  margin-bottom: 0.5rem;
+  text-align: left;
+  width: 100%;
+  max-width: 320px;
+}
+
+.password-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  gap: 0.5rem;
+}
+
+.password-row input {
+  flex: 1;
+}
+
+.toggle-pass {
+  background: transparent;
+  border: none;
+  color: #4a36af;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.pw-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.strength-bar {
+  height: 8px;
+  width: 120px;
+  background: #eee;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.strength-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: #ef4444;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.strength-bar.s-0::after { width: 5%; background: #ef4444 }
+.strength-bar.s-1::after { width: 35%; background: #f97316 }
+.strength-bar.s-2::after { width: 65%; background: #f59e0b }
+.strength-bar.s-3::after { width: 95%; background: #10b981 }
+
+.strength-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg) } }
+
+/* ensure signup-right stacks on smaller screens */
+@media (max-width: 900px) {
+  .signup-root { width: 100%; height: auto; position: static; transform: none; margin: 2rem auto }
+  .signup-left { display: none }
+  .signup-right { padding: 2rem }
+}
