@@ -91,6 +91,14 @@ export default function MakeOffer() {
     return valueInTarget
   }
 
+  // Format address from object
+  const getAddressString = (address) => {
+    if (!address) return 'Address not available'
+    if (typeof address === 'string') return address
+    const { street, city, state, zipCode } = address
+    return `${street || ''}, ${city || ''}, ${state || ''} ${zipCode || ''}`.replace(/,\s*,/g, ',').trim()
+  }
+
   return (
     <div className="page-container small">
       <h1>Make an Offer</h1>
@@ -99,7 +107,7 @@ export default function MakeOffer() {
           <img src={property.image} alt={property.title} />
           <div>
             <h3>{property.title}</h3>
-            <p className="muted">{property.address}</p>
+            <p className="muted">{getAddressString(property.address)}</p>
           </div>
         </div>
       )}
