@@ -31,7 +31,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+// Mount auth routes at /api/auth and other routes at /api
+app.use('/api/auth', propertyRoutes);
 app.use('/api', propertyRoutes);
 
 app.use((err, req, res, next) => {

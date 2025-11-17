@@ -66,7 +66,7 @@ router.get('/profile', authMiddleware, getProfile);
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/api/auth/google/failure' }),
+  passport.authenticate('google', { failureRedirect: '/auth/google/failure' }),
   googleCallback
 );
 router.get('/google/failure', googleFailure);

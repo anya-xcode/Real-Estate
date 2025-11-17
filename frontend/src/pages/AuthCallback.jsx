@@ -1,14 +1,20 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
 export default function AuthCallback() {
   const navigate = useNavigate()
   const message = 'Processing authentication...'
-
   const auth = useAuth()
+  const hasProcessed = useRef(false)
 
   useEffect(() => {
+    // Prevent double execution
+    if (hasProcessed.current) {
+      console.log('[AuthCallback] Already processed, skipping')
+      return
+    }
+
     // Helper to parse both query and hash fragment
     const parseParams = () => {
       const params = new URLSearchParams(window.location.search)
@@ -25,48 +31,47 @@ export default function AuthCallback() {
 
     const params = parseParams()
     const token = params.get('token')
-    const user = params.get('user')
+    const userStr = params.get('user')
     const error = params.get('error') || params.get('error_description')
 
+    console.log('[AuthCallback] Full URL:', window.location.href)
+    console.log('[AuthCallback] Search:', window.location.search)
     console.log('[AuthCallback] params:', Object.fromEntries(params.entries()))
+    console.log('[AuthCallback] token:', token ? 'EXISTS' : 'MISSING')
+    console.log('[AuthCallback] user:', userStr ? 'EXISTS' : 'MISSING')
+    console.log('[AuthCallback] error:', error)
 
-    if (token) {
+    if (token && userStr) {
+      hasProcessed.current = true
+      console.log('[AuthCallback] Processing successful login')
       try {
-        auth.login(user ? JSON.parse(user) : null, token)
+        const user = JSON.parse(userStr)
+        console.log('[AuthCallback] Parsed user:', user)
+        auth.login(user, token)
       } catch (e) {
+        console.error('[AuthCallback] Failed to parse user:', e)
         auth.login(null, token)
       }
       // successful login -> send user to home
+      console.log('[AuthCallback] Navigating to home')
       navigate('/', { replace: true })
-      // fallback: if SPA navigation didn't work (router not ready), force a full redirect
-      setTimeout(() => {
-        if (window.location.pathname.includes('auth') || window.location.pathname.includes('callback')) {
-          window.location.replace('/')
-        }
-      }, 800)
       return
     }
 
-    if (user) {
+    if (userStr && !token) {
+      hasProcessed.current = true
+      console.log('[AuthCallback] Has user but no token, redirecting to signup')
       // backend returned user but no token -> store and send back to signup to complete
-      try { localStorage.setItem('user', user) } catch { /* ignore */ }
+      try { localStorage.setItem('user', userStr) } catch { /* ignore */ }
       navigate('/signup', { replace: true })
-      setTimeout(() => {
-        if (window.location.pathname.includes('auth') || window.location.pathname.includes('callback')) {
-          window.location.replace('/signup')
-        }
-      }, 800)
       return
     }
 
     // No token/user -> likely cancelled or error from provider. Redirect back to signup with message.
+    hasProcessed.current = true
     const msg = error || 'Authentication cancelled or failed. Please try again.'
+    console.log('[AuthCallback] Auth failed, showing error:', msg)
     navigate('/signup', { replace: true, state: { oauthError: msg } })
-    setTimeout(() => {
-      if (window.location.pathname.includes('auth') || window.location.pathname.includes('callback')) {
-        window.location.replace('/signup')
-      }
-    }, 800)
   }, [navigate, auth])
 
   return (
