@@ -6,11 +6,30 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
   if (!isOpen || !property) return null
 
   const formatPrice = (price) => {
+    if (!price) return 'Price not available'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-    }).format(price)
+    }).format(Number(price))
+  }
+
+  // Get primary image or first image from backend data
+  const getPropertyImage = () => {
+    if (property.images && property.images.length > 0) {
+      const primaryImage = property.images.find(img => img.isPrimary)
+      return primaryImage ? primaryImage.url : property.images[0].url
+    }
+    return property.image || 'https://via.placeholder.com/800x600?text=No+Image'
+  }
+
+  // Get address string from address object or fallback
+  const getAddressString = () => {
+    if (property.address) {
+      const { street, city, state, zipCode } = property.address
+      return `${street || ''}, ${city || ''}, ${state || ''} ${zipCode || ''}`.replace(/,\s*,/g, ',').trim()
+    }
+    return property.address || 'Address not available'
   }
 
   // Agent avatar aspect detection: if image is nearly square, render square class
@@ -39,7 +58,7 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
 
         {/* Modal Header with Image */}
         <div className="modal-header">
-          <img src={property.image} alt={property.title} className="modal-header-image" />
+          <img src={getPropertyImage()} alt={property.title || 'Property'} className="modal-header-image" />
           <div className="modal-header-overlay">
             <div className="modal-header-content">
               {property.featured && (
@@ -50,7 +69,7 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
                   Featured Property
                 </div>
               )}
-              <h2 className="modal-title">{property.title}</h2>
+              <h2 className="modal-title">{property.title || 'Untitled Property'}</h2>
               <p className="modal-price">{formatPrice(property.price)}</p>
             </div>
           </div>
@@ -58,48 +77,58 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
 
         {/* Modal Body */}
         <div className="modal-body">
-          {/* Quick Info */}
-          <div className="modal-quick-info">
-            <div className="quick-info-item">
-              <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <div>
-                <p className="quick-info-label">Bedrooms</p>
-                <p className="quick-info-value">{property.beds}</p>
-              </div>
-            </div>
+          {/* Quick Info - Only show if data exists */}
+          {(property.beds || property.baths || property.area || property.yearBuilt) && (
+            <div className="modal-quick-info">
+              {property.beds && (
+                <div className="quick-info-item">
+                  <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <div>
+                    <p className="quick-info-label">Bedrooms</p>
+                    <p className="quick-info-value">{property.beds}</p>
+                  </div>
+                </div>
+              )}
 
-            <div className="quick-info-item">
-              <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21v6H3V3h7.5z" />
-              </svg>
-              <div>
-                <p className="quick-info-label">Bathrooms</p>
-                <p className="quick-info-value">{property.baths}</p>
-              </div>
-            </div>
+              {property.baths && (
+                <div className="quick-info-item">
+                  <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21v6H3V3h7.5z" />
+                  </svg>
+                  <div>
+                    <p className="quick-info-label">Bathrooms</p>
+                    <p className="quick-info-value">{property.baths}</p>
+                  </div>
+                </div>
+              )}
 
-            <div className="quick-info-item">
-              <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-              <div>
-                <p className="quick-info-label">Area</p>
-                <p className="quick-info-value">{property.area.toLocaleString()} sqft</p>
-              </div>
-            </div>
+              {property.area && (
+                <div className="quick-info-item">
+                  <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                  <div>
+                    <p className="quick-info-label">Area</p>
+                    <p className="quick-info-value">{Number(property.area).toLocaleString()} sqft</p>
+                  </div>
+                </div>
+              )}
 
-            <div className="quick-info-item">
-              <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <div>
-                <p className="quick-info-label">Year Built</p>
-                <p className="quick-info-value">{property.yearBuilt}</p>
-              </div>
+              {property.yearBuilt && (
+                <div className="quick-info-item">
+                  <svg className="quick-info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <div>
+                    <p className="quick-info-label">Year Built</p>
+                    <p className="quick-info-value">{property.yearBuilt}</p>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {/* Location */}
           <div className="modal-section">
@@ -110,39 +139,43 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
               </svg>
               Location
             </h3>
-            <p className="section-content">{property.address}</p>
+            <p className="section-content">{getAddressString()}</p>
           </div>
 
           {/* Description */}
-          <div className="modal-section">
-            <h3 className="section-title">
-              <svg className="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-              </svg>
-              Description
-            </h3>
-            <p className="section-content">{property.description}</p>
-          </div>
+          {property.description && (
+            <div className="modal-section">
+              <h3 className="section-title">
+                <svg className="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+                Description
+              </h3>
+              <p className="section-content">{property.description}</p>
+            </div>
+          )}
 
           {/* Amenities */}
-          <div className="modal-section">
-            <h3 className="section-title">
-              <svg className="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Amenities
-            </h3>
-            <div className="amenities-grid">
-              {property.amenities.map((amenity, index) => (
-                <div key={index} className="amenity-item">
-                  <svg className="amenity-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  {amenity}
-                </div>
-              ))}
+          {property.amenities && property.amenities.length > 0 && (
+            <div className="modal-section">
+              <h3 className="section-title">
+                <svg className="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Amenities
+              </h3>
+              <div className="amenities-grid">
+                {property.amenities.map((amenity, index) => (
+                  <div key={index} className="amenity-item">
+                    <svg className="amenity-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {amenity}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Agent Information */}
           <div className="modal-section agent-section">
@@ -162,21 +195,25 @@ export default function PropertyInfoModal({ isOpen, onClose, property }) {
                   decoding="async"
                 />
               <div className="agent-card-info">
-                <p className="agent-card-name">{property.agent.name}</p>
+                <p className="agent-card-name">{property.agent?.name || property.owner?.username || 'Property Owner'}</p>
                 <p className="agent-card-title">Licensed Real Estate Agent</p>
                 <div className="agent-contact">
-                  <a href={`tel:${property.agent.phone}`} className="agent-contact-item">
-                    <svg className="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    {property.agent.phone}
-                  </a>
-                  <a href={`mailto:${property.agent.email}`} className="agent-contact-item">
-                    <svg className="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    {property.agent.email}
-                  </a>
+                  {(property.agent?.phone || property.owner?.phone) && (
+                    <a href={`tel:${property.agent?.phone || property.owner?.phone}`} className="agent-contact-item">
+                      <svg className="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      {property.agent?.phone || property.owner?.phone}
+                    </a>
+                  )}
+                  {(property.agent?.email || property.owner?.email) && (
+                    <a href={`mailto:${property.agent?.email || property.owner?.email}`} className="agent-contact-item">
+                      <svg className="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      {property.agent?.email || property.owner?.email}
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

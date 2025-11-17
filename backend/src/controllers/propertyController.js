@@ -182,10 +182,219 @@ const googleFailure = (req, res) => {
   res.redirect(`${frontendUrl}/auth/error?message=Authentication failed`)
 }
 
+// Property CRUD Controllers
+const getAllProperties = async (req, res) => {
+  try {
+    const properties = await prisma.property.findMany({
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
+        },
+        address: true,
+        images: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    res.status(200).json({ properties })
+  } catch (error) {
+    console.error('Get properties error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const getPropertyById = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const property = await prisma.property.findUnique({
+      where: { id },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
+        },
+        address: true,
+        images: true,
+        features: {
+          include: {
+            feature: true
+          }
+        }
+      }
+    })
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' })
+    }
+
+    res.status(200).json({ property })
+  } catch (error) {
+    console.error('Get property error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const createProperty = async (req, res) => {
+  try {
+    const { title, description, price, address, images } = req.body
+
+    const property = await prisma.property.create({
+      data: {
+        title,
+        description,
+        price,
+        ownerId: req.user.id,
+        address: address ? {
+          create: {
+            street: address.street,
+            city: address.city,
+            state: address.state,
+            zipCode: address.zipCode,
+            country: address.country
+          }
+        } : undefined,
+        images: images ? {
+          create: images.map((img, index) => ({
+            url: img.url,
+            order: index,
+            isPrimary: index === 0
+          }))
+        } : undefined
+      },
+      include: {
+        address: true,
+        images: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
+        }
+      }
+    })
+
+    res.status(201).json({
+      message: 'Property created successfully',
+      property
+    })
+  } catch (error) {
+    console.error('Create property error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const updateProperty = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { title, description, price, address } = req.body
+
+    const property = await prisma.property.findUnique({
+      where: { id }
+    })
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' })
+    }
+
+    if (property.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this property' })
+    }
+
+    const updatedProperty = await prisma.property.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        price,
+        address: address ? {
+          upsert: {
+            create: {
+              street: address.street,
+              city: address.city,
+              state: address.state,
+              zipCode: address.zipCode,
+              country: address.country
+            },
+            update: {
+              street: address.street,
+              city: address.city,
+              state: address.state,
+              zipCode: address.zipCode,
+              country: address.country
+            }
+          }
+        } : undefined
+      },
+      include: {
+        address: true,
+        images: true,
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
+        }
+      }
+    })
+
+    res.status(200).json({
+      message: 'Property updated successfully',
+      property: updatedProperty
+    })
+  } catch (error) {
+    console.error('Update property error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const deleteProperty = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const property = await prisma.property.findUnique({
+      where: { id }
+    })
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' })
+    }
+
+    if (property.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this property' })
+    }
+
+    await prisma.property.delete({
+      where: { id }
+    })
+
+    res.status(200).json({ message: 'Property deleted successfully' })
+  } catch (error) {
+    console.error('Delete property error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 module.exports = {
   signup,
   login,
   getProfile,
   googleCallback,
-  googleFailure
+  googleFailure,
+  getAllProperties,
+  getPropertyById,
+  createProperty,
+  updateProperty,
+  deleteProperty
 }

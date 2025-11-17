@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import PropertyList from '../components/PropertyList'
 import './Home.css'
 import homeVideo from '../assets/homevideo.mp4'
-import home2Image from '../assets/home2image.jpg'
 import Insights from '../components/Insights'
 
 export default function Home() {
@@ -65,6 +64,7 @@ export default function Home() {
 					muted
 					playsInline
 					className="hero-video-bg"
+					poster=""
 				>
 					<source src={homeVideo} type="video/mp4" />
 					Your browser does not support the video tag.

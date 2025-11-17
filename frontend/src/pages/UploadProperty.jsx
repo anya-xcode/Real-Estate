@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './UploadProperty.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+
 export default function UploadProperty() {
+  const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     title: '',
@@ -23,6 +27,9 @@ export default function UploadProperty() {
 
   const [previewImages, setPreviewImages] = useState([])
   const [dragActive, setDragActive] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
 
   const propertyTypes = ['House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft', 'Condo', 'Townhouse']
   
@@ -108,11 +115,91 @@ export default function UploadProperty() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Form Data:', formData)
-    // Here you would send the data to your backend
-    alert('Property uploaded successfully! (This is a demo)')
+    
+    // Check authentication
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setError('Please login to upload a property')
+      setTimeout(() => navigate('/signin'), 2000)
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Step 1: Upload images to Cloudinary
+      let uploadedImages = []
+      
+      if (formData.images.length > 0) {
+        const formDataImages = new FormData()
+        formData.images.forEach((file) => {
+          formDataImages.append('images', file)
+        })
+
+        const imageUploadResponse = await fetch(`${API_URL}/api/auth/upload-images`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formDataImages
+        })
+
+        const imageData = await imageUploadResponse.json()
+
+        if (!imageUploadResponse.ok) {
+          throw new Error(imageData.message || 'Failed to upload images')
+        }
+
+        uploadedImages = imageData.images
+      }
+
+      // Step 2: Create property with Cloudinary URLs
+      const propertyData = {
+        title: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        address: {
+          street: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+          country: 'USA'
+        },
+        images: uploadedImages
+      }
+
+      const response = await fetch(`${API_URL}/api/auth/properties`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(propertyData)
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to create property')
+      }
+
+      setSuccess(true)
+      console.log('Property created:', data.property)
+      
+      // Redirect to property listing after 2 seconds
+      setTimeout(() => {
+        navigate('/properties')
+      }, 2000)
+
+    } catch (err) {
+      console.error('Error creating property:', err)
+      setError(err.message || 'Failed to upload property. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const isStepValid = () => {
@@ -139,6 +226,26 @@ export default function UploadProperty() {
           <p className="upload-subtitle">Share your property with thousands of potential buyers</p>
         </div>
       </div>
+
+      {/* Success Message */}
+      {success && (
+        <div className="notification success">
+          <svg className="notification-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>Property uploaded successfully! Redirecting...</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="notification error">
+          <svg className="notification-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>{error}</p>
+        </div>
+      )}
 
       {/* Progress Steps */}
       <div className="progress-container">
@@ -550,13 +657,22 @@ export default function UploadProperty() {
             ) : (
               <button
                 type="submit"
-                disabled={!isStepValid()}
+                disabled={!isStepValid() || loading}
                 className="nav-button submit"
               >
-                <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Submit Property
+                {loading ? (
+                  <>
+                    <div className="button-spinner" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Submit Property
+                  </>
+                )}
               </button>
             )}
           </div>
