@@ -19,12 +19,15 @@ export default function ChatPanel({ isOpen, onClose, property }) {
     if (isOpen && property && messages.length === 0) {
       
       setTimeout(() => {
+        const agentName = property.agent?.name || property.owner?.username || 'Property Owner'
+        const agentAvatar = property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'
+        
         const greeting = {
           id: Date.now(),
-          text: `Hello! I'm ${property.agent.name}, and I'd be happy to help you with ${property.title}. How can I assist you today?`,
+          text: `Hello! I'm ${agentName}, and I'd be happy to help you with ${property.title || 'this property'}. How can I assist you today?`,
           sender: 'agent',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          avatar: property.agent.avatar
+          avatar: agentAvatar
         }
         setMessages([greeting])
       }, 500)
@@ -59,12 +62,14 @@ export default function ChatPanel({ isOpen, onClose, property }) {
         "I can definitely help you with that. Would you like to discuss the financing options?"
       ]
 
+      const agentAvatar = property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'
+      
       const response = {
         id: Date.now() + 1,
         text: agentResponses[Math.floor(Math.random() * agentResponses.length)],
         sender: 'agent',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        avatar: property.agent.avatar
+        avatar: agentAvatar
       }
 
       setIsTyping(false)
@@ -91,12 +96,12 @@ export default function ChatPanel({ isOpen, onClose, property }) {
       <div className="chat-header">
         <div className="chat-header-info">
           <img 
-            src={property.agent.avatar} 
-            alt={property.agent.name}
+            src={property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'} 
+            alt={property.agent?.name || property.owner?.username || 'Agent'}
             className="chat-agent-avatar"
           />
           <div>
-            <h3 className="chat-agent-name">{property.agent.name}</h3>
+            <h3 className="chat-agent-name">{property.agent?.name || property.owner?.username || 'Property Owner'}</h3>
             <p className="chat-agent-status">
               <span className="status-dot"></span>
               Online
@@ -113,18 +118,18 @@ export default function ChatPanel({ isOpen, onClose, property }) {
       {/* Property Info Bar */}
       <div className="chat-property-bar">
         <img 
-          src={property.image} 
-          alt={property.title}
+          src={property.images?.[0]?.url || property.image || 'https://via.placeholder.com/60x60?text=Property'} 
+          alt={property.title || 'Property'}
           className="chat-property-image"
         />
         <div className="chat-property-info">
-          <p className="chat-property-title">{property.title}</p>
+          <p className="chat-property-title">{property.title || 'Property'}</p>
           <p className="chat-property-price">
-            {new Intl.NumberFormat('en-US', {
+            {property.price ? new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: 'USD',
               minimumFractionDigits: 0,
-            }).format(property.price)}
+            }).format(Number(property.price)) : 'Price available on request'}
           </p>
         </div>
       </div>
@@ -155,7 +160,7 @@ export default function ChatPanel({ isOpen, onClose, property }) {
         {isTyping && (
           <div className="chat-message agent-message">
             <img 
-              src={property.agent.avatar} 
+              src={property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'} 
               alt="Agent"
               className="message-avatar"
             />

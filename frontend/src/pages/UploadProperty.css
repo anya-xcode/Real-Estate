@@ -8,45 +8,11 @@
 
 /* Header */
 .upload-header {
-  background: transparent;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 4rem 2rem 3rem;
   position: relative;
   overflow: hidden;
 }
-
-/* Background Image (static) */
-/* .upload-header::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('../assets/listproperty1image.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.95;
-  z-index: 1;
-} */
-
-.upload-header::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('../assets/listproperty1image.jpg');
-  background-size: 100%;   /* zoomed out */
-  background-repeat: no-repeat;
-  background-position: top center;
-  opacity: 0.95;
-  z-index: 1;
-}
-
-
-/* parallax animation removed to keep background static */
 
 .upload-header::before {
   content: '';
@@ -56,9 +22,8 @@
   right: 0;
   bottom: 0;
   background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-  /* reduce overlay strength so the photo appears clearer */
-  opacity: 0.18;
-  z-index: 2;
+  opacity: 0.3;
+  z-index: 1;
 }
 
 .upload-header-content {
@@ -785,4 +750,68 @@
   .previews-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Notification Messages */
+.notification {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: slide-in 0.3s ease-out;
+}
+
+.notification.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1px solid #28a745;
+  color: #155724;
+}
+
+.notification.error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 1px solid #dc3545;
+  color: #721c24;
+}
+
+.notification-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.notification p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Button Spinner */
+.button-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

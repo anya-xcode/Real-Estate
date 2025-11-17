@@ -131,7 +131,6 @@ const dummyProperties = [
 ]
 
 export default function PropertyList({ showRibbon = false }) {
-	const [hoveredCard, setHoveredCard] = useState(null)
 	const [likedProperties, setLikedProperties] = useState([])
 	const [selectedProperty, setSelectedProperty] = useState(null)
 	const [showModal, setShowModal] = useState(false)
@@ -153,13 +152,11 @@ export default function PropertyList({ showRibbon = false }) {
 		<>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 				{dummyProperties.map((property, index) => (
-					<article 
-						key={property.id}
-						className="group relative bg-white rounded-2xl shadow-medium hover:shadow-xl transition-all duration-500 overflow-hidden animate-scale-in"
-						style={{animationDelay: `${index * 0.1}s`}}
-						onMouseEnter={() => setHoveredCard(property.id)}
-						onMouseLeave={() => setHoveredCard(null)}
-					>
+				<article 
+					key={property.id}
+					className="group relative bg-white rounded-2xl shadow-medium hover:shadow-xl transition-all duration-500 overflow-hidden animate-scale-in"
+					style={{animationDelay: `${index * 0.1}s`}}
+				>
 						{/* Featured Ribbon */}
 						{showRibbon && property.featured && (
 							<div className="absolute top-4 left-4 z-10">

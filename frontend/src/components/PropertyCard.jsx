@@ -7,11 +7,30 @@ export default function PropertyCard({ property, index, onConnectClick }) {
   const [isLiked, setIsLiked] = useState(false)
 
   const formatPrice = (price) => {
+    if (!price) return 'Price not available'
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-    }).format(price)
+    }).format(Number(price))
+  }
+
+  // Get primary image or first image from backend data
+  const getPropertyImage = () => {
+    if (property.images && property.images.length > 0) {
+      const primaryImage = property.images.find(img => img.isPrimary)
+      return primaryImage ? primaryImage.url : property.images[0].url
+    }
+    return property.image || 'https://via.placeholder.com/400x300?text=No+Image'
+  }
+
+  // Get address string from address object or fallback
+  const getAddressString = () => {
+    if (property.address) {
+      const { street, city, state, zipCode } = property.address
+      return `${street || ''}, ${city || ''}, ${state || ''} ${zipCode || ''}`.replace(/,\s*,/g, ',').trim()
+    }
+    return property.address || 'Address not available'
   }
 
   return (
@@ -23,8 +42,8 @@ export default function PropertyCard({ property, index, onConnectClick }) {
         {/* Image Container */}
         <div className="property-image-container">
           <img
-            src={property.image}
-            alt={property.title}
+            src={getPropertyImage()}
+            alt={property.title || 'Property'}
             className="property-image"
           />
           
@@ -42,9 +61,11 @@ export default function PropertyCard({ property, index, onConnectClick }) {
           )}
           
           {/* Property Type Badge */}
-          <div className="property-type-badge">
-            {property.type}
-          </div>
+          {property.type && (
+            <div className="property-type-badge">
+              {property.type}
+            </div>
+          )}
 
           {/* Like Button */}
           <button 
@@ -66,7 +87,7 @@ export default function PropertyCard({ property, index, onConnectClick }) {
 
           {/* Title */}
           <h3 className="property-title">
-            {property.title}
+            {property.title || 'Untitled Property'}
           </h3>
 
           {/* Address */}
@@ -75,47 +96,56 @@ export default function PropertyCard({ property, index, onConnectClick }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {property.address}
+            {getAddressString()}
           </p>
 
-          {/* Property Details */}
-          <div className="property-details">
-            <div className="property-detail-item">
-              <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <span>{property.beds} Beds</span>
+          {/* Property Details - Show only if available */}
+          {(property.beds || property.baths || property.area) && (
+            <div className="property-details">
+              {property.beds && (
+                <div className="property-detail-item">
+                  <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>{property.beds} Beds</span>
+                </div>
+              )}
+              {property.baths && (
+                <div className="property-detail-item">
+                  <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21v6H3V3h7.5z" />
+                  </svg>
+                  <span>{property.baths} Baths</span>
+                </div>
+              )}
+              {property.area && (
+                <div className="property-detail-item">
+                  <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                  <span>{Number(property.area).toLocaleString()} sqft</span>
+                </div>
+              )}
             </div>
-            <div className="property-detail-item">
-              <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21v6H3V3h7.5z" />
-              </svg>
-              <span>{property.baths} Baths</span>
-            </div>
-            <div className="property-detail-item">
-              <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-              <span>{property.area.toLocaleString()} sqft</span>
-            </div>
-          </div>
+          )}
 
           {/* Divider */}
           <div className="property-divider"></div>
 
-          {/* Agent Info - show name only (no photo) */}
+          {/* Agent Info - show owner info from backend */}
           <div className="property-agent">
             <div className="agent-avatar-placeholder" aria-hidden>
               {(() => {
-                const parts = property.agent.name.split(' ').filter(Boolean)
+                const ownerName = property.owner?.username || property.agent?.name || 'Unknown'
+                const parts = ownerName.split(' ').filter(Boolean)
                 const initials = (parts.length === 1)
                   ? parts[0].slice(0,2).toUpperCase()
-                  : (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+                  : (parts[0][0] + (parts[parts.length-1]?.[0] || '')).toUpperCase()
                 return initials
               })()}
             </div>
             <div className="agent-info">
-              <p className="agent-name">{property.agent.name}</p>
+              <p className="agent-name">{property.owner?.username || property.agent?.name || 'Unknown Owner'}</p>
               <p className="agent-label">Listing Agent</p>
             </div>
           </div>

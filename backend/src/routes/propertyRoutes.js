@@ -1,8 +1,20 @@
 const express = require('express');
 const { body } = require('express-validator');
 const passport = require('passport');
-const { signup, login, getProfile, googleCallback, googleFailure } = require('../controllers/propertyController');
+const { 
+  signup, 
+  login, 
+  getProfile, 
+  googleCallback, 
+  googleFailure,
+  getAllProperties,
+  getPropertyById,
+  createProperty,
+  updateProperty,
+  deleteProperty
+} = require('../controllers/propertyController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const { upload } = require('../config/cloudinary');
 
 const router = express.Router();
 
@@ -58,5 +70,35 @@ router.get('/google/callback',
   googleCallback
 );
 router.get('/google/failure', googleFailure);
+
+// Image Upload Route
+router.post('/upload-images', authMiddleware, upload.array('images', 10), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No images uploaded' });
+    }
+
+    const imageUrls = req.files.map((file, index) => ({
+      url: file.path, // Cloudinary URL
+      order: index,
+      isPrimary: index === 0
+    }));
+
+    res.status(200).json({
+      message: 'Images uploaded successfully',
+      images: imageUrls
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({ message: 'Failed to upload images' });
+  }
+});
+
+// Property Routes
+router.get('/properties', getAllProperties);
+router.get('/properties/:id', getPropertyById);
+router.post('/properties', authMiddleware, createProperty);
+router.put('/properties/:id', authMiddleware, updateProperty);
+router.delete('/properties/:id', authMiddleware, deleteProperty);
 
 module.exports = router
