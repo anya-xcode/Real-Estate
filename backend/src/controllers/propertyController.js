@@ -147,6 +147,15 @@ const getProfile = async (req, res) => {
 
 const googleCallback = async (req, res) => {
   try {
+    console.log('[googleCallback] Called');
+    console.log('[googleCallback] req.user:', req.user);
+    
+    if (!req.user) {
+      console.error('[googleCallback] No user found in request');
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+      return res.redirect(`${frontendUrl}/auth/callback?error=no_user`)
+    }
+    
     const user = req.user;
     
     const token = jwt.sign(
@@ -155,6 +164,7 @@ const googleCallback = async (req, res) => {
       { expiresIn: '7d' }
     )
 
+    console.log('[googleCallback] Token generated:', token.substring(0, 20) + '...');
   
     const userData = {
       id: user.id,
@@ -166,20 +176,21 @@ const googleCallback = async (req, res) => {
       createdAt: user.createdAt
     }
 
-    
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
+    console.log('[googleCallback] Redirecting to frontend with user data');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
     res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify(userData))}`)
     
   } catch (error) {
     console.error('Google OAuth callback error:', error)
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
-    res.redirect(`${frontendUrl}/auth/error?message=Authentication failed`)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+    res.redirect(`${frontendUrl}/auth/callback?error=${encodeURIComponent(error.message)}`)
   }
 }
 
 const googleFailure = (req, res) => {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'
-  res.redirect(`${frontendUrl}/auth/error?message=Authentication failed`)
+  console.error('[googleFailure] Google OAuth failed');
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+  res.redirect(`${frontendUrl}/auth/callback?error=authentication_failed`)
 }
 
 // Property CRUD Controllers
