@@ -9,6 +9,8 @@ import UploadProperty from './pages/UploadProperty'
 import HomeLoans from './pages/HomeLoans'
 import Contact from './pages/Contact'
 import Profile from './pages/Profile'
+import ScheduleViewing from './pages/ScheduleViewing'
+import MakeOffer from './pages/MakeOffer'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 

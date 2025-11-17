@@ -18,22 +18,47 @@ export default function PropertyListing() {
 
   const propertyTypes = ['All', 'House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft']
 
+  // Fetch properties from API
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${API_URL}/api/properties`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch properties')
+        }
+        const data = await response.json()
+        setProperties(data.properties || [])
+        setError(null)
+      } catch (err) {
+        setError(err.message)
+        setProperties([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProperties()
+  }, [])
+
   // Filter and sort properties (includes search)
-  const filteredProperties = dummyProperties
-    .filter(property => filterType === 'All' || property.type === filterType)
+  const filteredProperties = properties
+    .filter(property => filterType === 'All' || property.propertyType === filterType)
     .filter(property => {
       if (!searchQuery || searchQuery.trim() === '') return true
       const q = searchQuery.toLowerCase()
       return (
-        property.title.toLowerCase().includes(q) ||
-        property.address.toLowerCase().includes(q) ||
-        property.type.toLowerCase().includes(q) ||
-        property.agent.name.toLowerCase().includes(q)
+        (property.title && property.title.toLowerCase().includes(q)) ||
+        (property.address?.city && property.address.city.toLowerCase().includes(q)) ||
+        (property.address?.state && property.address.state.toLowerCase().includes(q)) ||
+        (property.address?.street && property.address.street.toLowerCase().includes(q)) ||
+        (property.propertyType && property.propertyType.toLowerCase().includes(q)) ||
+        (property.owner?.username && property.owner.username.toLowerCase().includes(q))
       )
     })
     .sort((a, b) => {
       if (sortBy === 'featured') {
-        return b.featured - a.featured
+        return 0 // Keep original order (most recent first)
       } else if (sortBy === 'price-low') {
         return a.price - b.price
       } else if (sortBy === 'price-high') {

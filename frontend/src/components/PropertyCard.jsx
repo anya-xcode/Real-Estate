@@ -159,14 +159,16 @@ export default function PropertyCard({ property, index, onConnectClick }) {
                 return initials
               })()}
             </div>
-            <img
-              src={property.agent.avatar}
-              alt={property.agent.name}
-              className={`agent-avatar ${isAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
-              onLoad={onAvatarLoad}
-              loading="lazy"
-              decoding="async"
-            />
+            {(property.owner?.avatar || property.agent?.avatar) && (
+              <img
+                src={property.owner?.avatar || property.agent?.avatar}
+                alt={property.owner?.username || property.agent?.name || 'Owner'}
+                className={`agent-avatar ${isAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
+                onLoad={onAvatarLoad}
+                loading="lazy"
+                decoding="async"
+              />
+            )}
             <div className="agent-info">
               <p className="agent-name">{property.owner?.username || property.agent?.name || 'Unknown Owner'}</p>
               <p className="agent-label">Listing Agent</p>
