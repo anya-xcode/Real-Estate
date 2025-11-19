@@ -20,6 +20,18 @@ export default function ScheduleViewing() {
 
   const auth = useAuth()
 
+  // Get address string from address object or fallback
+  const getAddressString = () => {
+    if (property?.address) {
+      if (typeof property.address === 'string') {
+        return property.address
+      }
+      const { street, city, state, zipCode } = property.address
+      return `${street || ''}, ${city || ''}, ${state || ''} ${zipCode || ''}`.replace(/,\s*,/g, ',').trim()
+    }
+    return 'Address not available'
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     setError('')
@@ -52,10 +64,10 @@ export default function ScheduleViewing() {
       <h1>Schedule Viewing</h1>
       {property && (
         <div className="property-summary">
-          <img src={property.image} alt={property.title} />
+          <img src={property.image || property.images?.[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image'} alt={property.title} />
           <div>
             <h3>{property.title}</h3>
-            <p className="muted">{property.address}</p>
+            <p className="muted">{getAddressString()}</p>
           </div>
         </div>
       )}
