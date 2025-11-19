@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import './App.css'
 import Home from './pages/Home'
+import About from './pages/About'
 import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import AuthCallback from './pages/AuthCallback'
@@ -46,6 +47,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
             <Route path="/properties" element={<PropertyListing />} />
             <Route path="/home-loans" element={<HomeLoans />} />
             <Route path="/contact" element={<Contact />} />
