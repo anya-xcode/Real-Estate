@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
-import PropertyInfoModal from './PropertyInfoModal'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './PropertyCard.css'
 
 export default function PropertyCard({ property, index, onConnectClick }) {
-  const [showModal, setShowModal] = useState(false)
+  const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const formatPrice = (price) => {
     if (!price) return 'Price not available'
@@ -15,13 +16,66 @@ export default function PropertyCard({ property, index, onConnectClick }) {
     }).format(Number(price))
   }
 
-  // Get primary image or first image from backend data
-  const getPropertyImage = () => {
-    if (property.images && property.images.length > 0) {
-      const primaryImage = property.images.find(img => img.isPrimary)
-      return primaryImage ? primaryImage.url : property.images[0].url
+  // Get all property images
+  const getAllPropertyImages = () => {
+    const images = []
+    
+    // Check if property.images exists and is an array
+    if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+      // Map through images array and extract URLs
+      property.images.forEach(img => {
+        if (img && img.url) {
+          images.push(img.url)
+        } else if (typeof img === 'string') {
+          // Handle case where images might be an array of strings
+          images.push(img)
+        }
+      })
     }
-    return property.image || 'https://via.placeholder.com/400x300?text=No+Image'
+    
+    // Fallback to single image property
+    if (images.length === 0 && property.image) {
+      images.push(property.image)
+    }
+    
+    // Final fallback
+    if (images.length === 0) {
+      images.push('https://via.placeholder.com/400x300?text=No+Image')
+    }
+    
+    return images
+  }
+
+  const propertyImages = getAllPropertyImages()
+  const hasMultipleImages = propertyImages.length > 1
+  
+  // Debug: Log images for troubleshooting
+  useEffect(() => {
+    if (property?.id) {
+      console.log(`Property ${property.id} images:`, propertyImages.length, propertyImages)
+    }
+  }, [property?.id, propertyImages.length])
+  
+  // Reset to first image when property changes
+  useEffect(() => {
+    setCurrentImageIndex(0)
+  }, [property?.id])
+
+  // Get current image to display
+  const getCurrentImage = () => {
+    return propertyImages[currentImageIndex] || propertyImages[0]
+  }
+
+  // Navigate to next image
+  const goToNextImage = (e) => {
+    e.stopPropagation()
+    setCurrentImageIndex((prev) => (prev + 1) % propertyImages.length)
+  }
+
+  // Navigate to previous image
+  const goToPrevImage = (e) => {
+    e.stopPropagation()
+    setCurrentImageIndex((prev) => (prev - 1 + propertyImages.length) % propertyImages.length)
   }
 
   // Get address string from address object or fallback
@@ -56,11 +110,68 @@ export default function PropertyCard({ property, index, onConnectClick }) {
       >
         {/* Image Container */}
         <div className="property-image-container">
-          <img
-            src={getPropertyImage()}
-            alt={property.title || 'Property'}
-            className="property-image"
-          />
+          {propertyImages.map((imageUrl, idx) => (
+            <img
+              key={`${property?.id || 'property'}-img-${idx}`}
+              src={imageUrl}
+              alt={`${property.title || 'Property'} - Image ${idx + 1}`}
+              className={`property-image ${idx === currentImageIndex ? 'active' : ''}`}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                opacity: idx === currentImageIndex ? 1 : 0,
+                zIndex: idx === currentImageIndex ? 2 : 1,
+                pointerEvents: idx === currentImageIndex ? 'auto' : 'none'
+              }}
+            />
+          ))}
+          
+          {/* Image Navigation Arrows - Only show if multiple images */}
+          {hasMultipleImages && (
+            <>
+              <button 
+                className="image-nav-button image-nav-prev"
+                onClick={goToPrevImage}
+                aria-label="Previous image"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button 
+                className="image-nav-button image-nav-next"
+                onClick={goToNextImage}
+                aria-label="Next image"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              
+              {/* Image Indicators */}
+              <div className="image-indicators">
+                {propertyImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`image-indicator ${index === currentImageIndex ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCurrentImageIndex(index)
+                    }}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
+              
+              {/* Image Counter */}
+              <div className="image-counter">
+                {currentImageIndex + 1} / {propertyImages.length}
+              </div>
+            </>
+          )}
           
           {/* Gradient Overlay */}
           <div className="property-image-overlay" />
@@ -179,7 +290,7 @@ export default function PropertyCard({ property, index, onConnectClick }) {
           <div className="property-actions">
             <button 
               className="action-button primary"
-              onClick={() => setShowModal(true)}
+              onClick={() => navigate(`/property/${property.id}`, { state: { property } })}
             >
               <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -201,13 +312,6 @@ export default function PropertyCard({ property, index, onConnectClick }) {
         {/* Hover Border Effect */}
         <div className="card-border-effect" />
       </article>
-
-      {/* Property Info Modal */}
-      <PropertyInfoModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        property={property}
-      />
     </>
   )
 }

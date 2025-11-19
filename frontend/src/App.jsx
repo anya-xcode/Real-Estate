@@ -11,6 +11,7 @@ import Contact from './pages/Contact'
 import Profile from './pages/Profile'
 import ScheduleViewing from './pages/ScheduleViewing'
 import MakeOffer from './pages/MakeOffer'
+import PropertyDetails from './pages/PropertyDetails'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 
@@ -56,6 +57,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/schedule-viewing" element={<ScheduleViewing />} />
             <Route path="/make-offer" element={<MakeOffer />} />
+            <Route path="/property/:id" element={<PropertyDetails />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

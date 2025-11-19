@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import PropertyInfoModal from './PropertyInfoModal'
+import { useNavigate } from 'react-router-dom'
 
 const dummyProperties = [
 	{
@@ -131,9 +131,8 @@ const dummyProperties = [
 ]
 
 export default function PropertyList({ showRibbon = false }) {
+	const navigate = useNavigate()
 	const [likedProperties, setLikedProperties] = useState([])
-	const [selectedProperty, setSelectedProperty] = useState(null)
-	const [showModal, setShowModal] = useState(false)
 
 	const toggleLike = (propertyId) => {
 		setLikedProperties(prev => 
@@ -144,8 +143,7 @@ export default function PropertyList({ showRibbon = false }) {
 	}
 
 	const handleViewDetails = (property) => {
-		setSelectedProperty(property)
-		setShowModal(true)
+		navigate(`/property/${property.id}`, { state: { property } })
 	}
 
 	return (
@@ -279,13 +277,6 @@ export default function PropertyList({ showRibbon = false }) {
 					</article>
 				))}
 			</div>
-
-			{/* Property Info Modal */}
-			<PropertyInfoModal
-				isOpen={showModal}
-				onClose={() => setShowModal(false)}
-				property={selectedProperty}
-			/>
 		</>
 	)
 }
