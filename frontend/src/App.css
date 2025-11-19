@@ -15,7 +15,7 @@ body {
 main {
   flex: 1;
   display: block;
-  padding: 2rem 0 4rem;
+  padding: 2rem 0 0;
   background: radial-gradient(circle at center, transparent, rgba(99, 102, 241, 0.04));
 }
 
