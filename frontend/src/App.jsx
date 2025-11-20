@@ -13,6 +13,8 @@ import Profile from './pages/Profile'
 import ScheduleViewing from './pages/ScheduleViewing'
 import MakeOffer from './pages/MakeOffer'
 import PropertyDetails from './pages/PropertyDetails'
+import Blog from './pages/Blog'
+import BlogPost from './pages/BlogPost'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 
@@ -27,6 +29,7 @@ function App() {
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/properties" className="nav-link">Properties</Link>
             <Link to="/home-loans" className="nav-link">Loans</Link>
+            <Link to="/blog" className="nav-link">Blog</Link>
             {auth.user && (
               <Link to="/upload" className="nav-link">List Property</Link>
             )}
@@ -57,6 +60,8 @@ function App() {
             <Route path="/schedule-viewing" element={<ScheduleViewing />} />
             <Route path="/make-offer" element={<MakeOffer />} />
             <Route path="/property/:id" element={<PropertyDetails />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
