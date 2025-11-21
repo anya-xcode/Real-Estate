@@ -1,69 +1,97 @@
-# Careers Page Implementation
+# Help Center Implementation
 
 ## Added Files
 
 ### Data Layer
-- `src/data/jobs.js` - Mock job listings with detailed information (6 positions across different departments)
+- `src/data/helpCategories.js` - Help categories with icons and descriptions (6 categories)
+- `src/data/faqs.js` - Comprehensive FAQ database organized by category (16 FAQs)
 
 ### Components
-- `src/components/JobCard.jsx` + `JobCard.css` - Job listing cards with hover effects
-- `src/components/TeamHighlight.jsx` + `TeamHighlight.css` - Team member showcase section
-- `src/components/ApplyModal.jsx` + `ApplyModal.css` - Job application modal with form validation
+- `src/components/HelpCategoryCard.jsx` + `HelpCategoryCard.css` - Interactive category cards with hover effects
+- `src/components/FaqItem.jsx` + `FaqItem.css` - Expandable FAQ items with search highlighting
+- `src/components/SupportForm.jsx` + `SupportForm.css` - Contact form with validation and success states
 
 ### Pages
-- `src/pages/Careers.jsx` + `Careers.css` - Main careers page with hero, culture, and job listings
+- `src/pages/HelpCenter.jsx` + `HelpCenter.css` - Main help center with search, categories, and support
 
 ### Routes Added
-- `/careers` - Main careers page
+- `/help` - Main help center page
 
 ## Features Implemented
 
-✅ **Hero Section** - Mission-driven copy with purple gradient background  
-✅ **Culture Section** - "Why Work With Us" with 3 key value propositions  
-✅ **Team Highlight** - 3 team members with roles and culture quotes  
-✅ **Job Listings** - Cards showing title, department, location, type, and summary  
-✅ **Search & Filter** - Real-time search by title/department/location + job type filters  
-✅ **Apply Modal** - Full job details with application form and mailto fallback  
-✅ **Form Validation** - Name, email, and cover letter validation with error states  
-✅ **Responsive Design** - Mobile-friendly layout with collapsing grids  
-✅ **Accessibility** - ARIA labels, keyboard navigation, ESC to close modal  
+✅ **Hero Section** - Purple gradient background with prominent search bar  
+✅ **Smart Search** - Debounced real-time search with term highlighting  
+✅ **Category Cards** - 6 help categories with icons and hover animations  
+✅ **FAQ System** - Expandable accordion with smooth animations  
+✅ **Support Form** - Full validation with success states and mailto fallback  
+✅ **Quick Links** - Navigation tiles to other site sections  
+✅ **Responsive Design** - Mobile-optimized layouts and interactions  
+✅ **Accessibility** - ARIA attributes, keyboard navigation, semantic HTML  
 ✅ **Purple Theme** - Consistent gradient branding throughout  
-✅ **Animations** - Smooth transitions and entrance animations  
+✅ **Micro-interactions** - Smooth transitions and entrance animations  
 
 ## How to Test Locally
 
 1. Start the development server: `npm run dev`
-2. Navigate to `/careers` to see the main page
-3. Use the search bar to filter jobs by keywords
-4. Click job type filters (Full-time, Part-time, Remote) to filter results
-5. Click any job card to open the detailed application modal
-6. Test the application form:
+2. Navigate to `/help` to see the main help center
+3. Test the search functionality:
+   - Type in the search bar to filter FAQs and categories
+   - Search terms are highlighted in results
+   - Search is debounced (300ms delay) for performance
+4. Browse categories:
+   - Click any category card to filter FAQs by that category
+   - Use the clear button to reset filters
+5. Test FAQ accordion:
+   - Click questions to expand/collapse answers
+   - Multiple FAQs can be open simultaneously
+   - Keyboard accessible (Enter/Space to toggle)
+6. Test support form:
    - Try submitting with empty fields to see validation
-   - Fill out the form and submit to see success state
-   - Click "Apply via Email" to test mailto functionality
-7. Test keyboard accessibility:
-   - Press ESC to close modal
-   - Tab through form fields
-   - Click outside modal to close
-8. Test responsive design by resizing browser window
+   - Fill out form and submit to see success message
+   - Click "Need urgent help?" for mailto functionality
+7. Test responsive design by resizing browser window
 
-## Sample Jobs Included
+## Help Categories Included
 
-- Senior Frontend Developer (Engineering, San Francisco)
-- Product Manager (Product, Remote)
-- UX Designer (Design, New York)
-- Data Scientist (Data, Austin)
-- Marketing Coordinator (Marketing, Los Angeles, Part-time)
-- Customer Success Manager (Customer Success, Chicago)
+- **Getting Started** - Platform basics and first steps
+- **Account & Security** - Profile management and security
+- **Payments** - Fees, billing, and transaction help
+- **Buying & Renting** - Property search to closing process
+- **Troubleshooting** - Technical issues and quick fixes
+- **Contact Support** - Direct access to support team
+
+## Sample FAQs by Category
+
+Each category contains 2-3 detailed FAQs with human-friendly answers covering common real estate platform questions like property listings, account management, payments, viewings, and technical support.
 
 ## Backend Integration Notes
 
-To connect the application form to a real backend:
+### Support Form Integration
+To connect the support form to a real backend:
 
-1. Replace the `console.log` in `ApplyModal.jsx` with an API call
-2. Add proper file upload handling for resume attachments
-3. Implement email notifications for new applications
-4. Add application tracking and status updates
-5. Consider adding a job application dashboard for HR team
+1. Replace the `console.log` in `SupportForm.jsx` with an API call to your support ticket system
+2. Add proper file upload handling for attachments
+3. Implement email notifications for new support requests
+4. Add ticket tracking and status updates
+5. Consider integrating with customer support tools like Zendesk or Intercom
 
-The current implementation logs application data to console and shows success feedback, making it easy to wire up to any backend service later.
+### Analytics Integration
+The form currently logs a sample analytics event to console. Replace with your analytics provider:
+
+```javascript
+// Replace this line in SupportForm.jsx:
+console.log('Analytics event: support_form_submitted', { ... });
+
+// With your analytics service:
+analytics.track('support_form_submitted', { ... });
+```
+
+### Content Management
+To make help content easily editable:
+
+1. Move FAQ and category data to a CMS or admin panel
+2. Add search indexing for better performance with large FAQ databases
+3. Implement content versioning and approval workflows
+4. Add analytics to track which articles are most helpful
+
+The current implementation uses static data files that can be easily replaced with API calls to your content management system.
