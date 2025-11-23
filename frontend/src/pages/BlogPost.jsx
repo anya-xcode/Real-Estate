@@ -30,10 +30,10 @@ const BlogPost = () => {
   if (!post) {
     return (
       <div className="blog-post__not-found">
-        <h1>Article Not Found</h1>
-        <p>The article you're looking for doesn't exist.</p>
+        <h1>Can't find this post</h1>
+        <p>This post might have been deleted or moved.</p>
         <Link to="/blog" className="blog-post__back-link">
-          ← Back to Blog
+          ← Back to all posts
         </Link>
       </div>
     );

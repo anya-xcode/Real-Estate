@@ -50,9 +50,9 @@ const Blog = () => {
     <div className="blog">
       <div className="blog__hero">
         <div className="blog__hero-content">
-          <h1 className="blog__title">Real Estate Insights</h1>
+          <h1 className="blog__title">Real Estate Blog</h1>
           <p className="blog__subtitle">
-            Real stories, expert tips, and property guides to help you make informed decisions
+            Simple tips and real experiences from home buyers like us
           </p>
         </div>
       </div>
@@ -94,8 +94,8 @@ const Blog = () => {
 
             {currentPosts.length === 0 && (
               <div className="blog__no-results">
-                <h3>No articles found</h3>
-                <p>Try adjusting your search or filter criteria</p>
+                <h3>No posts found</h3>
+                <p>Try searching something else or come back later</p>
               </div>
             )}
 

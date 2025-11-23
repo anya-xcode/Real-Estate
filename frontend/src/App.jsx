@@ -31,8 +31,6 @@ function App() {
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/properties" className="nav-link">Properties</Link>
             <Link to="/home-loans" className="nav-link">Loans</Link>
-            <Link to="/blog" className="nav-link">Blog</Link>
-            <Link to="/careers" className="nav-link">Careers</Link>
             <Link to="/help" className="nav-link">Help</Link>
             {auth.user && (
               <Link to="/upload" className="nav-link">List Property</Link>
