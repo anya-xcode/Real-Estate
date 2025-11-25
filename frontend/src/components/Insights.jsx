@@ -41,6 +41,11 @@ export default function Insights() {
             <h2 className="insights-title">Real Estate Insights</h2>
             <p className="insights-sub">Expert analysis, tips and market trends</p>
           </div>
+          
+          <Link to="/blog" className="insights-viewall">
+            View All
+            <span className="insights-arrow">↗</span>
+          </Link>
         </div>
 
         <div className="insights-grid">
