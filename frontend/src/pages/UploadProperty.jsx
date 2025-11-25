@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 import './UploadProperty.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
 export default function UploadProperty() {
   const navigate = useNavigate()
+  const auth = useAuth()
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     title: '',
@@ -30,6 +32,41 @@ export default function UploadProperty() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+
+  // Verify authentication on mount
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        setError('Please login to upload a property')
+        setTimeout(() => navigate('/signin'), 2000)
+        return
+      }
+
+      // Verify token is valid
+      try {
+        const response = await fetch(`${API_URL}/api/auth/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          setError('Your session has expired. Please login again.')
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          auth.logout()
+          setTimeout(() => navigate('/signin'), 2000)
+        }
+      } catch (err) {
+        console.error('Auth verification error:', err)
+        setError('Authentication error. Please login again.')
+        setTimeout(() => navigate('/signin'), 2000)
+      }
+    }
+
+    verifyAuth()
+  }, [navigate, auth])
 
   const propertyTypes = ['House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft', 'Condo', 'Townhouse']
   
@@ -150,6 +187,14 @@ export default function UploadProperty() {
         const imageData = await imageUploadResponse.json()
 
         if (!imageUploadResponse.ok) {
+          if (imageUploadResponse.status === 401) {
+            setError('Your session has expired. Please login again.')
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            auth.logout()
+            setTimeout(() => navigate('/signin'), 2000)
+            return
+          }
           throw new Error(imageData.message || 'Failed to upload images')
         }
 
@@ -183,6 +228,14 @@ export default function UploadProperty() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 401) {
+          setError('Your session has expired. Please login again.')
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          auth.logout()
+          setTimeout(() => navigate('/signin'), 2000)
+          return
+        }
         throw new Error(data.message || 'Failed to create property')
       }
 

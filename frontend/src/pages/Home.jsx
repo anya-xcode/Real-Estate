@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PropertyList from '../components/PropertyList'
 import './Home.css'
 import homeVideo from '../assets/homevideo.mp4'
 import Insights from '../components/Insights'
 
 export default function Home() {
+	const navigate = useNavigate()
 	const [activeTab, setActiveTab] = useState('Buy')
 
 	const stats = [
@@ -184,7 +185,10 @@ export default function Home() {
 								<div className="city-content">
 									<h3 className="city-name">{city.name}</h3>
 									<p className="city-count">{city.count}</p>
-									<button className="explore-city-btn">
+									<button 
+										className="explore-city-btn"
+										onClick={() => navigate(`/properties?city=${encodeURIComponent(city.name)}`)}
+									>
 										Explore
 										<svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -336,14 +340,13 @@ export default function Home() {
 									<li><a href="/blog">Blog</a></li>
 								</ul>
 							</div>
-							<div className="link-group">
-								<h4>Support</h4>
-								<ul>
-									<li><a href="/help">Help Center</a></li>
-									<li><a href="/contact">Contact Us</a></li>
-									<li><a href="/privacy">Privacy Policy</a></li>
-								</ul>
-							</div>
+						<div className="link-group">
+							<h4>Support</h4>
+							<ul>
+								<li><a href="/contact">Contact Us</a></li>
+								<li><a href="/privacy">Privacy Policy</a></li>
+							</ul>
+						</div>
 							<div className="contact-group">
 								<h4>Contact</h4>
 								<p>Email: <a href="mailto:support@realestate.com">support@realestate.com</a></p>

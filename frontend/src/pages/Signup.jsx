@@ -51,7 +51,7 @@ export default function Signup() {
 
     setLoading(true)
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
       const res = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,7 +99,7 @@ export default function Signup() {
           <button
             type="button"
             className="social-button google"
-            onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'; window.location.href = `${API_URL}/api/auth/google` }}
+            onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'; window.location.href = `${API_URL}/api/auth/google` }}
             aria-label="Sign up with Google"
           >
             <span className="g-icon" aria-hidden>
@@ -116,7 +116,7 @@ export default function Signup() {
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
               <button
                 type="button"
-                onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'; window.location.href = `${API_URL}/api/auth/google` }}
+                onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'; window.location.href = `${API_URL}/api/auth/google` }}
                 className="social-button google"
               >Retry Google</button>
               <button type="button" onClick={() => navigate('/signup')}>Back to Sign up</button>

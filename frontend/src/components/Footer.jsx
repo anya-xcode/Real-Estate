@@ -24,7 +24,6 @@ export default function Footer() {
             <div className="link-group">
               <h4>Support</h4>
               <ul>
-                <li><a href="/help">Help Center</a></li>
                 <li><a href="/contact">Contact Us</a></li>
                 <li><a href="/privacy">Privacy Policy</a></li>
               </ul>

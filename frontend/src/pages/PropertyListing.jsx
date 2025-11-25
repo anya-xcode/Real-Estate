@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
 import ChatPanel from '../components/ChatPanel'
 import Footer from '../components/Footer'
@@ -7,6 +8,7 @@ import './PropertyListing.css'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
 export default function PropertyListing() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -15,8 +17,18 @@ export default function PropertyListing() {
   const [filterType, setFilterType] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
   const [searchQuery, setSearchQuery] = useState('')
+  const [cityFilter, setCityFilter] = useState('')
 
   const propertyTypes = ['All', 'House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft']
+
+  // Read city filter from URL params
+  useEffect(() => {
+    const city = searchParams.get('city')
+    if (city) {
+      setCityFilter(city)
+      setSearchQuery(city)
+    }
+  }, [searchParams])
 
   // Fetch properties from API
   useEffect(() => {
@@ -128,8 +140,12 @@ export default function PropertyListing() {
       <section className="hero-section">
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <h1 className="hero-title">Find Your Dream Home</h1>
-          <p className="hero-subtitle">Discover the perfect property from our exclusive collection</p>
+          <h1 className="hero-title">
+            {cityFilter ? `Properties in ${cityFilter}` : 'Find Your Dream Home'}
+          </h1>
+          <p className="hero-subtitle">
+            {cityFilter ? `Explore available properties in ${cityFilter}` : 'Discover the perfect property from our exclusive collection'}
+          </p>
           
           {/* Search Bar */}
           <div className="search-bar">
@@ -199,6 +215,28 @@ export default function PropertyListing() {
 
           <div className="results-count">
             <span>{filteredProperties.length} properties found</span>
+            {cityFilter && (
+              <button 
+                className="clear-filter-btn"
+                onClick={() => {
+                  setCityFilter('')
+                  setSearchQuery('')
+                  setSearchParams({})
+                }}
+                style={{
+                  marginLeft: '1rem',
+                  padding: '0.5rem 1rem',
+                  background: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                Clear City Filter ✕
+              </button>
+            )}
           </div>
         </div>
       </section>

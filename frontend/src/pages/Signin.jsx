@@ -23,7 +23,7 @@ export default function Signin() {
     setLoading(true);
     try {
       // send identifier (username or email) and password
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -56,7 +56,7 @@ export default function Signin() {
           <button
             type="button"
             className="social-button google"
-            onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'; window.location.href = `${API_URL}/api/auth/google` }}
+            onClick={() => { const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'; window.location.href = `${API_URL}/api/auth/google` }}
             aria-label="Sign in with Google"
           >
             <span className="g-icon" aria-hidden>
