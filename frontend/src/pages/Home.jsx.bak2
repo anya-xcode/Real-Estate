@@ -25,22 +25,31 @@ export default function Home() {
 		{ number: '1000+', label: 'Verified Agents' }
 	]
 
-	// City properties data with colors
-	const [selectedCity, setSelectedCity] = useState(null)
-	
+	// City properties data
 	const cityData = {
-		'Delhi NCR': { count: '50,000+', color: '#667eea', listings: '50K+' },
-		'Mumbai': { count: '45,000+', color: '#f87171', listings: '45K+' },
-		'Bangalore': { count: '40,000+', color: '#34d399', listings: '40K+' },
-		'Hyderabad': { count: '35,000+', color: '#fbbf24', listings: '35K+' },
-		'Pune': { count: '30,000+', color: '#a78bfa', listings: '30K+' },
-		'Kolkata': { count: '25,000+', color: '#fb923c', listings: '25K+' },
-		'Chennai': { count: '28,000+', color: '#06b6d4', listings: '28K+' },
-		'Ahmedabad': { count: '32,000+', color: '#ec4899', listings: '32K+' }
+		'Delhi NCR': { count: '50K+', color: '#667eea' },
+		'Mumbai': { count: '45K+', color: '#764ba2' },
+		'Bangalore': { count: '40K+', color: '#667eea' },
+		'Hyderabad': { count: '35K+', color: '#764ba2' },
+		'Pune': { count: '30K+', color: '#667eea' },
+		'Kolkata': { count: '25K+', color: '#764ba2' },
+		'Chennai': { count: '28K+', color: '#667eea' },
+		'Ahmedabad': { count: '32K+', color: '#764ba2' }
 	}
 
-	const handleCityClick = (cityName) => {
-		setSelectedCity(cityName)
+	const handleCityHover = (e, cityName) => {
+		const tooltip = document.getElementById('mapTooltip')
+		if (tooltip && cityData[cityName]) {
+			tooltip.querySelector('.tooltip-count').textContent = `${cityData[cityName].count} properties available`
+			tooltip.style.opacity = '1'
+		}
+	}
+
+	const handleCityLeave = () => {
+		const tooltip = document.getElementById('mapTooltip')
+		if (tooltip) {
+			tooltip.style.opacity = '0'
+		}
 	}
 
 	const features = [
@@ -250,6 +259,307 @@ export default function Home() {
 		{/* Insights Section (Real Estate Insights) */}
 		<Insights />
 
+		{/* Testimonials Section */}
+		<section className="testimonials-section">
+			<div className="container">
+				<div className="section-header">
+					<h2 className="section-title">What Our Clients Say</h2>
+					<p className="section-subtitle">
+						Real experiences from real people
+					</p>
+				</div>
+
+				<div className="testimonials-grid">
+					{[
+						{
+							name: 'Priya Sharma',
+										{/* Delhi NCR - North */}
+										<circle 
+											cx="380" cy="180" r="45" 
+											fill="url(#mapGradient)" 
+											className="city-region delhi-region" 
+											data-city="Delhi NCR"
+											onMouseEnter={(e) => handleCityHover(e, 'Delhi NCR')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Delhi%20NCR')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Mumbai - West */}
+										<circle 
+											cx="280" cy="380" r="45" 
+											fill="url(#mapGradient)" 
+											className="city-region mumbai-region" 
+											data-city="Mumbai"
+											onMouseEnter={(e) => handleCityHover(e, 'Mumbai')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Mumbai')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Bangalore - South */}
+										<circle 
+											cx="360" cy="560" r="45" 
+											fill="url(#mapGradient)" 
+											className="city-region bangalore-region" 
+											data-city="Bangalore"
+											onMouseEnter={(e) => handleCityHover(e, 'Bangalore')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Bangalore')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Hyderabad - South Central */}
+										<circle 
+											cx="380" cy="480" r="40" 
+											fill="url(#mapGradient)" 
+											className="city-region hyderabad-region" 
+											data-city="Hyderabad"
+											onMouseEnter={(e) => handleCityHover(e, 'Hyderabad')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Hyderabad')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Pune - West Central */}
+										<circle 
+											cx="300" cy="410" r="35" 
+											fill="url(#mapGradient)" 
+											className="city-region pune-region" 
+											data-city="Pune"
+											onMouseEnter={(e) => handleCityHover(e, 'Pune')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Pune')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Kolkata - East */}
+										<circle 
+											cx="480" cy="320" r="40" 
+											fill="url(#mapGradient)" 
+											className="city-region kolkata-region" 
+											data-city="Kolkata"
+											onMouseEnter={(e) => handleCityHover(e, 'Kolkata')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Kolkata')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Chennai - South East */}
+										<circle 
+											cx="400" cy="600" r="40" 
+											fill="url(#mapGradient)" 
+											className="city-region chennai-region" 
+											data-city="Chennai"
+											onMouseEnter={(e) => handleCityHover(e, 'Chennai')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Chennai')}
+											style={{ cursor: 'pointer' }}
+										/>
+										
+										{/* Ahmedabad - West North */}
+										<circle 
+											cx="290" cy="310" r="35" 
+											fill="url(#mapGradient)" 
+											className="city-region ahmedabad-region" 
+											data-city="Ahmedabad"
+											onMouseEnter={(e) => handleCityHover(e, 'Ahmedabad')}
+											onMouseLeave={handleCityLeave}
+											onClick={() => navigate('/properties?city=Ahmedabad')}
+											style={{ cursor: 'pointer' }}
+										/>
+									</g>
+									
+									{/* City Markers */}
+									<g className="city-markers">
+										{/* Delhi NCR */}
+										<g 
+											className="city-marker delhi-marker" 
+											onClick={() => navigate('/properties?city=Delhi%20NCR')}
+											onMouseEnter={(e) => handleCityHover(e, 'Delhi NCR')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="380" cy="180" r="12" fill="#667eea" className="marker-circle"/>
+											<circle cx="380" cy="180" r="8" fill="white" className="marker-inner"/>
+											<circle cx="380" cy="180" r="4" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Mumbai */}
+										<g 
+											className="city-marker mumbai-marker"
+											onClick={() => navigate('/properties?city=Mumbai')}
+											onMouseEnter={(e) => handleCityHover(e, 'Mumbai')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="280" cy="380" r="12" fill="#667eea" className="marker-circle"/>
+											<circle cx="280" cy="380" r="8" fill="white" className="marker-inner"/>
+											<circle cx="280" cy="380" r="4" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Bangalore */}
+										<g 
+											className="city-marker bangalore-marker"
+											onClick={() => navigate('/properties?city=Bangalore')}
+											onMouseEnter={(e) => handleCityHover(e, 'Bangalore')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="360" cy="560" r="12" fill="#667eea" className="marker-circle"/>
+											<circle cx="360" cy="560" r="8" fill="white" className="marker-inner"/>
+											<circle cx="360" cy="560" r="4" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Hyderabad */}
+										<g 
+											className="city-marker hyderabad-marker"
+											onClick={() => navigate('/properties?city=Hyderabad')}
+											onMouseEnter={(e) => handleCityHover(e, 'Hyderabad')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="380" cy="480" r="11" fill="#667eea" className="marker-circle"/>
+											<circle cx="380" cy="480" r="7.5" fill="white" className="marker-inner"/>
+											<circle cx="380" cy="480" r="3.5" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Pune */}
+										<g 
+											className="city-marker pune-marker"
+											onClick={() => navigate('/properties?city=Pune')}
+											onMouseEnter={(e) => handleCityHover(e, 'Pune')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="300" cy="410" r="10" fill="#667eea" className="marker-circle"/>
+											<circle cx="300" cy="410" r="7" fill="white" className="marker-inner"/>
+											<circle cx="300" cy="410" r="3" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Kolkata */}
+										<g 
+											className="city-marker kolkata-marker"
+											onClick={() => navigate('/properties?city=Kolkata')}
+											onMouseEnter={(e) => handleCityHover(e, 'Kolkata')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="480" cy="320" r="11" fill="#667eea" className="marker-circle"/>
+											<circle cx="480" cy="320" r="7.5" fill="white" className="marker-inner"/>
+											<circle cx="480" cy="320" r="3.5" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Chennai */}
+										<g 
+											className="city-marker chennai-marker"
+											onClick={() => navigate('/properties?city=Chennai')}
+											onMouseEnter={(e) => handleCityHover(e, 'Chennai')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="400" cy="600" r="11" fill="#667eea" className="marker-circle"/>
+											<circle cx="400" cy="600" r="7.5" fill="white" className="marker-inner"/>
+											<circle cx="400" cy="600" r="3.5" fill="#667eea" className="marker-dot"/>
+										</g>
+										
+										{/* Ahmedabad */}
+										<g 
+											className="city-marker ahmedabad-marker"
+											onClick={() => navigate('/properties?city=Ahmedabad')}
+											onMouseEnter={(e) => handleCityHover(e, 'Ahmedabad')}
+											onMouseLeave={handleCityLeave}
+											style={{ cursor: 'pointer' }}
+										>
+											<circle cx="290" cy="310" r="10" fill="#667eea" className="marker-circle"/>
+											<circle cx="290" cy="310" r="7" fill="white" className="marker-inner"/>
+											<circle cx="290" cy="310" r="3" fill="#667eea" className="marker-dot"/>
+										</g>
+									</g>
+									
+									{/* City Labels */}
+									<g className="city-labels">
+										<text x="380" y="210" className="city-label">Delhi NCR</text>
+										<text x="280" y="410" className="city-label">Mumbai</text>
+										<text x="360" y="590" className="city-label">Bangalore</text>
+										<text x="380" y="510" className="city-label">Hyderabad</text>
+										<text x="300" y="435" className="city-label">Pune</text>
+										<text x="480" y="345" className="city-label">Kolkata</text>
+										<text x="400" y="625" className="city-label">Chennai</text>
+										<text x="290" y="335" className="city-label">Ahmedabad</text>
+									</g>
+								</svg>
+								
+								{/* Hover Tooltip */}
+								<div className="map-tooltip" id="mapTooltip">
+									<span className="tooltip-count">500+ properties available</span>
+								</div>
+							</div>
+
+							{/* City Markers Grid */}
+							<div className="city-markers-grid">
+								{[
+									{ name: 'Delhi NCR', icon: '🏛️' },
+									{ name: 'Mumbai', icon: '🌊' },
+									{ name: 'Bangalore', icon: '🌳' },
+									{ name: 'Hyderabad', icon: '🏰' },
+									{ name: 'Pune', icon: '🎓' },
+									{ name: 'Kolkata', icon: '🎭' },
+									{ name: 'Chennai', icon: '🏖️' },
+									{ name: 'Ahmedabad', icon: '🕌' }
+								].map((city, index) => (
+									<div key={index} className="city-marker-tag">
+										<span className="city-marker-icon">{city.icon}</span>
+										<span className="city-marker-name">{city.name}</span>
+									</div>
+								))}
+							</div>
+
+							{/* Coverage Stats */}
+							<div className="coverage-stats">
+								<div className="coverage-stat-item">
+									<div className="coverage-stat-icon">
+										<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+										</svg>
+									</div>
+									<div className="coverage-stat-content">
+										<div className="coverage-stat-number">500+</div>
+										<div className="coverage-stat-label">Cities Covered</div>
+									</div>
+								</div>
+
+								<div className="coverage-stat-item">
+									<div className="coverage-stat-icon">
+										<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+										</svg>
+									</div>
+									<div className="coverage-stat-content">
+										<div className="coverage-stat-number">200K+</div>
+										<div className="coverage-stat-label">Properties Listed</div>
+									</div>
+								</div>
+
+								<div className="coverage-stat-item">
+									<div className="coverage-stat-icon">
+										<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+										</svg>
+									</div>
+									<div className="coverage-stat-content">
+										<div className="coverage-stat-number">1000+</div>
+										<div className="coverage-stat-label">Verified Agents</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			{/* Insights Section (Real Estate Insights) */}
+			<Insights />
+
 			{/* Testimonials Section */}
 			<section className="testimonials-section">
 				<div className="container">
@@ -303,106 +613,6 @@ export default function Home() {
 							</div>
 						))}
 					</div>
-				</div>
-			</section>
-
-			{/* Service Area Map Section */}
-			<section className="service-area-map-section" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
-				<div className="container">
-				<div className="map-header">
-					<div className="map-badge">
-						<svg className="map-badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-						</svg>
-						Our Service Area
-					</div>
-					<h3 className="map-title-updated">Serving Across Major Indian Cities</h3>
-					<p className="map-subtitle-updated">
-						We provide real estate services across India's top metropolitan areas and growing cities
-					</p>
-				</div>
-
-				<div className="map-container">
-					<div className="google-map-wrapper">
-						{/* Google Maps Background */}
-						<iframe
-							className="google-map-iframe"
-							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15139249.86778636!2d73.03046268562503!3d22.84765024179047!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30635ff06b92b791%3A0xd78c4fa1854213a6!2sIndia!5e0!3m2!1sen!2sin!4v1732557890123!5m2!1sen!2sin"
-							width="100%"
-							height="100%"
-							style={{ border: 0 }}
-							allowFullScreen=""
-							loading="lazy"
-							referrerPolicy="no-referrer-when-downgrade"
-							title="Service Area Map - India"
-						></iframe>
-						
-						{/* Overlay with City Markers */}
-						<div className="map-overlay">
-							<div className="city-markers-container">
-								{Object.entries(cityData).map(([cityName, data]) => {
-									const positions = {
-										'Delhi NCR': { top: '23%', left: '53%' },
-										'Mumbai': { top: '48%', left: '41%' },
-										'Bangalore': { top: '69%', left: '49%' },
-										'Hyderabad': { top: '59%', left: '52%' },
-										'Pune': { top: '51%', left: '44%' },
-										'Kolkata': { top: '42%', left: '68%' },
-										'Chennai': { top: '72%', left: '56%' },
-										'Ahmedabad': { top: '40%', left: '43%' }
-									}
-									const pos = positions[cityName]
-									
-									return (
-										<div 
-											key={cityName}
-											className={`city-marker-on-map ${selectedCity === cityName ? 'active' : ''}`}
-											style={{ 
-												top: pos.top, 
-												left: pos.left,
-												backgroundColor: data.color
-											}}
-											onClick={() => handleCityClick(cityName)}
-										>
-											<div className="city-marker-dot"></div>
-											<div className="city-marker-label">{cityName}</div>
-											<div className="city-marker-pulse" style={{ borderColor: data.color }}></div>
-										</div>
-									)
-								})}
-							</div>
-						</div>
-						
-						{/* City Info Card */}
-						{selectedCity && (
-							<div className="city-info-card">
-								<div className="city-info-header">
-									<div className="city-info-title">
-										<div className="city-color-dot" style={{ backgroundColor: cityData[selectedCity].color }}></div>
-										<h3>{selectedCity}</h3>
-									</div>
-									<button className="city-info-close" onClick={() => setSelectedCity(null)}>×</button>
-								</div>
-								<div className="city-info-content">
-									<div className="city-listings-count">
-										<span className="listings-number">{cityData[selectedCity].count}</span>
-										<span className="listings-label">Properties Available</span>
-									</div>
-									<button 
-										className="view-properties-btn"
-										onClick={() => navigate(`/properties?city=${encodeURIComponent(selectedCity)}`)}
-									>
-										View All Properties
-										<svg className="btn-arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-										</svg>
-									</button>
-								</div>
-							</div>
-						)}
-					</div>
-				</div>
 				</div>
 			</section>
 

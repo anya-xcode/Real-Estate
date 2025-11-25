@@ -1,106 +1,190 @@
 .home-loans-page {
   min-height: 100vh;
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 /* Hero Section */
 .loans-hero {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  padding: 80px 20px 60px;
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 100px 20px 80px;
   text-align: center;
+  overflow: hidden;
+}
+
+.loans-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .loans-hero-title {
-  font-size: 48px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 16px 0;
+  position: relative;
+  font-size: 3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 1.25rem 0;
   letter-spacing: -0.02em;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.8s ease-out;
 }
 
 .loans-hero-subtitle {
-  font-size: 18px;
-  color: #475569;
-  max-width: 600px;
-  margin: 0 auto 32px;
-  line-height: 1.6;
+  position: relative;
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.95);
+  max-width: 650px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
 .loans-hero-buttons {
+  position: relative;
   display: flex;
-  gap: 16px;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
 .loans-btn {
-  padding: 14px 32px;
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  font-size: 1rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 50px;
   border: none;
   cursor: pointer;
-  transition: all 200ms;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.loans-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.loans-btn:hover::before {
+  opacity: 1;
 }
 
 .loans-btn-primary {
-  background: #3b82f6;
-  color: white;
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .loans-btn-primary:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  background: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
 .loans-btn-secondary {
-  background: white;
-  color: #1e293b;
-  border: 2px solid #e2e8f0;
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
 }
 
 .loans-btn-secondary:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: white;
+  transform: translateY(-3px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Why Choose Us Section */
 .loans-why-section {
-  padding: 60px 20px;
+  padding: 5rem 2rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9ff 100%);
 }
 
 .loans-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  max-width: 1200px;
+  gap: 2rem;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
 .loans-card {
   background: white;
-  padding: 40px 32px;
-  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  border-radius: 24px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 200ms, box-shadow 200ms;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.loans-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.loans-card:hover::before {
+  transform: scaleX(1);
 }
 
 .loans-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.4);
 }
 
 .loans-card-icon {
   width: 100px;
   height: 100px;
   margin: 0 auto 24px;
+  transition: transform 0.4s ease;
+}
+
+.loans-card:hover .loans-card-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .icon-illustration {
   width: 100%;
   height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 .loans-card-title {
@@ -108,6 +192,12 @@
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 12px 0;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: color 0.3s ease;
+}
+
+.loans-card:hover .loans-card-title {
+  color: #667eea;
 }
 
 .loans-card-text {
@@ -115,121 +205,176 @@
   color: #64748b;
   line-height: 1.6;
   margin: 0 0 24px 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .loans-card-btn {
-  padding: 10px 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
   font-size: 15px;
   font-weight: 600;
   background: white;
   color: #1e293b;
   border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 200ms;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .loans-card-btn:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  border-color: #667eea;
+  color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.loans-card-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon-inline {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.loans-card-btn:hover .btn-icon-inline {
+  transform: scale(1.1);
 }
 
 /* EMI Calculator Section */
 .loans-calculator-section {
-  padding: 60px 20px 80px;
+  padding: 5rem 2rem 6rem;
   background: white;
 }
 
 .calculator-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 3rem;
 }
 
 .calculator-title {
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 8px 0;
+  color: #111827;
+  margin: 0 0 0.75rem 0;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .calculator-subtitle {
-  font-size: 16px;
-  color: #64748b;
+  font-size: 1.05rem;
+  color: #6b7280;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
 }
 
 /* Eligibility Checker Section */
 .loans-eligibility-section {
-  padding: 60px 20px 80px;
-  background: #f8fafc;
+  padding: 5rem 2rem 6rem;
+  background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
 }
 
 /* Documents Required Section */
 .loans-documents-section {
-  padding: 60px 20px 80px;
+  padding: 5rem 2rem 6rem;
   background: white;
 }
 
 .documents-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 3.5rem;
 }
 
 .documents-title {
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 8px 0;
+  color: #111827;
+  margin: 0 0 0.75rem 0;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .documents-subtitle {
-  font-size: 16px;
-  color: #64748b;
+  font-size: 1.05rem;
+  color: #6b7280;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
 }
 
 .documents-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  max-width: 1200px;
+  gap: 1.5rem;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
 .document-card {
-  background: white;
-  padding: 32px 24px;
-  border-radius: 16px;
-  border: 2px solid #e2e8f0;
-  transition: all 200ms;
+  background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
+  padding: 2rem 1.5rem;
+  border-radius: 20px;
+  border: 2px solid rgba(226, 232, 240, 0.6);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.document-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.document-card:hover::before {
+  opacity: 1;
 }
 
 .document-card:hover {
-  border-color: #3b82f6;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(102, 126, 234, 0.15);
 }
 
 .document-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border-radius: 12px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  transition: transform 0.4s ease;
+}
+
+.document-card:hover .document-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .document-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   color: white;
 }
 
 .document-title {
-  font-size: 18px;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 16px 0;
+  color: #111827;
+  margin: 0 0 1rem 0;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .document-list {
@@ -239,11 +384,12 @@
 }
 
 .document-list li {
-  font-size: 14px;
-  color: #64748b;
-  padding: 6px 0;
-  padding-left: 20px;
+  font-size: 0.9rem;
+  color: #6b7280;
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
   position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .document-list li:before {
@@ -252,51 +398,74 @@
   left: 0;
   color: #10b981;
   font-weight: 700;
+  font-size: 1rem;
 }
 
 /* Apply Form Section */
 .loans-apply-section {
-  padding: 60px 20px 80px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  padding: 5rem 2rem 6rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.loans-apply-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .apply-header {
+  position: relative;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 3rem;
 }
 
 .apply-title {
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 8px 0;
+  color: #ffffff;
+  margin: 0 0 0.75rem 0;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
 .apply-subtitle {
-  font-size: 16px;
-  color: #64748b;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
 }
 
 .apply-form {
-  max-width: 800px;
+  position: relative;
+  max-width: 900px;
   margin: 0 auto;
   background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .form-group-full {
@@ -304,109 +473,247 @@
 }
 
 .form-label {
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #334155;
+  color: #374151;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .form-input,
 .form-textarea {
-  padding: 12px 16px;
-  font-size: 15px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  transition: all 200ms;
+  padding: 0.875rem 1.125rem;
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.3s ease;
   font-family: inherit;
+  background: #fafbfc;
+}
+
+.form-input:hover,
+.form-textarea:hover {
+  border-color: #d1d5db;
+  background: white;
 }
 
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .form-textarea {
   resize: vertical;
+  min-height: 120px;
 }
 
 .form-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .form-submit-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
-  font-size: 16px;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 3rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 50px;
   cursor: pointer;
-  transition: all 200ms;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.form-submit-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.form-submit-btn:hover::before {
+  opacity: 1;
 }
 
 .form-submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+}
+
+.form-submit-btn:active {
+  transform: translateY(-1px);
 }
 
 .form-submit-btn .btn-icon {
   width: 20px;
   height: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .form-note {
-  font-size: 13px;
-  color: #94a3b8;
+  font-size: 0.9rem;
+  color: #9ca3af;
   margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .loans-hero {
+    padding: 80px 20px 60px;
+  }
+
+  .loans-hero-title {
+    font-size: 2.5rem;
+  }
+
   .loans-cards-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 
   .documents-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .loans-hero-title {
-    font-size: 32px;
-  }
-
-  .loans-hero-subtitle {
-    font-size: 16px;
-  }
-
-  .loans-cards-grid {
-    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
   .calculator-title,
   .documents-title,
   .apply-title {
-    font-size: 28px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .loans-hero {
+    padding: 60px 20px 50px;
+  }
+
+  .loans-hero-title {
+    font-size: 2rem;
+  }
+
+  .loans-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .loans-hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .loans-btn {
+    width: 100%;
+  }
+
+  .loans-why-section,
+  .loans-calculator-section,
+  .loans-eligibility-section,
+  .loans-documents-section,
+  .loans-apply-section {
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .loans-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .loans-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .calculator-title,
+  .documents-title,
+  .apply-title {
+    font-size: 1.75rem;
+  }
+
+  .calculator-subtitle,
+  .documents-subtitle,
+  .apply-subtitle {
+    font-size: 0.95rem;
   }
 
   .documents-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .apply-form {
-    padding: 24px;
+    padding: 2rem 1.5rem;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .form-submit-btn {
+    width: 100%;
+    padding: 0.875rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .loans-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .loans-hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .loans-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .loans-card-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .loans-card-title {
+    font-size: 1.35rem;
+  }
+
+  .loans-card-text {
+    font-size: 0.9rem;
+  }
+
+  .calculator-title,
+  .documents-title,
+  .apply-title {
+    font-size: 1.5rem;
+  }
+
+  .document-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .document-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .apply-form {
+    padding: 1.5rem 1.25rem;
   }
 }

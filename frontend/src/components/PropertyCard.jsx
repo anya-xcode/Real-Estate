@@ -80,11 +80,32 @@ export default function PropertyCard({ property, index, onConnectClick }) {
 
   // Get address string from address object or fallback
   const getAddressString = () => {
-    if (property.address) {
+    if (!property.address) {
+      return 'Address not available'
+    }
+    
+    // If address is a string, return it directly
+    if (typeof property.address === 'string') {
+      return property.address
+    }
+    
+    // If address is an object, format it
+    if (typeof property.address === 'object') {
       const { street, city, state, zipCode } = property.address
       return `${street || ''}, ${city || ''}, ${state || ''} ${zipCode || ''}`.replace(/,\s*,/g, ',').trim()
     }
-    return property.address || 'Address not available'
+    
+    return 'Address not available'
+  }
+
+  // Open address in Google Maps
+  const handleLocationClick = (e) => {
+    e.stopPropagation()
+    const address = getAddressString()
+    if (address && address !== 'Address not available') {
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer')
+    }
   }
 
   const [isAvatarSquare, setIsAvatarSquare] = useState(false)
@@ -217,13 +238,20 @@ export default function PropertyCard({ property, index, onConnectClick }) {
           </h3>
 
           {/* Address */}
-          <p className="property-address">
-            <svg className="location-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            {getAddressString()}
-          </p>
+          <div className="property-address">
+            <button 
+              className="location-icon-button" 
+              onClick={handleLocationClick}
+              aria-label="Open in Google Maps"
+              title="Open in Google Maps"
+            >
+              <svg className="location-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+            <span className="address-text">{getAddressString()}</span>
+          </div>
 
           {/* Property Details - Show only if available */}
           {(property.beds || property.baths || property.area) && (
@@ -254,37 +282,6 @@ export default function PropertyCard({ property, index, onConnectClick }) {
               )}
             </div>
           )}
-
-          {/* Divider */}
-          <div className="property-divider"></div>
-
-          {/* Agent Info - show owner info from backend */}
-          <div className="property-agent">
-            <div className="agent-avatar-placeholder" aria-hidden>
-              {(() => {
-                const ownerName = property.owner?.username || property.agent?.name || 'Unknown'
-                const parts = ownerName.split(' ').filter(Boolean)
-                const initials = (parts.length === 1)
-                  ? parts[0].slice(0,2).toUpperCase()
-                  : (parts[0][0] + (parts[parts.length-1]?.[0] || '')).toUpperCase()
-                return initials
-              })()}
-            </div>
-            {(property.owner?.avatar || property.agent?.avatar) && (
-              <img
-                src={property.owner?.avatar || property.agent?.avatar}
-                alt={property.owner?.username || property.agent?.name || 'Owner'}
-                className={`agent-avatar ${isAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
-                onLoad={onAvatarLoad}
-                loading="lazy"
-                decoding="async"
-              />
-            )}
-            <div className="agent-info">
-              <p className="agent-name">{property.owner?.username || property.agent?.name || 'Unknown Owner'}</p>
-              <p className="agent-label">Listing Agent</p>
-            </div>
-          </div>
 
           {/* Action Buttons - In One Line */}
           <div className="property-actions">

@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import EMICalculator from '../components/EMICalculator'
 import EligibilityChecker from '../components/EligibilityChecker'
 import './HomeLoans.css'
 
 export default function HomeLoans() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,6 +40,21 @@ export default function HomeLoans() {
     }
   }
 
+  // Handle Buy button click - Navigate to properties listing page
+  const handleBuyClick = () => {
+    navigate('/properties')
+  }
+
+  // Handle Mortgage button click - Scroll to eligibility checker
+  const handleMortgageClick = () => {
+    scrollToEligibility()
+  }
+
+  // Handle Sell button click - Navigate to upload property page
+  const handleSellClick = () => {
+    navigate('/upload')
+  }
+
   return (
     <div className="home-loans-page">
       {/* Hero Section */}
@@ -70,7 +87,12 @@ export default function HomeLoans() {
               <p className="loans-card-text">
                 Redfin agents are among the most experienced in the industry and can help you win in today's market.
               </p>
-              <button className="loans-card-btn">Find an agent</button>
+              <button className="loans-card-btn" onClick={handleBuyClick}>
+                <svg className="btn-icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Browse Properties
+              </button>
             </div>
 
             <div className="loans-card">
@@ -84,7 +106,12 @@ export default function HomeLoans() {
               <p className="loans-card-text">
                 Get competitive rates, fast pre-approvals, and seamless closings with our trusted lending.
               </p>
-              <button className="loans-card-btn">Get prequalified</button>
+              <button className="loans-card-btn" onClick={handleMortgageClick}>
+                <svg className="btn-icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Get Prequalified
+              </button>
             </div>
 
             <div className="loans-card">
@@ -98,7 +125,12 @@ export default function HomeLoans() {
               <p className="loans-card-text">
                 We know how to price, market, and sell your home for top dollar. And we do it all for half.
               </p>
-              <button className="loans-card-btn">Learn more</button>
+              <button className="loans-card-btn" onClick={handleSellClick}>
+                <svg className="btn-icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                List Your Property
+              </button>
             </div>
           </div>
         </div>
