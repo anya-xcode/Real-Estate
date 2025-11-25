@@ -1,5 +1,394 @@
 export const blogPosts = [
   {
+    id: 7,
+    slug: "5-tips-first-time-home-buyers",
+    title: "5 Tips for First-Time Home Buyers in Today's Market",
+    excerpt: "Essential advice for navigating today's competitive real estate market as a first-time buyer.",
+    content: `
+      <h2>5 Tips for First-Time Home Buyers in Today's Market</h2>
+      <p>Buying your first home in today's market can feel overwhelming. With prices fluctuating and competition fierce, it's crucial to go in prepared. Here are five essential tips to help you navigate the process successfully.</p>
+      
+      <h3>1. Get Your Finances in Order Early</h3>
+      <p>Before you start house hunting, take time to understand your financial position:</p>
+      <ul>
+        <li><strong>Check your credit score:</strong> Aim for 620 or higher to qualify for better mortgage rates</li>
+        <li><strong>Save for down payment:</strong> While 20% is ideal, many programs accept 3-5%</li>
+        <li><strong>Calculate affordability:</strong> Your housing costs should be no more than 28% of gross monthly income</li>
+        <li><strong>Build emergency fund:</strong> Keep 3-6 months of expenses separate from your down payment</li>
+      </ul>
+      
+      <h3>2. Get Pre-Approved, Not Just Pre-Qualified</h3>
+      <p>Pre-approval shows sellers you're a serious buyer. Unlike pre-qualification (which is just an estimate), pre-approval means a lender has verified your finances and committed to lending you a specific amount. This gives you:</p>
+      <ul>
+        <li>A competitive edge in multiple-offer situations</li>
+        <li>Clear understanding of your budget</li>
+        <li>Faster closing process</li>
+        <li>Negotiating power with sellers</li>
+      </ul>
+      
+      <h3>3. Understand the True Cost of Homeownership</h3>
+      <p>Your mortgage payment is just the beginning. Budget for:</p>
+      <ul>
+        <li><strong>Closing costs:</strong> Typically 2-5% of purchase price</li>
+        <li><strong>Property taxes:</strong> Varies by location</li>
+        <li><strong>Homeowners insurance:</strong> Required by lenders</li>
+        <li><strong>Maintenance:</strong> Budget 1-2% of home value annually</li>
+        <li><strong>HOA fees:</strong> If applicable</li>
+        <li><strong>Utilities:</strong> Often higher than renting</li>
+      </ul>
+      
+      <h3>4. Be Strategic About Location</h3>
+      <p>You can change almost everything about a house except its location. Consider:</p>
+      <ul>
+        <li>Commute times to work and family</li>
+        <li>School district quality (even if you don't have kids - it affects resale value)</li>
+        <li>Neighborhood safety and crime rates</li>
+        <li>Future development plans in the area</li>
+        <li>Access to amenities and public transportation</li>
+        <li>Property value trends over the past 5-10 years</li>
+      </ul>
+      
+      <h3>5. Don't Skip the Home Inspection</h3>
+      <p>Even in competitive markets, never waive the inspection contingency. A thorough inspection can reveal:</p>
+      <ul>
+        <li>Structural issues that could cost thousands</li>
+        <li>Safety hazards like faulty electrical or plumbing</li>
+        <li>Upcoming major repairs (roof, HVAC, foundation)</li>
+        <li>Deal-breakers that help you walk away if needed</li>
+      </ul>
+      <p>The $300-500 inspection fee could save you from a $50,000 mistake.</p>
+      
+      <h3>Bonus Tip: Work with an Experienced Buyer's Agent</h3>
+      <p>A good buyer's agent costs you nothing (seller pays their commission) and provides invaluable help:</p>
+      <ul>
+        <li>Access to off-market listings</li>
+        <li>Negotiation expertise</li>
+        <li>Knowledge of local market conditions</li>
+        <li>Guidance through paperwork and deadlines</li>
+      </ul>
+      
+      <p>The first-time home buying process is complex, but with proper preparation and the right team, you can find the perfect home within your budget. Take your time, do your research, and don't let emotions drive your decisions.</p>
+    `,
+    author: {
+      name: "Jessica Park",
+      bio: "Real estate expert specializing in helping first-time home buyers navigate the market.",
+      email: "jessica.park@example.com",
+      avatar: ""
+    },
+    publishedAt: "2025-03-15",
+    readTime: "5 min read",
+    tags: ["First-Time Buyers", "Home Buying Guide", "Real Estate Tips"],
+    heroImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=80",
+    featured: true
+  },
+  {
+    id: 8,
+    slug: "evaluate-modern-home-roi",
+    title: "How to Evaluate a Modern Home's ROI",
+    excerpt: "Learn how to assess the return on investment for modern homes and make smarter buying decisions.",
+    content: `
+      <h2>How to Evaluate a Modern Home's ROI</h2>
+      <p>Understanding the return on investment (ROI) of a modern home is crucial for making informed real estate decisions. Whether you're buying to live in or as an investment property, knowing how to calculate and maximize ROI will help you build wealth through real estate.</p>
+      
+      <h3>What is Real Estate ROI?</h3>
+      <p>ROI measures the profitability of your investment relative to its cost. For real estate, this includes:</p>
+      <ul>
+        <li>Appreciation in property value</li>
+        <li>Rental income (if applicable)</li>
+        <li>Tax benefits and deductions</li>
+        <li>Equity buildup through mortgage payments</li>
+      </ul>
+      
+      <h3>Key Factors Affecting Modern Home ROI</h3>
+      
+      <h4>1. Location, Location, Location</h4>
+      <p>Modern homes in desirable areas with:</p>
+      <ul>
+        <li>Strong job markets and economic growth</li>
+        <li>Good schools and low crime rates</li>
+        <li>Proximity to amenities and transportation</li>
+        <li>Limited housing supply</li>
+      </ul>
+      <p>These factors typically appreciate faster and provide better ROI.</p>
+      
+      <h4>2. Energy Efficiency and Smart Home Features</h4>
+      <p>Modern homes with sustainable features offer:</p>
+      <ul>
+        <li>Lower utility costs (30-50% savings)</li>
+        <li>Higher resale values (up to 9% premium)</li>
+        <li>Tax credits and incentives</li>
+        <li>Faster sales (sell 2x faster on average)</li>
+      </ul>
+      
+      <h4>3. Quality of Construction and Materials</h4>
+      <p>Well-built modern homes require:</p>
+      <ul>
+        <li>Less maintenance over time</li>
+        <li>Fewer unexpected repairs</li>
+        <li>Better durability and longevity</li>
+        <li>Higher rental income potential</li>
+      </ul>
+      
+      <h3>Calculating Your ROI</h3>
+      
+      <h4>Basic ROI Formula</h4>
+      <p><strong>ROI = (Net Profit / Total Investment) × 100</strong></p>
+      
+      <h4>Example Calculation:</h4>
+      <ul>
+        <li>Purchase price: $400,000</li>
+        <li>Down payment (20%): $80,000</li>
+        <li>Closing costs: $12,000</li>
+        <li>Renovation: $20,000</li>
+        <li><strong>Total investment: $112,000</strong></li>
+      </ul>
+      
+      <p>After 5 years:</p>
+      <ul>
+        <li>Home value: $480,000</li>
+        <li>Mortgage principal paid: $30,000</li>
+        <li>Total equity: $190,000</li>
+        <li>Less original investment: $112,000</li>
+        <li><strong>Net profit: $78,000</strong></li>
+      </ul>
+      
+      <p><strong>ROI = ($78,000 / $112,000) × 100 = 69.6% over 5 years</strong></p>
+      <p>That's approximately 13.9% annually!</p>
+      
+      <h3>Maximizing ROI in Modern Homes</h3>
+      
+      <h4>1. Buy Below Market Value</h4>
+      <ul>
+        <li>Look for motivated sellers</li>
+        <li>Consider homes needing cosmetic updates</li>
+        <li>Negotiate based on comparable sales</li>
+      </ul>
+      
+      <h4>2. Strategic Improvements</h4>
+      <p>Focus on high-ROI renovations:</p>
+      <ul>
+        <li>Kitchen updates: 70-80% ROI</li>
+        <li>Bathroom remodels: 60-70% ROI</li>
+        <li>Energy-efficient upgrades: 50-100% ROI</li>
+        <li>Curb appeal: 75-100% ROI</li>
+      </ul>
+      
+      <h4>3. Rental Income Potential</h4>
+      <p>Consider the 1% rule: monthly rent should equal 1% of purchase price</p>
+      <ul>
+        <li>$400,000 home should rent for $4,000/month</li>
+        <li>Covers mortgage, taxes, insurance, and maintenance</li>
+        <li>Provides positive cash flow</li>
+      </ul>
+      
+      <h3>Red Flags That Hurt ROI</h3>
+      <ul>
+        <li>Buying at market peak</li>
+        <li>Over-improving for the neighborhood</li>
+        <li>Ignoring maintenance and repairs</li>
+        <li>High HOA fees that don't add value</li>
+        <li>Unique features that limit buyer pool</li>
+      </ul>
+      
+      <h3>Long-Term vs. Short-Term ROI</h3>
+      
+      <h4>Short-Term (1-3 years)</h4>
+      <ul>
+        <li>Focus on forced appreciation through renovations</li>
+        <li>Higher risk but potentially higher returns</li>
+        <li>More sensitive to market conditions</li>
+      </ul>
+      
+      <h4>Long-Term (5+ years)</h4>
+      <ul>
+        <li>Benefits from market appreciation</li>
+        <li>Equity buildup through mortgage payments</li>
+        <li>Tax advantages compound over time</li>
+        <li>More stable and predictable returns</li>
+      </ul>
+      
+      <h3>Don't Forget These Factors</h3>
+      <ul>
+        <li><strong>Tax implications:</strong> Deduct mortgage interest, property taxes</li>
+        <li><strong>Opportunity cost:</strong> Could money earn more elsewhere?</li>
+        <li><strong>Leverage benefits:</strong> Using bank's money to build wealth</li>
+        <li><strong>Inflation hedge:</strong> Real estate typically beats inflation</li>
+      </ul>
+      
+      <p>Evaluating a modern home's ROI requires looking beyond the purchase price. Consider all costs, potential appreciation, rental income, and tax benefits to make an informed decision. Remember, the best ROI comes from buying smart, maintaining well, and holding for the long term.</p>
+    `,
+    author: {
+      name: "Jessica Park",
+      bio: "Real estate investment advisor with expertise in property valuation and ROI analysis.",
+      email: "jessica.park@example.com",
+      avatar: ""
+    },
+    publishedAt: "2025-03-15",
+    readTime: "5 min read",
+    tags: ["Property Investment", "Investment Tips", "Home Value Check"],
+    heroImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=80",
+    featured: true
+  },
+  {
+    id: 9,
+    slug: "design-trends-boost-resale-value",
+    title: "Design Trends That Boost Resale Value",
+    excerpt: "Discover which modern design trends add real value to your home and attract more buyers.",
+    content: `
+      <h2>Design Trends That Boost Resale Value</h2>
+      <p>Not all design trends are created equal when it comes to resale value. While some trendy updates can make your home more appealing, others might actually hurt your chances of selling. Here's what actually works in today's market.</p>
+      
+      <h3>Timeless Design Elements That Always Add Value</h3>
+      
+      <h4>1. Open Floor Plans</h4>
+      <p>Open-concept living spaces continue to be highly desirable:</p>
+      <ul>
+        <li>Removes walls between kitchen, dining, and living areas</li>
+        <li>Creates sense of spaciousness</li>
+        <li>Better for entertaining and family interaction</li>
+        <li>Can add 5-10% to home value</li>
+      </ul>
+      <p><strong>ROI: 70-80%</strong> if done properly</p>
+      
+      <h4>2. Neutral Color Palettes</h4>
+      <p>Neutral doesn't mean boring - it means broad appeal:</p>
+      <ul>
+        <li>Whites, grays, beiges, and soft earth tones</li>
+        <li>Allows buyers to envision their own style</li>
+        <li>Makes spaces feel larger and brighter</li>
+        <li>Easy to maintain and touch up</li>
+      </ul>
+      <p><strong>ROI: 107%</strong> - paint is one of the best investments</p>
+      
+      <h4>3. Updated Kitchens</h4>
+      <p>The kitchen remains the heart of the home. Focus on:</p>
+      <ul>
+        <li>Quartz or granite countertops</li>
+        <li>Stainless steel appliances</li>
+        <li>Shaker-style cabinets in white or gray</li>
+        <li>Large island with seating</li>
+        <li>Good lighting (pendant lights over island)</li>
+      </ul>
+      <p><strong>ROI: 50-80%</strong> depending on extent of renovation</p>
+      
+      <h3>Modern Trends Worth the Investment</h3>
+      
+      <h4>1. Smart Home Technology</h4>
+      <p>Today's buyers expect smart features:</p>
+      <ul>
+        <li>Smart thermostats (Nest, Ecobee): Save 10-23% on energy</li>
+        <li>Smart security systems: Add safety and convenience</li>
+        <li>Smart lighting: Energy efficient and customizable</li>
+        <li>Smart locks: Enhanced security</li>
+      </ul>
+      <p><strong>ROI: 5%</strong> increase in home value, faster sales</p>
+      
+      <h4>2. Spa-Like Bathrooms</h4>
+      <p>Luxury bathroom features buyers love:</p>
+      <ul>
+        <li>Walk-in showers with frameless glass</li>
+        <li>Rainfall showerheads</li>
+        <li>Floating vanities with vessel sinks</li>
+        <li>Heated floors</li>
+        <li>Good lighting (especially around mirrors)</li>
+      </ul>
+      <p><strong>ROI: 60-70%</strong> for mid-range bathroom remodels</p>
+      
+      <h4>3. Energy-Efficient Features</h4>
+      <p>Green features attract eco-conscious buyers:</p>
+      <ul>
+        <li>LED lighting throughout</li>
+        <li>Energy-efficient windows</li>
+        <li>High-efficiency HVAC systems</li>
+        <li>Solar panels (where applicable)</li>
+        <li>Tankless water heaters</li>
+      </ul>
+      <p><strong>ROI: Up to 100%</strong> through energy savings and higher sale prices</p>
+      
+      <h4>4. Luxury Vinyl Plank (LVP) Flooring</h4>
+      <p>The modern alternative to hardwood:</p>
+      <ul>
+        <li>Looks like real wood</li>
+        <li>Waterproof and durable</li>
+        <li>Pet and kid-friendly</li>
+        <li>Lower cost than hardwood</li>
+        <li>Easy installation and maintenance</li>
+      </ul>
+      <p><strong>ROI: 70%</strong> and growing in popularity</p>
+      
+      <h3>Outdoor Living Spaces</h3>
+      
+      <h4>Deck or Patio Upgrades</h4>
+      <ul>
+        <li>Covered outdoor living areas</li>
+        <li>Built-in grills and outdoor kitchens</li>
+        <li>Fire pits or fireplaces</li>
+        <li>Good outdoor lighting</li>
+        <li>Low-maintenance composite decking</li>
+      </ul>
+      <p><strong>ROI: 65-90%</strong> depending on quality and location</p>
+      
+      <h3>Trends to AVOID</h3>
+      
+      <h4>These can actually hurt resale:</h4>
+      <ul>
+        <li><strong>Overly trendy colors:</strong> Millennial pink, bold accent walls</li>
+        <li><strong>Removing bedrooms:</strong> For home offices or gyms</li>
+        <li><strong>Over-personalization:</strong> Unique themes or bold patterns</li>
+        <li><strong>High-maintenance features:</strong> Pool in cold climates, white marble</li>
+        <li><strong>Luxury in modest neighborhoods:</strong> Don't over-improve</li>
+      </ul>
+      
+      <h3>Room-by-Room Priority List</h3>
+      
+      <h4>Highest Impact:</h4>
+      <ol>
+        <li><strong>Kitchen:</strong> Updated cabinets, counters, appliances</li>
+        <li><strong>Master bathroom:</strong> Modern fixtures, walk-in shower</li>
+        <li><strong>Curb appeal:</strong> Front door, landscaping, exterior paint</li>
+      </ol>
+      
+      <h4>Medium Impact:</h4>
+      <ol>
+        <li><strong>Flooring:</strong> Replace carpet with LVP or hardwood</li>
+        <li><strong>Lighting:</strong> Update fixtures throughout</li>
+        <li><strong>Paint:</strong> Fresh neutral colors everywhere</li>
+      </ol>
+      
+      <h4>Lower Impact but Still Valuable:</h4>
+      <ol>
+        <li><strong>Hardware:</strong> Cabinet pulls, door handles</li>
+        <li><strong>Outlets/switches:</strong> Replace dated ones</li>
+        <li><strong>Closet organization:</strong> Built-in systems</li>
+      </ol>
+      
+      <h3>The Golden Rule</h3>
+      <p><strong>Don't over-improve for your neighborhood.</strong> Your home should be among the nicest on the block, but not significantly more expensive than surrounding homes. You won't recoup investments that push your home's value above the neighborhood average.</p>
+      
+      <h3>Before You Start</h3>
+      <ul>
+        <li>Research recent sales in your area</li>
+        <li>Consult with a local real estate agent</li>
+        <li>Get multiple contractor quotes</li>
+        <li>Focus on quality over quantity</li>
+        <li>Keep receipts for all improvements</li>
+      </ul>
+      
+      <p>The best design choices for resale value balance current trends with timeless appeal. Focus on improvements that make your home move-in ready, energy-efficient, and emotionally appealing to the widest range of buyers. Remember: you're not designing for yourself, you're designing for your future buyer.</p>
+    `,
+    author: {
+      name: "Jessica Park",
+      bio: "Interior design consultant specializing in home staging and value-boosting renovations.",
+      email: "jessica.park@example.com",
+      avatar: ""
+    },
+    publishedAt: "2025-03-15",
+    readTime: "5 min read",
+    tags: ["Home Staging", "Real Estate Tips", "Property Investment"],
+    heroImage: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=80",
+    featured: true
+  },
+  {
     id: 1,
     slug: "first-time-buyer-guide-2024",
     title: "Buying My First Home: What I Wish I Knew Before",

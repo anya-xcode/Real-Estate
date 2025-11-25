@@ -34,22 +34,16 @@
   font-size: 14px;
 }
 
-.insights-viewall {
-  color: #111827;
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #374151;
-}
-
-.insights-arrow { font-size: 12px; opacity: 0.75 }
-
 .insights-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 26px;
+}
+
+.insight-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .insight-card {
@@ -58,6 +52,7 @@
   background: #fff;
   box-shadow: 0 10px 30px rgba(16,24,40,0.06);
   transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms;
+  cursor: pointer;
 }
 
 .insight-card:hover { transform: translateY(-6px); box-shadow: 0 22px 40px rgba(16,24,40,0.12); }

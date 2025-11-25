@@ -13,26 +13,13 @@ export default function Footer() {
 
           <nav className="footer-links" aria-label="Footer navigation">
             <div className="link-group">
-              <h4>Company</h4>
+              <h4>Quick Links</h4>
               <ul>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/careers">Careers</a></li>
+                <li><a href="/#why-choose-us">Why Choose Us</a></li>
+                <li><a href="/properties">Property Listings</a></li>
                 <li><a href="/blog">Blog</a></li>
-              </ul>
-            </div>
-
-            <div className="link-group">
-              <h4>Support</h4>
-              <ul>
                 <li><a href="/contact">Contact Us</a></li>
-                <li><a href="/privacy">Privacy Policy</a></li>
               </ul>
-            </div>
-
-            <div className="contact-group">
-              <h4>Contact</h4>
-              <p>Email: <a href="mailto:support@realestate.com">support@realestate.com</a></p>
-              <p>Phone: <a href="tel:+919876543210">+91 98765 43210</a></p>
             </div>
           </nav>
         </div>

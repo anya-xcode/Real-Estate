@@ -1,9 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import './Insights.css'
 
 const insightsData = [
   {
     id: 1,
+    slug: '5-tips-first-time-home-buyers',
     title: "5 Tips for First-Time Home Buyers in Today's Market",
     author: 'Jessica Park',
     date: 'March 15, 2025',
@@ -12,6 +14,7 @@ const insightsData = [
   },
   {
     id: 2,
+    slug: 'evaluate-modern-home-roi',
     title: "How to Evaluate a Modern Home's ROI",
     author: 'Jessica Park',
     date: 'March 15, 2025',
@@ -20,6 +23,7 @@ const insightsData = [
   },
   {
     id: 3,
+    slug: 'design-trends-boost-resale-value',
     title: "Design Trends That Boost Resale Value",
     author: 'Jessica Park',
     date: 'March 15, 2025',
@@ -37,28 +41,25 @@ export default function Insights() {
             <h2 className="insights-title">Real Estate Insights</h2>
             <p className="insights-sub">Expert analysis, tips and market trends</p>
           </div>
-
-          <a className="insights-viewall" href="#">
-            View All
-            <span className="insights-arrow">↗</span>
-          </a>
         </div>
 
         <div className="insights-grid">
           {insightsData.map((item) => (
-            <article key={item.id} className="insight-card">
-              <div className="insight-image-wrapper">
-                <img src={item.img} alt={item.title} className="insight-image" />
-                <div className="insight-bottom">
-                  <div className="insight-price" />
-                  <h3 className="insight-card-title">{item.title}</h3>
-                  <div className="insight-card-meta">
-                    <span className="insight-author">By {item.author}</span>
-                    <span className="insight-date">{item.date} • {item.readTime}</span>
+            <Link key={item.id} to={`/blog/${item.slug}`} className="insight-card-link">
+              <article className="insight-card">
+                <div className="insight-image-wrapper">
+                  <img src={item.img} alt={item.title} className="insight-image" />
+                  <div className="insight-bottom">
+                    <div className="insight-price" />
+                    <h3 className="insight-card-title">{item.title}</h3>
+                    <div className="insight-card-meta">
+                      <span className="insight-author">By {item.author}</span>
+                      <span className="insight-date">{item.date} • {item.readTime}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
       </div>

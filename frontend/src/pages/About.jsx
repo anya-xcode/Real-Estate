@@ -8,9 +8,9 @@ export default function About() {
       {/* Hero Section */}
       <section className="about-hero">
         <div className="container">
-          <h1 className="about-hero-title">About Real Estate</h1>
+          <h1 className="about-hero-title">About Us</h1>
           <p className="about-hero-subtitle">
-            Your trusted partner in finding the perfect property with transparency and excellence
+            Your trusted partner in finding the perfect property
           </p>
         </div>
       </section>
@@ -21,16 +21,16 @@ export default function About() {
           <div className="mission-content">
             <h2 className="section-title">Our Mission</h2>
             <p className="mission-text">
-              We're revolutionizing the real estate experience by connecting property seekers with their dream homes through a transparent, secure, and user-friendly platform. Our mission is to make property discovery and transactions seamless for everyone.
+              We connect property seekers with their dream homes through a transparent, secure, and user-friendly platform. Making property discovery seamless for everyone.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Why Trust Us */}
+      {/* Why Choose Us */}
       <section className="about-trust">
         <div className="container">
-          <h2 className="section-title">Why Trust Us</h2>
+          <h2 className="section-title">Why Choose Us</h2>
           <div className="trust-grid">
             <div className="trust-card">
               <div className="trust-icon">
@@ -39,7 +39,7 @@ export default function About() {
                 </svg>
               </div>
               <h3>Verified Properties</h3>
-              <p>Every listing is thoroughly verified for authenticity and accuracy</p>
+              <p>Every listing is verified for authenticity</p>
             </div>
             <div className="trust-card">
               <div className="trust-icon">
@@ -48,8 +48,8 @@ export default function About() {
                   <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </div>
-              <h3>Full Transparency</h3>
-              <p>Complete property details, pricing, and seller information upfront</p>
+              <h3>Transparent Pricing</h3>
+              <p>Complete property details upfront</p>
             </div>
             <div className="trust-card">
               <div className="trust-icon">
@@ -58,56 +58,7 @@ export default function About() {
                 </svg>
               </div>
               <h3>Secure Platform</h3>
-              <p>Your data and transactions are protected with enterprise-grade security</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="about-process">
-        <div className="container">
-          <h2 className="section-title">How It Works</h2>
-          <div className="process-steps">
-            <div className="process-step">
-              <div className="step-number">1</div>
-              <h3>Browse Properties</h3>
-              <p>Explore our extensive collection of verified properties with detailed information and high-quality images</p>
-            </div>
-            <div className="process-step">
-              <div className="step-number">2</div>
-              <h3>View Details</h3>
-              <p>Get complete property information including pricing, amenities, location details, and seller contact</p>
-            </div>
-            <div className="process-step">
-              <div className="step-number">3</div>
-              <h3>Connect Securely</h3>
-              <p>Connect directly with verified sellers through our secure platform to schedule visits and negotiate</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Values */}
-      <section className="about-values">
-        <div className="container">
-          <h2 className="section-title">Our Values</h2>
-          <div className="values-grid">
-            <div className="value-item">
-              <h3>Innovation</h3>
-              <p>Continuously improving our platform with cutting-edge technology</p>
-            </div>
-            <div className="value-item">
-              <h3>Transparency</h3>
-              <p>Honest, clear communication in every interaction</p>
-            </div>
-            <div className="value-item">
-              <h3>Customer First</h3>
-              <p>Your success in finding the perfect property is our priority</p>
-            </div>
-            <div className="value-item">
-              <h3>Reliability</h3>
-              <p>Dependable service you can trust for your property needs</p>
+              <p>Your data is protected with security</p>
             </div>
           </div>
         </div>

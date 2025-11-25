@@ -1,16 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { blogPosts } from '../data/blog';
-import AuthorCard from '../components/AuthorCard';
-import ShareButtons from '../components/ShareButtons';
-import CommentsPlaceholder from '../components/CommentsPlaceholder';
-import PostCard from '../components/PostCard';
 import './BlogPost.css';
 
 const BlogPost = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
-  const [relatedPosts, setRelatedPosts] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState({ name: '', email: '', comment: '' });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const foundPost = blogPosts.find(p => p.slug === slug);
@@ -18,14 +16,52 @@ const BlogPost = () => {
 
     if (foundPost) {
       document.title = `${foundPost.title} | Real Estate Blog`;
-      
-      const related = blogPosts
-        .filter(p => p.id !== foundPost.id && 
-          p.tags.some(tag => foundPost.tags.includes(tag)))
-        .slice(0, 3);
-      setRelatedPosts(related);
+      // Load comments from localStorage
+      const savedComments = localStorage.getItem(`comments_${slug}`);
+      if (savedComments) {
+        setComments(JSON.parse(savedComments));
+      }
     }
   }, [slug]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!newComment.name.trim()) newErrors.name = 'Name is required';
+    if (!newComment.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(newComment.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    if (!newComment.comment.trim()) newErrors.comment = 'Comment is required';
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length === 0) {
+      const comment = {
+        id: Date.now(),
+        ...newComment,
+        date: new Date().toISOString()
+      };
+      const updatedComments = [...comments, comment];
+      setComments(updatedComments);
+      localStorage.setItem(`comments_${slug}`, JSON.stringify(updatedComments));
+      setNewComment({ name: '', email: '', comment: '' });
+      setErrors({});
+    } else {
+      setErrors(formErrors);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewComment(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
 
   if (!post) {
     return (
@@ -47,8 +83,6 @@ const BlogPost = () => {
     });
   };
 
-  const currentUrl = window.location.href;
-
   return (
     <article className="blog-post">
       <div className="blog-post__header">
@@ -63,20 +97,8 @@ const BlogPost = () => {
           </div>
           
           <h1 className="blog-post__title">{post.title}</h1>
-          
-          <div className="blog-post__tags">
-            {post.tags.map((tag, index) => (
-              <span key={index} className="blog-post__tag">{tag}</span>
-            ))}
-          </div>
         </div>
       </div>
-
-      {post.heroImage && (
-        <div className="blog-post__hero">
-          <img src={post.heroImage} alt={post.title} />
-        </div>
-      )}
 
       <div className="blog-post__container">
         <div className="blog-post__content">
@@ -85,26 +107,79 @@ const BlogPost = () => {
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
           
-          <ShareButtons 
-            url={currentUrl}
-            title={post.title}
-            description={post.excerpt}
-          />
-          
-          <AuthorCard author={post.author} />
-          
-          {relatedPosts.length > 0 && (
-            <section className="blog-post__related">
-              <h3>Related Articles</h3>
-              <div className="blog-post__related-grid">
-                {relatedPosts.map(relatedPost => (
-                  <PostCard key={relatedPost.id} post={relatedPost} />
+          <div className="comments-section">
+            <h3 className="comments-title">Comments ({comments.length})</h3>
+            
+            {comments.length > 0 && (
+              <div className="comments-list">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="comment-item">
+                    <div className="comment-header">
+                      <div className="comment-avatar">{comment.name.charAt(0).toUpperCase()}</div>
+                      <div className="comment-info">
+                        <strong className="comment-name">{comment.name}</strong>
+                        <span className="comment-date">
+                          {new Date(comment.date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="comment-text">{comment.comment}</p>
+                  </div>
                 ))}
               </div>
-            </section>
-          )}
-          
-          <CommentsPlaceholder />
+            )}
+            
+            <form onSubmit={handleSubmit} className="comment-form">
+              <h4 className="comment-form-title">Leave a Comment</h4>
+              
+              <div className="form-row">
+                <div className="form-field">
+                  <label htmlFor="name">Name *</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={newComment.name}
+                    onChange={handleChange}
+                    className={errors.name ? 'input-error' : ''}
+                  />
+                  {errors.name && <span className="error-text">{errors.name}</span>}
+                </div>
+                
+                <div className="form-field">
+                  <label htmlFor="email">Email *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={newComment.email}
+                    onChange={handleChange}
+                    className={errors.email ? 'input-error' : ''}
+                  />
+                  {errors.email && <span className="error-text">{errors.email}</span>}
+                </div>
+              </div>
+              
+              <div className="form-field">
+                <label htmlFor="comment">Comment *</label>
+                <textarea
+                  id="comment"
+                  name="comment"
+                  rows="5"
+                  value={newComment.comment}
+                  onChange={handleChange}
+                  className={errors.comment ? 'input-error' : ''}
+                />
+                {errors.comment && <span className="error-text">{errors.comment}</span>}
+              </div>
+              
+              <button type="submit" className="submit-btn">Post Comment</button>
+            </form>
+          </div>
         </div>
       </div>
     </article>

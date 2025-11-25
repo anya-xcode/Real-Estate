@@ -203,7 +203,7 @@ export default function Home() {
 
 
 			{/* Features Section */}
-			<section className="features-section">
+			<section id="why-choose-us" className="features-section">
 				<div className="container">
 					<div className="section-header">
 						<h2 className="section-title">Why Choose Us</h2>
@@ -331,28 +331,17 @@ export default function Home() {
 							<p>Helping you find the perfect property with trust and transparency.</p>
 						</div>
 
-						<nav className="footer-links" aria-label="Footer navigation">
-							<div className="link-group">
-								<h4>Company</h4>
-								<ul>
-									<li><a href="/about">About Us</a></li>
-									<li><a href="/careers">Careers</a></li>
-									<li><a href="/blog">Blog</a></li>
-								</ul>
-							</div>
+					<nav className="footer-links" aria-label="Footer navigation">
 						<div className="link-group">
-							<h4>Support</h4>
+							<h4>Quick Links</h4>
 							<ul>
+								<li><a href="#why-choose-us">Why Choose Us</a></li>
+								<li><a href="/properties">Property Listings</a></li>
+								<li><a href="/blog">Blog</a></li>
 								<li><a href="/contact">Contact Us</a></li>
-								<li><a href="/privacy">Privacy Policy</a></li>
 							</ul>
 						</div>
-							<div className="contact-group">
-								<h4>Contact</h4>
-								<p>Email: <a href="mailto:support@realestate.com">support@realestate.com</a></p>
-								<p>Phone: <a href="tel:+919876543210">+91 98765 43210</a></p>
-							</div>
-						</nav>
+					</nav>
 					</div>
 
 					<div className="footer-bottom">
