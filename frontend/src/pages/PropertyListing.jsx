@@ -21,12 +21,16 @@ export default function PropertyListing() {
 
   const propertyTypes = ['All', 'House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft']
 
-  // Read city filter from URL params
+  // Read city filter and search query from URL params
   useEffect(() => {
     const city = searchParams.get('city')
+    const search = searchParams.get('search')
+    
     if (city) {
       setCityFilter(city)
       setSearchQuery(city)
+    } else if (search) {
+      setSearchQuery(search)
     }
   }, [searchParams])
 

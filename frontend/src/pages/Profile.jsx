@@ -16,7 +16,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('overview')
   const [isEditing, setIsEditing] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
-  const [avatarImage, setAvatarImage] = useState(null)
+  const [avatarImage, setAvatarImage] = useState(auth.user?.avatar || null)
   
   const [userInfo, setUserInfo] = useState({
     firstName: auth.user?.firstName || 'John',
@@ -142,8 +142,16 @@ export default function Profile() {
       const reader = new FileReader()
       reader.onloadend = () => {
         setAvatarImage(reader.result)
-        // Add API call to upload avatar to server
-        console.log('Uploading avatar...')
+        // Persist avatar in auth context so it survives refresh (stored in localStorage)
+        try {
+          if (auth && auth.login) {
+            const updatedUser = { ...auth.user, avatar: reader.result }
+            auth.login(updatedUser, auth.token)
+          }
+        } catch (err) {
+          console.warn('Failed to update auth context with avatar', err)
+        }
+        console.log('Avatar updated in context/localStorage')
         alert('Profile photo updated successfully!')
       }
       reader.readAsDataURL(file)
