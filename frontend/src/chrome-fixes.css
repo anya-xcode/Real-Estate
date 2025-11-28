@@ -1,0 +1,115 @@
+/* Chrome Compatibility Fixes - Applied Globally */
+
+/* Force hardware acceleration on all pages */
+body,
+#root,
+main,
+.home-page,
+.property-listing-page,
+.property-details-page,
+.profile-page,
+.about-page,
+.messages-page,
+.admin-page,
+.blog-page,
+.contact-page,
+.careers-page,
+.signin-page,
+.signup-page {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Fix for hero sections and backgrounds */
+[class*="hero-section"],
+[class*="hero-background"],
+[class*="hero-content"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Fix for cards and modals */
+[class*="card"],
+[class*="modal"],
+[class*="panel"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Fix for overlays and absolute positioned elements */
+[class*="overlay"],
+[class*="gradient"],
+[class*="background"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Ensure smooth scrolling in Chrome */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix Chrome text rendering */
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fix for flexbox and grid layouts in Chrome */
+[style*="display: flex"],
+[style*="display: grid"],
+.flex,
+.grid {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Fix for animations in Chrome */
+@keyframes chromefix {
+  0% { opacity: 0.99; }
+  100% { opacity: 1; }
+}
+
+/* Apply to animated elements */
+[class*="animate"],
+[class*="animation"] {
+  animation: chromefix 0.001s;
+  -webkit-animation: chromefix 0.001s;
+}
+
+/* Fix for position: fixed in Chrome */
+[style*="position: fixed"] {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Ensure images render properly in Chrome */
+img {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Fix for buttons and interactive elements */
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Fix backdrop-filter fallback for Chrome */
+[style*="backdrop-filter"],
+[class*="blur"] {
+  background-color: rgba(255, 255, 255, 0.8);
+}
