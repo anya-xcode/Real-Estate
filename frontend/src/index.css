@@ -17,6 +17,16 @@ body {
   background-color: #f8fafc;
 }
 
+/* Hide Google Maps error dialogs */
+.gm-err-container,
+.gm-style .gm-err-content {
+  display: none !important;
+}
+
+.dismissButton {
+  display: none !important;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', system-ui, sans-serif;
   font-weight: 600;
