@@ -4,7 +4,7 @@ const prisma = require('../utils/db');
 const getOrCreateConversation = async (req, res) => {
   try {
     const { propertyId } = req.params;
-    const buyerId = req.user.id;
+    const currentUserId = req.user.id;
 
     // Get property to find the seller
     const property = await prisma.property.findUnique({
@@ -21,6 +21,75 @@ const getOrCreateConversation = async (req, res) => {
     }
 
     const sellerId = property.ownerId;
+
+    // Determine if current user is seller or buyer
+    const isSeller = currentUserId === sellerId;
+    
+    // If seller is trying to open chat on their own property
+    // they need to view existing conversations with buyers
+    if (isSeller) {
+      // Find any conversation for this property where user is the seller
+      let conversation = await prisma.conversation.findFirst({
+        where: {
+          propertyId,
+          sellerId: currentUserId
+        },
+        include: {
+          property: {
+            include: {
+              images: { take: 1 }
+            }
+          },
+          buyer: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              firstName: true,
+              lastName: true
+            }
+          },
+          seller: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              firstName: true,
+              lastName: true
+            }
+          },
+          messages: {
+            orderBy: { createdAt: 'asc' },
+            include: {
+              sender: {
+                select: {
+                  id: true,
+                  username: true,
+                  email: true,
+                  firstName: true,
+                  lastName: true
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          lastMessageAt: 'desc'
+        }
+      });
+
+      if (!conversation) {
+        return res.status(404).json({ 
+          message: 'No conversations yet for this property',
+          noConversations: true 
+        });
+      }
+
+      return res.status(200).json({ conversation });
+    }
+
+    // Current user is a buyer
+    const buyerId = currentUserId;
 
     // Don't allow owner to chat with themselves
     if (buyerId === sellerId) {
