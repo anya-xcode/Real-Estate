@@ -196,7 +196,12 @@ const googleFailure = (req, res) => {
 // Property CRUD Controllers
 const getAllProperties = async (req, res) => {
   try {
-    const properties = await prisma.property.findMany({
+    // Get query parameters
+    const limit = req.query.limit ? parseInt(req.query.limit) : undefined
+    const sort = req.query.sort || 'createdAt'
+    const order = req.query.order || 'desc'
+
+    const queryOptions = {
       include: {
         owner: {
           select: {
@@ -209,9 +214,16 @@ const getAllProperties = async (req, res) => {
         images: true
       },
       orderBy: {
-        createdAt: 'desc'
+        [sort]: order
       }
-    })
+    }
+
+    // Add limit if provided
+    if (limit) {
+      queryOptions.take = limit
+    }
+
+    const properties = await prisma.property.findMany(queryOptions)
 
     res.status(200).json({ properties })
   } catch (error) {

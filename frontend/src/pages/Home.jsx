@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import PropertyList from '../components/PropertyList'
+import GoogleMapWithMarkers from '../components/GoogleMapWithMarkers'
 import './Home.css'
 import homeVideo from '../assets/homevideo.mp4'
 import Insights from '../components/Insights'
@@ -8,6 +9,56 @@ import Insights from '../components/Insights'
 export default function Home() {
 	const navigate = useNavigate()
 	const [searchQuery, setSearchQuery] = useState('')
+	const [selectedCity, setSelectedCity] = useState(null)
+	const [cityData, setCityData] = useState({})
+	const [loading, setLoading] = useState(true)
+
+	const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+	// Fetch properties and group by city
+	useEffect(() => {
+		const fetchCityData = async () => {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/properties`)
+				
+				if (response.ok) {
+					const data = await response.json()
+					const properties = data.properties || []
+					
+					// Group properties by city
+					const cityCounts = {}
+					const cityColors = [
+						'#667eea', '#f87171', '#34d399', '#fbbf24', 
+						'#a78bfa', '#fb923c', '#06b6d4', '#ec4899',
+						'#10b981', '#f59e0b', '#8b5cf6', '#ef4444'
+					]
+					
+					properties.forEach(property => {
+						if (property.address?.city) {
+							const city = property.address.city
+							if (!cityCounts[city]) {
+								cityCounts[city] = {
+									count: 0,
+									color: cityColors[Object.keys(cityCounts).length % cityColors.length],
+									listings: '0'
+								}
+							}
+							cityCounts[city].count++
+							cityCounts[city].listings = `${cityCounts[city].count}`
+						}
+					})
+					
+					setCityData(cityCounts)
+				}
+			} catch (error) {
+				console.error('Error fetching city data:', error)
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		fetchCityData()
+	}, [API_BASE_URL])
 
 	const handleSearch = (e) => {
 		e.preventDefault()
@@ -25,22 +76,10 @@ export default function Home() {
 		{ number: '1000+', label: 'Verified Agents' }
 	]
 
-	// City properties data with colors
-	const [selectedCity, setSelectedCity] = useState(null)
-	
-	const cityData = {
-		'Delhi NCR': { count: '50,000+', color: '#667eea', listings: '50K+' },
-		'Mumbai': { count: '45,000+', color: '#f87171', listings: '45K+' },
-		'Bangalore': { count: '40,000+', color: '#34d399', listings: '40K+' },
-		'Hyderabad': { count: '35,000+', color: '#fbbf24', listings: '35K+' },
-		'Pune': { count: '30,000+', color: '#a78bfa', listings: '30K+' },
-		'Kolkata': { count: '25,000+', color: '#fb923c', listings: '25K+' },
-		'Chennai': { count: '28,000+', color: '#06b6d4', listings: '28K+' },
-		'Ahmedabad': { count: '32,000+', color: '#ec4899', listings: '32K+' }
-	}
-
 	const handleCityClick = (cityName) => {
 		setSelectedCity(cityName)
+		// Navigate to property listing page with city filter
+		navigate(`/properties?city=${encodeURIComponent(cityName)}`)
 	}
 
 	const features = [
@@ -213,7 +252,7 @@ export default function Home() {
 						</Link>
 					</div>
 					
-					<PropertyList />
+					<PropertyList limit={3} />
 				</div>
 			</section>
 
@@ -324,84 +363,48 @@ export default function Home() {
 				</div>
 
 				<div className="map-container">
-					<div className="google-map-wrapper">
-						{/* Google Maps Background */}
-						<iframe
-							className="google-map-iframe"
-							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15139249.86778636!2d73.03046268562503!3d22.84765024179047!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30635ff06b92b791%3A0xd78c4fa1854213a6!2sIndia!5e0!3m2!1sen!2sin!4v1732557890123!5m2!1sen!2sin"
-							width="100%"
-							height="100%"
-							style={{ border: 0 }}
-							allowFullScreen=""
-							loading="lazy"
-							referrerPolicy="no-referrer-when-downgrade"
-							title="Service Area Map - India"
-						></iframe>
-						
-						{/* Overlay with City Markers */}
-						<div className="map-overlay">
-							<div className="city-markers-container">
-								{Object.entries(cityData).map(([cityName, data]) => {
-									const positions = {
-										'Delhi NCR': { top: '23%', left: '53%' },
-										'Mumbai': { top: '48%', left: '41%' },
-										'Bangalore': { top: '69%', left: '49%' },
-										'Hyderabad': { top: '59%', left: '52%' },
-										'Pune': { top: '51%', left: '44%' },
-										'Kolkata': { top: '42%', left: '68%' },
-										'Chennai': { top: '72%', left: '56%' },
-										'Ahmedabad': { top: '40%', left: '43%' }
-									}
-									const pos = positions[cityName]
-									
-									return (
-										<div 
-											key={cityName}
-											className={`city-marker-on-map ${selectedCity === cityName ? 'active' : ''}`}
-											style={{ 
-												top: pos.top, 
-												left: pos.left,
-												backgroundColor: data.color
-											}}
-											onClick={() => handleCityClick(cityName)}
-										>
-											<div className="city-marker-dot"></div>
-											<div className="city-marker-label">{cityName}</div>
-											<div className="city-marker-pulse" style={{ borderColor: data.color }}></div>
-										</div>
-									)
-								})}
+					<GoogleMapWithMarkers 
+						cityData={cityData}
+						onCityClick={handleCityClick}
+					/>
+					
+					{/* City Info Card */}
+					{selectedCity && cityData[selectedCity] && (
+						<div className="city-info-card" style={{
+							position: 'absolute',
+							bottom: '2rem',
+							left: '2rem',
+							background: 'white',
+							borderRadius: '12px',
+							boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+							padding: '1.5rem',
+							minWidth: '280px',
+							zIndex: 10
+						}}>
+							<div className="city-info-header">
+								<div className="city-info-title">
+									<div className="city-color-dot" style={{ backgroundColor: cityData[selectedCity].color }}></div>
+									<h3>{selectedCity}</h3>
+								</div>
+								<button className="city-info-close" onClick={() => setSelectedCity(null)}>×</button>
+							</div>
+							<div className="city-info-content">
+								<div className="city-listings-count">
+									<span className="listings-number">{cityData[selectedCity].count}</span>
+									<span className="listings-label">Properties Available</span>
+								</div>
+								<button 
+									className="view-properties-btn"
+									onClick={() => navigate(`/properties?city=${encodeURIComponent(selectedCity)}`)}
+								>
+									View All Properties
+									<svg className="btn-arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+									</svg>
+								</button>
 							</div>
 						</div>
-						
-						{/* City Info Card */}
-						{selectedCity && (
-							<div className="city-info-card">
-								<div className="city-info-header">
-									<div className="city-info-title">
-										<div className="city-color-dot" style={{ backgroundColor: cityData[selectedCity].color }}></div>
-										<h3>{selectedCity}</h3>
-									</div>
-									<button className="city-info-close" onClick={() => setSelectedCity(null)}>×</button>
-								</div>
-								<div className="city-info-content">
-									<div className="city-listings-count">
-										<span className="listings-number">{cityData[selectedCity].count}</span>
-										<span className="listings-label">Properties Available</span>
-									</div>
-									<button 
-										className="view-properties-btn"
-										onClick={() => navigate(`/properties?city=${encodeURIComponent(selectedCity)}`)}
-									>
-										View All Properties
-										<svg className="btn-arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-										</svg>
-									</button>
-								</div>
-							</div>
-						)}
-					</div>
+					)}
 				</div>
 				</div>
 			</section>
