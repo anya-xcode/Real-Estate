@@ -1,18 +1,15 @@
 .signup-root {
   display: flex;
-  margin: auto;
+  margin: 120px auto 80px;
   width: 900px;
-  height: 550px;
+  max-width: 95%;
+  min-height: 550px;
   background: #fff;
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 
     0 30px 40px rgba(102, 126, 234, 0.2),
     0 60px 60px rgba(102, 126, 234, 0.1);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 .signup-left {
@@ -281,7 +278,17 @@
 
 /* ensure signup-right stacks on smaller screens */
 @media (max-width: 900px) {
-  .signup-root { width: 100%; height: auto; position: static; transform: none; margin: 2rem auto }
-  .signup-left { display: none }
+  .signup-root { 
+    width: 95%; 
+    height: auto; 
+    margin: 100px auto 60px;
+    flex-direction: column;
+  }
+  .signup-left { 
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 2rem;
+  }
   .signup-right { padding: 2rem }
 }
