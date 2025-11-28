@@ -129,6 +129,12 @@ const getProfile = async (req, res) => {
         id: true,
         username: true,
         email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        location: true,
+        bio: true,
+        avatar: true,
         createdAt: true,
         updatedAt: true
       }
@@ -141,6 +147,85 @@ const getProfile = async (req, res) => {
     res.status(200).json({ user })
   } catch (error) {
     console.error('Get profile error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, phone, location, bio, avatar } = req.body
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        firstName,
+        lastName,
+        phone,
+        location,
+        bio,
+        avatar
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        location: true,
+        bio: true,
+        avatar: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    })
+
+    res.status(200).json({ 
+      message: 'Profile updated successfully',
+      user: updatedUser 
+    })
+  } catch (error) {
+    console.error('Update profile error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required' })
+    }
+
+    // Get user with password
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id }
+    })
+
+    if (!user || !user.password) {
+      return res.status(400).json({ message: 'Cannot change password for OAuth users' })
+    }
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password)
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' })
+    }
+
+    // Hash new password
+    const saltRounds = 10
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
+
+    // Update password
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { password: hashedPassword }
+    })
+
+    res.status(200).json({ message: 'Password changed successfully' })
+  } catch (error) {
+    console.error('Change password error:', error)
     res.status(500).json({ message: 'Internal server error' })
   }
 }
@@ -592,10 +677,160 @@ const adminChangePassword = async (req, res) => {
   }
 };
 
+// Get user's favorite properties
+const getUserFavorites = async (req, res) => {
+  try {
+    const favorites = await prisma.favorite.findMany({
+      where: { userId: req.user.id },
+      include: {
+        property: {
+          include: {
+            images: {
+              orderBy: { order: 'asc' },
+              take: 1
+            },
+            address: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    res.status(200).json({ favorites })
+  } catch (error) {
+    console.error('Get favorites error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+// Remove favorite
+const removeFavorite = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const favorite = await prisma.favorite.findUnique({
+      where: { id }
+    })
+
+    if (!favorite) {
+      return res.status(404).json({ message: 'Favorite not found' })
+    }
+
+    if (favorite.userId !== req.user.id) {
+      return res.status(403).json({ message: 'Unauthorized' })
+    }
+
+    await prisma.favorite.delete({
+      where: { id }
+    })
+
+    res.status(200).json({ message: 'Favorite removed successfully' })
+  } catch (error) {
+    console.error('Remove favorite error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+// Add favorite
+const addFavorite = async (req, res) => {
+  try {
+    const { propertyId } = req.body
+
+    if (!propertyId) {
+      return res.status(400).json({ message: 'Property ID is required' })
+    }
+
+    // Check if already favorited
+    const existing = await prisma.favorite.findUnique({
+      where: {
+        userId_propertyId: {
+          userId: req.user.id,
+          propertyId: propertyId
+        }
+      }
+    })
+
+    if (existing) {
+      return res.status(200).json({ favorite: existing, message: 'Already favorited' })
+    }
+
+    // Create favorite
+    const favorite = await prisma.favorite.create({
+      data: {
+        userId: req.user.id,
+        propertyId: propertyId
+      }
+    })
+
+    res.status(201).json({ favorite, message: 'Property added to favorites' })
+  } catch (error) {
+    console.error('Add favorite error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+// Get user activity
+const getUserActivity = async (req, res) => {
+  try {
+    // Get recent favorites
+    const recentFavorites = await prisma.favorite.findMany({
+      where: { userId: req.user.id },
+      include: {
+        property: {
+          select: {
+            title: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    })
+
+    // Get recent messages
+    const recentMessages = await prisma.message.findMany({
+      where: { senderId: req.user.id },
+      include: {
+        conversation: {
+          include: {
+            property: {
+              select: {
+                title: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    })
+
+    // Combine and format activity
+    const activity = [
+      ...recentFavorites.map(fav => ({
+        action: 'favorite_added',
+        propertyTitle: fav.property.title,
+        createdAt: fav.createdAt
+      })),
+      ...recentMessages.map(msg => ({
+        action: 'message_sent',
+        propertyTitle: msg.conversation.property.title,
+        createdAt: msg.createdAt
+      }))
+    ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 20)
+
+    res.status(200).json({ activity })
+  } catch (error) {
+    console.error('Get activity error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 module.exports = {
   signup,
   login,
   getProfile,
+  updateProfile,
+  changePassword,
   googleCallback,
   googleFailure,
   getAllProperties,
@@ -603,6 +838,10 @@ module.exports = {
   createProperty,
   updateProperty,
   deleteProperty,
+  getUserFavorites,
+  addFavorite,
+  removeFavorite,
+  getUserActivity,
   adminGetAllProperties,
   adminApproveProperty,
   adminDeleteProperty,

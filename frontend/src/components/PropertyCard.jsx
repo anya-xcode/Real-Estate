@@ -7,7 +7,9 @@ export default function PropertyCard({ property, index, onConnectClick }) {
   const navigate = useNavigate()
   const auth = useAuth()
   const [isLiked, setIsLiked] = useState(false)
+  const [favoriteId, setFavoriteId] = useState(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
   const formatPrice = (price) => {
     if (!price) return 'Price not available'
@@ -57,6 +59,75 @@ export default function PropertyCard({ property, index, onConnectClick }) {
       console.log(`Property ${property.id} images:`, propertyImages.length, propertyImages)
     }
   }, [property?.id, propertyImages.length])
+
+  // Check if property is already favorited
+  useEffect(() => {
+    if (auth.user && property?.id) {
+      checkFavoriteStatus()
+    }
+  }, [auth.user, property?.id])
+
+  const checkFavoriteStatus = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/favorites`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        const favorite = data.favorites.find(fav => fav.propertyId === property.id)
+        if (favorite) {
+          setIsLiked(true)
+          setFavoriteId(favorite.id)
+        }
+      }
+    } catch (error) {
+      console.error('Error checking favorite status:', error)
+    }
+  }
+
+  const handleToggleFavorite = async (e) => {
+    e.stopPropagation()
+    
+    if (!auth.user) {
+      navigate('/signin')
+      return
+    }
+
+    try {
+      if (isLiked && favoriteId) {
+        // Remove favorite
+        const response = await fetch(`${API_BASE_URL}/api/favorites/${favoriteId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        })
+        if (response.ok) {
+          setIsLiked(false)
+          setFavoriteId(null)
+        }
+      } else {
+        // Add favorite
+        const response = await fetch(`${API_BASE_URL}/api/favorites`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${auth.token}`
+          },
+          body: JSON.stringify({ propertyId: property.id })
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setIsLiked(true)
+          setFavoriteId(data.favorite.id)
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+    }
+  }
   
   // Reset to first image when property changes
   useEffect(() => {
@@ -228,7 +299,8 @@ export default function PropertyCard({ property, index, onConnectClick }) {
           {/* Like Button */}
           <button 
             className={`like-button ${isLiked ? 'liked' : ''}`}
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={handleToggleFavorite}
+            title={isLiked ? 'Remove from favorites' : 'Add to favorites'}
           >
             <svg className="heart-icon" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

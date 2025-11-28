@@ -470,50 +470,6 @@ export default function PropertyDetails() {
             </div>
           </div>
 
-          {/* Agent Information */}
-          <div className="property-details-section agent-section-details">
-            <h3 className="section-title-details">
-              <svg className="section-icon-details" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Contact Agent
-            </h3>
-            <div className="agent-card-details">
-              {(property.owner?.avatar || property.agent?.avatar) && (
-                <img
-                  src={property.owner?.avatar || property.agent?.avatar}
-                  alt={property.owner?.username || property.agent?.name || 'Owner'}
-                  className={`agent-card-avatar-details ${isAgentAvatarSquare ? 'square-avatar' : 'rounded-avatar'}`}
-                  onLoad={onAgentAvatarLoad}
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
-              <div className="agent-card-info-details">
-                <p className="agent-card-name-details">{property.owner?.username || property.agent?.name || 'Property Owner'}</p>
-                <p className="agent-card-title-details">Licensed Real Estate Agent</p>
-                <div className="agent-contact-details">
-                  {(property.agent?.phone || property.owner?.phone) && (
-                    <a href={`tel:${property.agent?.phone || property.owner?.phone}`} className="agent-contact-item-details">
-                      <svg className="contact-icon-details" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      {property.agent?.phone || property.owner?.phone}
-                    </a>
-                  )}
-                  {(property.agent?.email || property.owner?.email) && (
-                    <a href={`mailto:${property.agent?.email || property.owner?.email}`} className="agent-contact-item-details">
-                      <svg className="contact-icon-details" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      {property.agent?.email || property.owner?.email}
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Action Buttons */}
           <div className="property-details-actions">
             <button
