@@ -14,7 +14,7 @@ const adminMiddleware = async (req, res, next) => {
     }
     
     // Get admin password from database
-    let adminConfig = await prisma.adminConfig.findUnique({
+    let adminConfig = await prisma.adminSettings.findUnique({
       where: { key: 'admin_password' }
     });
     
@@ -23,7 +23,7 @@ const adminMiddleware = async (req, res, next) => {
       const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
       const hashedPassword = await bcrypt.hash(defaultPassword, 10);
       
-      adminConfig = await prisma.adminConfig.create({
+      adminConfig = await prisma.adminSettings.create({
         data: {
           key: 'admin_password',
           value: hashedPassword

@@ -536,7 +536,7 @@ const adminChangePassword = async (req, res) => {
     }
 
     // Get current admin password from database
-    let adminConfig = await prisma.adminConfig.findUnique({
+    let adminConfig = await prisma.adminSettings.findUnique({
       where: { key: 'admin_password' }
     });
 
@@ -545,7 +545,7 @@ const adminChangePassword = async (req, res) => {
       const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
       const hashedPassword = await bcrypt.hash(defaultPassword, 10);
       
-      adminConfig = await prisma.adminConfig.create({
+      adminConfig = await prisma.adminSettings.create({
         data: {
           key: 'admin_password',
           value: hashedPassword
@@ -566,7 +566,7 @@ const adminChangePassword = async (req, res) => {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password in database
-    await prisma.adminConfig.update({
+    await prisma.adminSettings.update({
       where: { key: 'admin_password' },
       data: { value: hashedNewPassword }
     });
