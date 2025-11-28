@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -15,7 +21,7 @@ body {
 main {
   flex: 1;
   display: block;
-  padding: 2rem 0 0;
+  padding-top: 80px;
   background: radial-gradient(circle at center, transparent, rgba(99, 102, 241, 0.04));
 }
 
@@ -67,11 +73,6 @@ main {
 .signup-link:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 36px rgba(75,40,200,0.26);
-}
-
-/* make sure main content isn't hidden behind fixed header */
-main {
-  padding-top: 5rem;
 }
 
 button {

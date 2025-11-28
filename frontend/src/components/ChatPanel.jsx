@@ -42,7 +42,13 @@ export default function ChatPanel({ isOpen, onClose, property }) {
           setMessages(data.conversation.messages || [])
         } else {
           const data = await response.json()
-          setError(data.message || 'Failed to load conversation')
+          // Check if it's a "no conversations" case (seller viewing their own property)
+          if (data.noConversations) {
+            setError('No messages yet. Buyers will see this when they contact you.')
+            setMessages([])
+          } else {
+            setError(data.message || 'Failed to load conversation')
+          }
         }
       } catch (err) {
         console.error('Load conversation error:', err)

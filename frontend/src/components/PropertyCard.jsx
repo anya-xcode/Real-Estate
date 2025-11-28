@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 import './PropertyCard.css'
 
 export default function PropertyCard({ property, index, onConnectClick }) {
   const navigate = useNavigate()
+  const auth = useAuth()
   const [isLiked, setIsLiked] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
@@ -303,15 +305,18 @@ export default function PropertyCard({ property, index, onConnectClick }) {
               </svg>
               More Info
             </button>
-            <button 
-              className="action-button secondary"
-              onClick={() => onConnectClick(property)}
-            >
-              <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              Connect
-            </button>
+            {/* Only show Connect button if user is not the owner */}
+            {(!auth?.user || auth.user.id !== property.ownerId) && (
+              <button 
+                className="action-button secondary"
+                onClick={() => onConnectClick(property)}
+              >
+                <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Connect
+              </button>
+            )}
           </div>
         </div>
 

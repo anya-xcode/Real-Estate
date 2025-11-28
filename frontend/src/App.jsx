@@ -16,6 +16,7 @@ import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Careers from './pages/Careers'
 import Admin from './pages/Admin'
+import Messages from './pages/Messages'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 
@@ -31,7 +32,10 @@ function App() {
             <Link to="/properties" className="nav-link">Properties</Link>
             <Link to="/home-loans" className="nav-link">Loans</Link>
             {auth.user && (
-              <Link to="/upload" className="nav-link">List Property</Link>
+              <>
+                <Link to="/upload" className="nav-link">List Property</Link>
+                <Link to="/messages" className="nav-link">Messages</Link>
+              </>
             )}
             {!auth.user ? (
               <>
@@ -63,6 +67,7 @@ function App() {
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
