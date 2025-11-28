@@ -245,7 +245,9 @@ h1, h2, h3, h4, h5, h6 {
 .group:hover .group-hover\:border-blue-200 { border-color: #bfdbfe; }
 
 /* Backdrop */
+.backdrop-blur-sm { -webkit-backdrop-filter: blur(4px); }
 .backdrop-blur-sm { backdrop-filter: blur(4px); }
+.backdrop-blur-lg { -webkit-backdrop-filter: blur(16px); }
 .backdrop-blur-lg { backdrop-filter: blur(16px); }
 
 /* Background Opacity */
@@ -298,6 +300,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Glass Effect */
 .glass-effect {
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }

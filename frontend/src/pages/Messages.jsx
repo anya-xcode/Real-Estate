@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import './Messages.css'
@@ -8,25 +8,16 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
-  const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [initialLoad, setInitialLoad] = useState(true)
   const auth = useAuth()
   const navigate = useNavigate()
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-  useEffect(() => {
-    if (!auth.user) {
-      navigate('/signin')
-      return
-    }
-    loadConversations()
-  }, [auth.user])
-
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     try {
-      setLoading(true)
       setError('')
       
       const response = await fetch(`${API_BASE_URL}/api/chat/conversations`, {
@@ -46,9 +37,53 @@ export default function Messages() {
       console.error('Load conversations error:', err)
       setError('Failed to connect to server')
     } finally {
-      setLoading(false)
+      setInitialLoad(false)
     }
-  }
+  }, [auth.token, API_BASE_URL])
+
+  useEffect(() => {
+    if (!auth.user) {
+      navigate('/signin')
+      return
+    }
+    loadConversations()
+  }, [auth.user, navigate, loadConversations])
+
+  // Poll for new conversations every 5 seconds
+  useEffect(() => {
+    if (!auth.user) return
+
+    const interval = setInterval(() => {
+      loadConversations()
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [auth.user, loadConversations])
+
+  // Poll for new messages in selected conversation every 3 seconds
+  useEffect(() => {
+    if (!selectedConversation || !auth.token) return
+
+    const pollMessages = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/chat/conversations/${selectedConversation.id}/messages`, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setMessages(data.messages || [])
+        }
+      } catch (err) {
+        console.error('Poll messages error:', err)
+      }
+    }
+
+    const interval = setInterval(pollMessages, 3000)
+    return () => clearInterval(interval)
+  }, [selectedConversation, auth.token, API_BASE_URL])
 
   const loadMessages = async (conversationId) => {
     try {
@@ -81,6 +116,23 @@ export default function Messages() {
     if (!newMessage.trim() || !selectedConversation) return
 
     const messageText = newMessage.trim()
+    const tempId = `temp-${Date.now()}`
+    
+    // Optimistically add message to UI immediately
+    const optimisticMessage = {
+      id: tempId,
+      text: messageText,
+      createdAt: new Date().toISOString(),
+      senderId: auth.user.id,
+      sender: {
+        id: auth.user.id,
+        username: auth.user.username,
+        firstName: auth.user.firstName,
+        email: auth.user.email
+      }
+    }
+    
+    setMessages(prev => [...prev, optimisticMessage])
     setNewMessage('')
     setSending(true)
 
@@ -96,15 +148,20 @@ export default function Messages() {
 
       if (response.ok) {
         const data = await response.json()
-        setMessages(prev => [...prev, data.message])
-        // Update conversation list to reflect new message
-        loadConversations()
+        // Replace temporary message with real one from server
+        setMessages(prev => prev.map(msg => 
+          msg.id === tempId ? data.message : msg
+        ))
       } else {
+        // Remove optimistic message on error
+        setMessages(prev => prev.filter(msg => msg.id !== tempId))
         const data = await response.json()
         alert(data.message || 'Failed to send message')
         setNewMessage(messageText)
       }
     } catch (err) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== tempId))
       console.error('Send message error:', err)
       alert('Failed to send message')
       setNewMessage(messageText)
@@ -134,7 +191,7 @@ export default function Messages() {
     return conversation.buyerId === auth.user.id ? conversation.seller : conversation.buyer
   }
 
-  if (loading) {
+  if (initialLoad) {
     return (
       <div className="messages-page">
         <div className="messages-loading">

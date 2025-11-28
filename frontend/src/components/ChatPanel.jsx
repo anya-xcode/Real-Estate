@@ -63,12 +63,53 @@ export default function ChatPanel({ isOpen, onClose, property }) {
     }
   }, [isOpen, property, auth.user, auth.token, API_BASE_URL])
 
+  // Poll for new messages every 3 seconds when panel is open
+  useEffect(() => {
+    if (!isOpen || !conversationId || !auth.token) return
+
+    const pollMessages = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/chat/conversations/${conversationId}/messages`, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setMessages(data.messages || [])
+        }
+      } catch (err) {
+        console.error('Poll messages error:', err)
+      }
+    }
+
+    const interval = setInterval(pollMessages, 3000)
+    return () => clearInterval(interval)
+  }, [isOpen, conversationId, auth.token, API_BASE_URL])
+
   const handleSendMessage = async (e) => {
     e.preventDefault()
     
     if (!inputMessage.trim() || !conversationId) return
 
     const messageText = inputMessage.trim()
+    const tempId = `temp-${Date.now()}`
+    
+    // Optimistically add message to UI immediately
+    const optimisticMessage = {
+      id: tempId,
+      text: messageText,
+      createdAt: new Date().toISOString(),
+      sender: {
+        id: auth.user.id,
+        username: auth.user.username,
+        firstName: auth.user.firstName,
+        email: auth.user.email
+      }
+    }
+    
+    setMessages(prev => [...prev, optimisticMessage])
     setInputMessage('')
 
     try {
@@ -83,16 +124,23 @@ export default function ChatPanel({ isOpen, onClose, property }) {
 
       if (response.ok) {
         const data = await response.json()
-        setMessages(prev => [...prev, data.message])
+        // Replace temporary message with real one from server
+        setMessages(prev => prev.map(msg => 
+          msg.id === tempId ? data.message : msg
+        ))
       } else {
+        // Remove optimistic message on error
+        setMessages(prev => prev.filter(msg => msg.id !== tempId))
         const data = await response.json()
         setError(data.message || 'Failed to send message')
-        setInputMessage(messageText) // Restore message on error
+        setInputMessage(messageText)
       }
     } catch (err) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== tempId))
       console.error('Send message error:', err)
       setError('Failed to send message')
-      setInputMessage(messageText) // Restore message on error
+      setInputMessage(messageText)
     }
   }
 

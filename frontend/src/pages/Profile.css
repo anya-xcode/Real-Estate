@@ -87,6 +87,7 @@
   width: 120px;
   height: 120px;
   background: rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 50%;
   display: flex;
@@ -183,6 +184,7 @@
   text-align: center;
   padding: 1.5rem 2rem;
   background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -256,6 +258,7 @@
 
 .profile-nav {
   background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 1.25rem;
@@ -357,6 +360,7 @@
 /* Main Content */
 .profile-main {
   background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 2.5rem;
@@ -407,6 +411,7 @@
 
 .info-card {
   background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 2rem;
@@ -662,6 +667,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   color: #1a1a1a;
 }
@@ -757,6 +763,7 @@
   gap: 0.75rem;
   padding: 1.25rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.9) 100%);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(102, 126, 234, 0.2);
   border-radius: 14px;
@@ -823,6 +830,7 @@
 
 .saved-property-card {
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   overflow: hidden;
@@ -905,6 +913,7 @@
   width: 36px;
   height: 36px;
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: none;
   border-radius: 50%;
@@ -990,6 +999,7 @@
   gap: 1rem;
   padding: 1.5rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 250, 251, 0.8) 100%);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 14px;
   border: 1px solid rgba(102, 126, 234, 0.15);
@@ -1088,6 +1098,7 @@
 
 .settings-card {
   background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   padding: 2rem;
@@ -1131,6 +1142,7 @@
   align-items: center;
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   border-radius: 12px;
   cursor: pointer;
@@ -1171,6 +1183,7 @@
   width: 100%;
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   border: 2px solid rgba(102, 126, 234, 0.2);
   border-radius: 12px;
@@ -1238,6 +1251,7 @@
 .cancel-btn {
   padding: 1rem 2.5rem;
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   color: #666;
   border: 2px solid rgba(102, 126, 234, 0.2);
@@ -1258,6 +1272,7 @@
 .delete-warning {
   color: #ef4444;
   background: linear-gradient(135deg, rgba(254, 242, 242, 0.9) 0%, rgba(254, 226, 226, 0.9) 100%);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   padding: 1.25rem;
   border-radius: 12px;
