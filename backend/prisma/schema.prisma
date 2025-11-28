@@ -20,30 +20,35 @@ model User {
   lastName  String? @db.VarChar(100)
   provider  String  @default("local") @db.VarChar(20)
 
-  properties Property[] @relation("UserProperties")
-  inquiries  Inquiry[]
-  favorites  Favorite[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  properties          Property[]     @relation("UserProperties")
+  inquiries           Inquiry[]
+  favorites           Favorite[]
+  buyerConversations  Conversation[] @relation("BuyerConversations")
+  sellerConversations Conversation[] @relation("SellerConversations")
+  sentMessages        Message[]      @relation("SentMessages")
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   @@map("users")
 }
 
 // Properties table
 model Property {
-  id          String            @id @default(cuid())
-  title       String?           @db.VarChar(255)
-  description String?           @db.Text
-  price       Decimal?          @db.Decimal(12, 2)
-  ownerId     String?
-  owner       User?             @relation(fields: [ownerId], references: [id], name: "UserProperties")
-  address     Address?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  images      PropertyImage[]
-  features    PropertyFeature[]
-  inquiries   Inquiry[]
-  favorites   Favorite[]
+  id                 String            @id @default(cuid())
+  title              String?           @db.VarChar(255)
+  description        String?           @db.Text
+  price              Decimal?          @db.Decimal(12, 2)
+  verificationStatus String            @default("pending") @db.VarChar(20)
+  ownerId            String?
+  owner              User?             @relation(fields: [ownerId], references: [id], name: "UserProperties")
+  address            Address?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  images             PropertyImage[]
+  features           PropertyFeature[]
+  inquiries          Inquiry[]
+  favorites          Favorite[]
+  conversations      Conversation[]
 
   @@map("properties")
 }
@@ -116,4 +121,43 @@ model Favorite {
 
   @@unique([userId, propertyId])
   @@map("favorites")
+}
+
+model AdminConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique @db.VarChar(100)
+  value     String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_config")
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  buyerId       String
+  buyer         User      @relation(fields: [buyerId], references: [id], name: "BuyerConversations", onDelete: Cascade)
+  sellerId      String
+  seller        User      @relation(fields: [sellerId], references: [id], name: "SellerConversations", onDelete: Cascade)
+  lastMessageAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  messages      Message[]
+
+  @@unique([propertyId, buyerId, sellerId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id], name: "SentMessages", onDelete: Cascade)
+  text           String       @db.Text
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@map("messages")
 }

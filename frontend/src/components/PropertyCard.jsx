@@ -214,6 +214,15 @@ export default function PropertyCard({ property, index, onConnectClick }) {
             </div>
           )}
 
+          {/* Verification Status Badge */}
+          {property.verificationStatus && (
+            <div className={`verification-status-badge ${property.verificationStatus}`}>
+              {property.verificationStatus === 'approved' && '✓ Verified'}
+              {property.verificationStatus === 'pending' && '⏱ Pending'}
+              {property.verificationStatus === 'denied' && '✗ Denied'}
+            </div>
+          )}
+
           {/* Like Button */}
           <button 
             className={`like-button ${isLiked ? 'liked' : ''}`}

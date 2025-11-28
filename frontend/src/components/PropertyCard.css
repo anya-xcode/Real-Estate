@@ -262,6 +262,39 @@
   text-transform: capitalize;
 }
 
+/* Verification Status Badge */
+.verification-status-badge {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  padding: 0.5rem 1rem;
+  backdrop-filter: blur(12px);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.verification-status-badge.approved {
+  background: rgba(40, 167, 69, 0.95);
+  color: white;
+}
+
+.verification-status-badge.pending {
+  background: rgba(255, 193, 7, 0.95);
+  color: #333;
+}
+
+.verification-status-badge.denied {
+  background: rgba(220, 53, 69, 0.95);
+  color: white;
+}
+
 /* Like Button */
 .like-button {
   position: absolute;

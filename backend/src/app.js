@@ -4,6 +4,7 @@ const cors = require('cors');
 const session = require('express-session');
 const passport = require('./config/passport');
 const propertyRoutes = require('./routes/propertyRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -34,6 +35,7 @@ app.use(passport.session());
 // Mount auth routes at /api/auth and other routes at /api
 app.use('/api/auth', propertyRoutes);
 app.use('/api', propertyRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
