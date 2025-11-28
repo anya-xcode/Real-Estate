@@ -15,6 +15,7 @@ import PropertyDetails from './pages/PropertyDetails'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Careers from './pages/Careers'
+import Admin from './pages/Admin'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 
@@ -61,6 +62,7 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/careers" element={<Careers />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

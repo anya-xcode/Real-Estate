@@ -11,9 +11,14 @@ const {
   getPropertyById,
   createProperty,
   updateProperty,
-  deleteProperty
+  deleteProperty,
+  adminGetAllProperties,
+  adminApproveProperty,
+  adminDeleteProperty,
+  adminChangePassword
 } = require('../controllers/propertyController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const adminMiddleware = require('../middlewares/adminMiddleware');
 const { upload } = require('../config/cloudinary');
 
 const router = express.Router();
@@ -100,5 +105,11 @@ router.get('/properties/:id', getPropertyById);
 router.post('/properties', authMiddleware, createProperty);
 router.put('/properties/:id', authMiddleware, updateProperty);
 router.delete('/properties/:id', authMiddleware, deleteProperty);
+
+// Admin Routes
+router.get('/admin/properties', adminMiddleware, adminGetAllProperties);
+router.patch('/admin/properties/:id/status', adminMiddleware, adminApproveProperty);
+router.delete('/admin/properties/:id', adminMiddleware, adminDeleteProperty);
+router.post('/admin/change-password', adminMiddleware, adminChangePassword);
 
 module.exports = router

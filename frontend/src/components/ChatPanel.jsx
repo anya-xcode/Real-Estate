@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
+import useAuth from '../hooks/useAuth'
 import './ChatPanel.css'
 
 export default function ChatPanel({ isOpen, onClose, property }) {
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [conversationId, setConversationId] = useState(null)
+  const [error, setError] = useState('')
   const messagesEndRef = useRef(null)
+  const auth = useAuth()
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -15,96 +21,149 @@ export default function ChatPanel({ isOpen, onClose, property }) {
     scrollToBottom()
   }, [messages])
 
+  // Load or create conversation when panel opens
   useEffect(() => {
-    if (isOpen && property && messages.length === 0) {
-      
-      setTimeout(() => {
-        const agentName = property.agent?.name || property.owner?.username || 'Property Owner'
-        const agentAvatar = property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'
-        
-        const greeting = {
-          id: Date.now(),
-          text: `Hello! I'm ${agentName}, and I'd be happy to help you with ${property.title || 'this property'}. How can I assist you today?`,
-          sender: 'agent',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          avatar: agentAvatar
-        }
-        setMessages([greeting])
-      }, 500)
-    }
-  }, [isOpen, property, messages.length])
+    const loadConversation = async () => {
+      if (!auth.token || !property?.id) return
 
-  const handleSendMessage = (e) => {
+      try {
+        setLoading(true)
+        setError('')
+        
+        const response = await fetch(`${API_BASE_URL}/api/chat/conversations/property/${property.id}`, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setConversationId(data.conversation.id)
+          setMessages(data.conversation.messages || [])
+        } else {
+          const data = await response.json()
+          setError(data.message || 'Failed to load conversation')
+        }
+      } catch (err) {
+        console.error('Load conversation error:', err)
+        setError('Failed to connect to server')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (isOpen && property && auth.user) {
+      loadConversation()
+    }
+  }, [isOpen, property, auth.user, auth.token, API_BASE_URL])
+
+  const handleSendMessage = async (e) => {
     e.preventDefault()
     
-    if (!inputMessage.trim()) return
+    if (!inputMessage.trim() || !conversationId) return
 
-   
-    const userMessage = {
-      id: Date.now(),
-      text: inputMessage,
-      sender: 'user',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }
-
-    setMessages(prev => [...prev, userMessage])
+    const messageText = inputMessage.trim()
     setInputMessage('')
-    setIsTyping(true)
 
- 
-    setTimeout(() => {
-      const agentResponses = [
-        "That's a great question! This property has recently been renovated with modern amenities.",
-        "I'd be happy to schedule a viewing for you. When would be a convenient time?",
-        "The neighborhood is fantastic with great schools and parks nearby.",
-        "Let me get those details for you right away.",
-        "This property has been priced competitively and we've had quite a bit of interest.",
-        "I can definitely help you with that. Would you like to discuss the financing options?"
-      ]
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat/conversations/${conversationId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
+        },
+        body: JSON.stringify({ text: messageText })
+      })
 
-      const agentAvatar = property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'
-      
-      const response = {
-        id: Date.now() + 1,
-        text: agentResponses[Math.floor(Math.random() * agentResponses.length)],
-        sender: 'agent',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        avatar: agentAvatar
+      if (response.ok) {
+        const data = await response.json()
+        setMessages(prev => [...prev, data.message])
+      } else {
+        const data = await response.json()
+        setError(data.message || 'Failed to send message')
+        setInputMessage(messageText) // Restore message on error
       }
-
-      setIsTyping(false)
-      setMessages(prev => [...prev, response])
-    }, 1500)
+    } catch (err) {
+      console.error('Send message error:', err)
+      setError('Failed to send message')
+      setInputMessage(messageText) // Restore message on error
+    }
   }
 
-  const quickReplies = [
-    "Schedule a viewing",
-    "Request more info",
-    "Discuss price",
-    "Neighborhood details"
-  ]
+  const getOtherUser = () => {
+    if (!auth.user || !messages.length) return null
+    
+    // Find the other user from the first message
+    const otherMessage = messages.find(msg => msg.sender.id !== auth.user.id)
+    return otherMessage?.sender || property?.owner
+  }
 
-  const handleQuickReply = (reply) => {
-    setInputMessage(reply)
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp)
+    const now = new Date()
+    const diff = now - date
+
+    // Less than 1 minute
+    if (diff < 60000) return 'Just now'
+    
+    // Less than 1 hour
+    if (diff < 3600000) {
+      const minutes = Math.floor(diff / 60000)
+      return `${minutes} min ago`
+    }
+    
+    // Today
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+    
+    // This week
+    if (diff < 604800000) {
+      return date.toLocaleDateString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })
+    }
+    
+    // Older
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
   if (!isOpen || !property) return null
+
+  if (!auth.user) {
+    return (
+      <div className={`chat-panel ${isOpen ? 'open' : ''}`}>
+        <div className="chat-header">
+          <h3>Please Sign In</h3>
+          <button className="chat-close-button" onClick={onClose}>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="chat-signin-message">
+          <p>You need to be signed in to chat with property owners.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const otherUser = getOtherUser() || property.owner
+  const otherUserName = otherUser?.username || otherUser?.firstName || otherUser?.email || 'Property Owner'
 
   return (
     <div className={`chat-panel ${isOpen ? 'open' : ''}`}>
       {/* Chat Header */}
       <div className="chat-header">
         <div className="chat-header-info">
-          <img 
-            src={property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'} 
-            alt={property.agent?.name || property.owner?.username || 'Agent'}
-            className="chat-agent-avatar"
-          />
+          <div className="chat-agent-avatar-wrapper">
+            <div className="chat-agent-avatar-placeholder">
+              {otherUserName.charAt(0).toUpperCase()}
+            </div>
+          </div>
           <div>
-            <h3 className="chat-agent-name">{property.agent?.name || property.owner?.username || 'Property Owner'}</h3>
+            <h3 className="chat-agent-name">{otherUserName}</h3>
             <p className="chat-agent-status">
               <span className="status-dot"></span>
-              Online
+              Available
             </p>
           </div>
         </div>
@@ -134,83 +193,65 @@ export default function ChatPanel({ isOpen, onClose, property }) {
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="chat-error-message">
+          {error}
+        </div>
+      )}
+
       {/* Messages Container */}
       <div className="chat-messages">
-        {messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`chat-message ${message.sender === 'user' ? 'user-message' : 'agent-message'}`}
-          >
-            {message.sender === 'agent' && (
-              <img 
-                src={message.avatar} 
-                alt="Agent"
-                className="message-avatar"
-              />
-            )}
-            <div className="message-content">
-              <div className="message-bubble">
-                {message.text}
-              </div>
-              <p className="message-timestamp">{message.timestamp}</p>
-            </div>
+        {loading ? (
+          <div className="chat-loading">Loading messages...</div>
+        ) : messages.length === 0 ? (
+          <div className="chat-empty">
+            <p>Start a conversation about this property!</p>
           </div>
-        ))}
+        ) : (
+          messages.map((message) => {
+            const isCurrentUser = message.sender.id === auth.user.id
+            const senderName = message.sender.username || message.sender.firstName || message.sender.email
 
-        {isTyping && (
-          <div className="chat-message agent-message">
-            <img 
-              src={property.agent?.avatar || property.owner?.avatar || 'https://via.placeholder.com/40?text=Agent'} 
-              alt="Agent"
-              className="message-avatar"
-            />
-            <div className="message-content">
-              <div className="message-bubble typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+            return (
+              <div 
+                key={message.id} 
+                className={`chat-message ${isCurrentUser ? 'user-message' : 'agent-message'}`}
+              >
+                {!isCurrentUser && (
+                  <div className="message-avatar-placeholder">
+                    {senderName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="message-content">
+                  <div className="message-bubble">
+                    {message.text}
+                  </div>
+                  <p className="message-timestamp">{formatTimestamp(message.createdAt)}</p>
+                </div>
               </div>
-            </div>
-          </div>
+            )
+          })
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Replies */}
-      {messages.length <= 2 && (
-        <div className="chat-quick-replies">
-          {quickReplies.map((reply, index) => (
-            <button
-              key={index}
-              className="quick-reply-button"
-              onClick={() => handleQuickReply(reply)}
-            >
-              {reply}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* Chat Input */}
       <form className="chat-input-container" onSubmit={handleSendMessage}>
         <div className="chat-input-wrapper">
-          <button type="button" className="chat-attach-button">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-            </svg>
-          </button>
           <input
             type="text"
             placeholder="Type your message..."
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             className="chat-input"
+            disabled={loading || !conversationId}
           />
           <button 
             type="submit" 
             className="chat-send-button"
-            disabled={!inputMessage.trim()}
+            disabled={!inputMessage.trim() || loading || !conversationId}
           >
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

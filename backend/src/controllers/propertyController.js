@@ -397,6 +397,189 @@ const deleteProperty = async (req, res) => {
   }
 }
 
+// Admin Controllers
+const adminGetAllProperties = async (req, res) => {
+  try {
+    const properties = await prisma.property.findMany({
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
+        },
+        address: true,
+        images: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    res.status(200).json({ properties })
+  } catch (error) {
+    console.error('Admin get properties error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const adminApproveProperty = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { status } = req.body
+
+    // Validate status
+    if (!['approved', 'denied', 'pending'].includes(status)) {
+      return res.status(400).json({ 
+        message: 'Invalid status. Must be approved, denied, or pending' 
+      })
+    }
+
+    const property = await prisma.property.findUnique({
+      where: { id }
+    })
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' })
+    }
+
+    const updatedProperty = await prisma.property.update({
+      where: { id },
+      data: {
+        verificationStatus: status
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
+        },
+        address: true,
+        images: true
+      }
+    })
+
+    res.status(200).json({ 
+      message: `Property ${status} successfully`,
+      property: updatedProperty 
+    })
+  } catch (error) {
+    console.error('Admin approve property error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const adminDeleteProperty = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const property = await prisma.property.findUnique({
+      where: { id }
+    })
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' })
+    }
+
+    // Delete related records first to avoid foreign key constraint errors
+    await prisma.$transaction([
+      // Delete property features
+      prisma.propertyFeature.deleteMany({
+        where: { propertyId: id }
+      }),
+      // Delete property images
+      prisma.propertyImage.deleteMany({
+        where: { propertyId: id }
+      }),
+      // Delete inquiries
+      prisma.inquiry.deleteMany({
+        where: { propertyId: id }
+      }),
+      // Delete favorites
+      prisma.favorite.deleteMany({
+        where: { propertyId: id }
+      }),
+      // Delete address
+      prisma.address.deleteMany({
+        where: { propertyId: id }
+      }),
+      // Finally delete the property
+      prisma.property.delete({
+        where: { id }
+      })
+    ])
+
+    res.status(200).json({ message: 'Property deleted successfully' })
+  } catch (error) {
+    console.error('Admin delete property error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const adminChangePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        message: 'Current password and new password are required' 
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ 
+        message: 'New password must be at least 6 characters long' 
+      });
+    }
+
+    // Get current admin password from database
+    let adminConfig = await prisma.adminConfig.findUnique({
+      where: { key: 'admin_password' }
+    });
+
+    // If no password exists, create with default
+    if (!adminConfig) {
+      const defaultPassword = process.env.ADMIN_PASSWORD || 'admin123';
+      const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+      
+      adminConfig = await prisma.adminConfig.create({
+        data: {
+          key: 'admin_password',
+          value: hashedPassword
+        }
+      });
+    }
+
+    // Verify current password
+    const isValid = await bcrypt.compare(currentPassword, adminConfig.value);
+    
+    if (!isValid) {
+      return res.status(403).json({ 
+        message: 'Current password is incorrect' 
+      });
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password in database
+    await prisma.adminConfig.update({
+      where: { key: 'admin_password' },
+      data: { value: hashedNewPassword }
+    });
+
+    res.status(200).json({ 
+      message: 'Admin password changed successfully' 
+    });
+  } catch (error) {
+    console.error('Admin change password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   signup,
   login,
@@ -407,5 +590,9 @@ module.exports = {
   getPropertyById,
   createProperty,
   updateProperty,
-  deleteProperty
+  deleteProperty,
+  adminGetAllProperties,
+  adminApproveProperty,
+  adminDeleteProperty,
+  adminChangePassword
 }
