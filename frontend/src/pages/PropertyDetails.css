@@ -779,6 +779,18 @@
   box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
 }
 
+.action-button-details.download-pdf-details {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.action-button-details.download-pdf-details:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+}
+
 .action-icon-details {
   width: 22px;
   height: 22px;
