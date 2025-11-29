@@ -12,8 +12,10 @@ export default function Home() {
 	const [selectedCity, setSelectedCity] = useState(null)
 	const [cityData, setCityData] = useState({})
 	const [loading, setLoading] = useState(true)
+	const [reviews, setReviews] = useState([])
+	const [loadingReviews, setLoadingReviews] = useState(true)
 
-	const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+	const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
 	// Fetch properties and group by city
 	useEffect(() => {
@@ -58,6 +60,26 @@ export default function Home() {
 		}
 
 		fetchCityData()
+	}, [API_BASE_URL])
+
+	// Fetch reviews
+	useEffect(() => {
+		const fetchReviews = async () => {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/reviews?limit=3`)
+				
+				if (response.ok) {
+					const data = await response.json()
+					setReviews(data.reviews || [])
+				}
+			} catch (error) {
+				console.error('Error fetching reviews:', error)
+			} finally {
+				setLoadingReviews(false)
+			}
+		}
+
+		fetchReviews()
 	}, [API_BASE_URL])
 
 	const handleSearch = (e) => {
@@ -257,6 +279,67 @@ export default function Home() {
 			</section>
 
 
+			{/* Testimonials Section */}
+			<section className="testimonials-section">
+				<div className="container">
+					<div className="section-header">
+						<h2 className="section-title">What Our Clients Say</h2>
+						<p className="section-subtitle">
+							Real experiences from real people
+						</p>
+						<Link 
+							to="/add-review"
+							className="add-review-btn"
+						>
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+							</svg>
+							Add Your Review
+						</Link>
+					</div>
+
+					{loadingReviews ? (
+						<div className="testimonials-loading">
+							<div className="loading-spinner"></div>
+							<p>Loading reviews...</p>
+						</div>
+					) : reviews.length === 0 ? (
+						<div className="no-reviews">
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+							</svg>
+							<p>No reviews yet. Be the first to share your experience!</p>
+						</div>
+					) : (
+						<div className="testimonials-grid">
+							{reviews.map((review) => (
+								<div key={review.id} className="testimonial-card">
+									<div className="testimonial-stars">
+										{[...Array(review.rating)].map((_, i) => (
+											<svg key={i} className="star-icon" fill="currentColor" viewBox="0 0 20 20">
+												<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+											</svg>
+										))}
+									</div>
+									<p className="testimonial-text">{review.text}</p>
+									<div className="testimonial-author">
+										<img 
+											src={review.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=667eea&color=fff&size=128`} 
+											alt={review.name} 
+											className="author-image" 
+										/>
+										<div>
+											<h4 className="author-name">{review.name}</h4>
+											<p className="author-role">{review.role}</p>
+										</div>
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+				</div>
+			</section>
+
 			{/* Features Section */}
 			<section id="why-choose-us" className="features-section">
 				<div className="container">
@@ -288,62 +371,6 @@ export default function Home() {
 		</section>
 		{/* Insights Section (Real Estate Insights) */}
 		<Insights />
-
-			{/* Testimonials Section */}
-			<section className="testimonials-section">
-				<div className="container">
-					<div className="section-header">
-						<h2 className="section-title">What Our Clients Say</h2>
-						<p className="section-subtitle">
-							Real experiences from real people
-						</p>
-					</div>
-
-					<div className="testimonials-grid">
-						{[
-							{
-								name: 'Priya Sharma',
-								role: 'Home Buyer',
-								image: 'https://randomuser.me/api/portraits/women/44.jpg',
-								rating: 5,
-								text: 'Found my dream apartment in just 2 weeks! The platform is incredibly easy to use and the support team was amazing.'
-							},
-							{
-								name: 'Rajesh Kumar',
-								role: 'Property Investor',
-								image: 'https://randomuser.me/api/portraits/men/32.jpg',
-								rating: 5,
-								text: 'Best real estate platform in India. Verified listings and transparent pricing made my investment decision so much easier.'
-							},
-							{
-								name: 'Anita Desai',
-								role: 'First-time Buyer',
-								image: 'https://randomuser.me/api/portraits/women/68.jpg',
-								rating: 5,
-								text: 'As a first-time buyer, I was nervous. But the guidance and support I received was exceptional. Highly recommended!'
-							}
-						].map((testimonial, index) => (
-							<div key={index} className="testimonial-card">
-								<div className="testimonial-stars">
-									{[...Array(testimonial.rating)].map((_, i) => (
-										<svg key={i} className="star-icon" fill="currentColor" viewBox="0 0 20 20">
-											<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-										</svg>
-									))}
-								</div>
-								<p className="testimonial-text">{testimonial.text}</p>
-								<div className="testimonial-author">
-									<img src={testimonial.image} alt={testimonial.name} className="author-image" />
-									<div>
-										<h4 className="author-name">{testimonial.name}</h4>
-										<p className="author-role">{testimonial.role}</p>
-									</div>
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
 
 			{/* Service Area Map Section */}
 			<section className="service-area-map-section" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
