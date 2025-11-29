@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
+import { fetchCountries, fetchStates, fetchCities } from '../services/locationService'
 import './UploadProperty.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
@@ -15,8 +16,9 @@ export default function UploadProperty() {
     price: '',
     type: '',
     address: '',
-    city: '',
+    country: '',
     state: '',
+    city: '',
     zipCode: '',
     beds: '',
     baths: '',
@@ -34,6 +36,22 @@ export default function UploadProperty() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
+  const [availableStates, setAvailableStates] = useState([])
+  const [availableCities, setAvailableCities] = useState([])
+  
+  // API data from CountryStateCity API
+  const [countries, setCountries] = useState([])
+  const [loadingLocations, setLoadingLocations] = useState(false)
+  const [selectedCountryCode, setSelectedCountryCode] = useState('')
+  const [selectedStateCode, setSelectedStateCode] = useState('')
+  
+  // Search/filter states for dropdowns
+  const [countrySearch, setCountrySearch] = useState('')
+  const [stateSearch, setStateSearch] = useState('')
+  const [citySearch, setCitySearch] = useState('')
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false)
+  const [showStateDropdown, setShowStateDropdown] = useState(false)
+  const [showCityDropdown, setShowCityDropdown] = useState(false)
 
   // Verify authentication on mount
   useEffect(() => {
@@ -70,6 +88,23 @@ export default function UploadProperty() {
     verifyAuth()
   }, [navigate, auth])
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.searchable-dropdown')) {
+        setShowCountryDropdown(false)
+        setShowStateDropdown(false)
+        setShowCityDropdown(false)
+        setCountrySearch('')
+        setStateSearch('')
+        setCitySearch('')
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const propertyTypes = ['House', 'Apartment', 'Cottage', 'Penthouse', 'Villa', 'Loft', 'Condo', 'Townhouse']
   
   const amenitiesList = [
@@ -78,6 +113,419 @@ export default function UploadProperty() {
     'Heating', 'Dishwasher', 'Washer/Dryer', 'Hardwood Floors',
     'High Ceilings', 'Walk-in Closet', 'Pet Friendly', 'Furnished'
   ]
+
+  // Load countries from API on mount
+  useEffect(() => {
+    const loadCountries = async () => {
+      try {
+        setLoadingLocations(true)
+        const countriesData = await fetchCountries()
+        setCountries(countriesData)
+      } catch (error) {
+        console.error('Failed to load countries:', error)
+        setError('Failed to load countries. Please refresh the page.')
+      } finally {
+        setLoadingLocations(false)
+      }
+    }
+    
+    loadCountries()
+  }, [])
+
+  // Handle country change - fetch states from API
+  const handleCountryChange = async (e) => {
+    const countryName = e.target.value
+    
+    // Find country code from name
+    const selectedCountry = countries.find(c => c.name === countryName)
+    const countryCode = selectedCountry?.iso2 || ''
+    
+    setFormData(prev => ({
+      ...prev,
+      country: countryName,
+      state: '',
+      city: ''
+    }))
+    
+    setSelectedCountryCode(countryCode)
+    setSelectedStateCode('')
+    setAvailableCities([])
+    
+    if (countryCode) {
+      try {
+        setLoadingLocations(true)
+        const statesData = await fetchStates(countryCode)
+        setAvailableStates(statesData)
+      } catch (error) {
+        console.error('Failed to load states:', error)
+        setAvailableStates([])
+      } finally {
+        setLoadingLocations(false)
+      }
+    } else {
+      setAvailableStates([])
+    }
+  }
+
+  // Handle state change - fetch cities from API
+  const handleStateChange = async (e) => {
+    const stateName = e.target.value
+    
+    // Find state code from name
+    const selectedState = availableStates.find(s => s.name === stateName)
+    const stateCode = selectedState?.iso2 || ''
+    
+    setFormData(prev => ({
+      ...prev,
+      state: stateName,
+      city: ''
+    }))
+    
+    setSelectedStateCode(stateCode)
+    
+    if (selectedCountryCode && stateCode) {
+      try {
+        setLoadingLocations(true)
+        const citiesData = await fetchCities(selectedCountryCode, stateCode)
+        setAvailableCities(citiesData)
+      } catch (error) {
+        console.error('Failed to load cities:', error)
+        setAvailableCities([])
+      } finally {
+        setLoadingLocations(false)
+      }
+    } else {
+      setAvailableCities([])
+    }
+  }
+
+  // Handle city change
+  const handleCityChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      city: e.target.value
+    }))
+  }
+  //   'United States': {
+  //     'Alabama': ['Birmingham', 'Montgomery', 'Mobile', 'Huntsville', 'Tuscaloosa', 'Hoover', 'Dothan', 'Auburn', 'Decatur', 'Madison', 'Florence', 'Gadsden', 'Vestavia Hills', 'Prattville', 'Phenix City', 'Alabaster', 'Bessemer', 'Enterprise', 'Opelika', 'Homewood'],
+  //     'Alaska': ['Anchorage', 'Juneau', 'Fairbanks', 'Sitka', 'Ketchikan', 'Wasilla', 'Kenai', 'Kodiak', 'Bethel', 'Palmer', 'Homer', 'Soldotna', 'Barrow', 'Valdez', 'Nome'],
+  //     'Arizona': ['Phoenix', 'Tucson', 'Mesa', 'Chandler', 'Scottsdale', 'Glendale', 'Gilbert', 'Tempe', 'Peoria', 'Surprise', 'Yuma', 'Avondale', 'Flagstaff', 'Goodyear', 'Lake Havasu City', 'Buckeye', 'Casa Grande', 'Sierra Vista', 'Maricopa', 'Oro Valley'],
+  //     'Arkansas': ['Little Rock', 'Fort Smith', 'Fayetteville', 'Springdale', 'Jonesboro', 'North Little Rock', 'Conway', 'Rogers', 'Pine Bluff', 'Bentonville', 'Hot Springs', 'Benton', 'Sherwood', 'Texarkana', 'Russellville', 'Jacksonville', 'Bella Vista', 'Paragould', 'Cabot', 'Searcy'],
+  //     'California': ['Los Angeles', 'San Francisco', 'San Diego', 'Sacramento', 'San Jose', 'Fresno', 'Oakland', 'Long Beach', 'Bakersfield', 'Anaheim', 'Santa Ana', 'Riverside', 'Stockton', 'Irvine', 'Chula Vista', 'Fremont', 'San Bernardino', 'Modesto', 'Fontana', 'Santa Clarita', 'Oxnard', 'Moreno Valley', 'Glendale', 'Huntington Beach', 'Santa Rosa', 'Oceanside', 'Garden Grove', 'Ontario', 'Rancho Cucamonga', 'Elk Grove', 'Corona', 'Lancaster', 'Palmdale', 'Salinas', 'Pomona', 'Hayward', 'Sunnyvale', 'Pasadena', 'Escondido', 'Torrance', 'Orange', 'Fullerton', 'Thousand Oaks', 'Visalia', 'Simi Valley', 'Concord', 'Roseville', 'Santa Clara', 'Vallejo', 'Berkeley'],
+  //     'Colorado': ['Denver', 'Colorado Springs', 'Aurora', 'Fort Collins', 'Lakewood', 'Thornton', 'Arvada', 'Westminster', 'Pueblo', 'Centennial', 'Boulder', 'Greeley', 'Longmont', 'Loveland', 'Grand Junction', 'Broomfield', 'Castle Rock', 'Commerce City', 'Parker', 'Littleton'],
+  //     'Connecticut': ['Hartford', 'New Haven', 'Stamford', 'Bridgeport', 'Waterbury', 'Norwalk', 'Danbury', 'New Britain', 'Bristol', 'Meriden', 'Milford', 'West Haven', 'Middletown', 'Norwich', 'Shelton', 'Torrington', 'Stratford', 'East Hartford', 'Groton', 'Manchester'],
+  //     'Delaware': ['Wilmington', 'Dover', 'Newark', 'Middletown', 'Smyrna', 'Milford', 'Seaford', 'Georgetown', 'Elsmere', 'New Castle', 'Millsboro', 'Laurel', 'Harrington', 'Camden', 'Clayton', 'Lewes', 'Milton', 'Selbyville', 'Bridgeville', 'Delmar'],
+  //     'Florida': ['Miami', 'Orlando', 'Tampa', 'Jacksonville', 'Fort Lauderdale', 'Tallahassee', 'St. Petersburg', 'Hialeah', 'Port St. Lucie', 'Cape Coral', 'Pembroke Pines', 'Hollywood', 'Miramar', 'Coral Springs', 'Clearwater', 'Miami Gardens', 'Palm Bay', 'Pompano Beach', 'West Palm Beach', 'Lakeland', 'Davie', 'Miami Beach', 'Sunrise', 'Plantation', 'Boca Raton', 'Deltona', 'Largo', 'Deerfield Beach', 'Palm Coast', 'Melbourne'],
+  //     'Georgia': ['Atlanta', 'Augusta', 'Columbus', 'Macon', 'Savannah', 'Athens', 'Sandy Springs', 'Roswell', 'Johns Creek', 'Albany', 'Warner Robins', 'Alpharetta', 'Marietta', 'Valdosta', 'Smyrna', 'Dunwoody', 'Rome', 'East Point', 'Milton', 'Gainesville'],
+  //     'Hawaii': ['Honolulu', 'Pearl City', 'Hilo', 'Kailua', 'Waipahu', 'Kaneohe', 'Mililani', 'Kahului', 'Ewa Gentry', 'Mililani Town', 'Kihei', 'Makakilo', 'Wahiawa', 'Schofield Barracks', 'Halawa', 'Waimalu', 'Nanakuli', 'Waianae', 'Wailuku', 'Kapaa'],
+  //     'Idaho': ['Boise', 'Meridian', 'Nampa', 'Idaho Falls', 'Pocatello', 'Caldwell', 'Coeur d\'Alene', 'Twin Falls', 'Lewiston', 'Post Falls', 'Rexburg', 'Eagle', 'Moscow', 'Kuna', 'Ammon', 'Chubbuck', 'Hayden', 'Mountain Home', 'Blackfoot', 'Garden City'],
+  //     'Illinois': ['Chicago', 'Aurora', 'Naperville', 'Joliet', 'Rockford', 'Springfield', 'Elgin', 'Peoria', 'Champaign', 'Waukegan', 'Cicero', 'Bloomington', 'Arlington Heights', 'Evanston', 'Decatur', 'Schaumburg', 'Bolingbrook', 'Palatine', 'Skokie', 'Des Plaines', 'Orland Park', 'Tinley Park', 'Oak Lawn', 'Berwyn', 'Mount Prospect', 'Normal', 'Wheaton', 'Hoffman Estates', 'Oak Park', 'Downers Grove'],
+  //     'Indiana': ['Indianapolis', 'Fort Wayne', 'Evansville', 'South Bend', 'Carmel', 'Fishers', 'Bloomington', 'Hammond', 'Gary', 'Muncie', 'Lafayette', 'Terre Haute', 'Kokomo', 'Anderson', 'Noblesville', 'Greenwood', 'Elkhart', 'Mishawaka', 'Lawrence', 'Jeffersonville'],
+  //     'Iowa': ['Des Moines', 'Cedar Rapids', 'Davenport', 'Sioux City', 'Iowa City', 'Waterloo', 'Council Bluffs', 'Ames', 'West Des Moines', 'Dubuque', 'Ankeny', 'Urbandale', 'Cedar Falls', 'Marion', 'Bettendorf', 'Mason City', 'Marshalltown', 'Clinton', 'Burlington', 'Ottumwa'],
+  //     'Kansas': ['Wichita', 'Overland Park', 'Kansas City', 'Topeka', 'Olathe', 'Lawrence', 'Shawnee', 'Manhattan', 'Lenexa', 'Salina', 'Hutchinson', 'Leavenworth', 'Leawood', 'Dodge City', 'Garden City', 'Junction City', 'Emporia', 'Derby', 'Prairie Village', 'Hays'],
+  //     'Kentucky': ['Louisville', 'Lexington', 'Bowling Green', 'Owensboro', 'Covington', 'Richmond', 'Georgetown', 'Florence', 'Elizabethtown', 'Nicholasville', 'Henderson', 'Jeffersontown', 'Frankfort', 'Paducah', 'Hopkinsville', 'Independence', 'Radcliff', 'Ashland', 'Madisonville', 'Winchester'],
+  //     'Louisiana': ['New Orleans', 'Baton Rouge', 'Shreveport', 'Lafayette', 'Lake Charles', 'Kenner', 'Bossier City', 'Monroe', 'Alexandria', 'Houma', 'Marrero', 'Laplace', 'New Iberia', 'Slidell', 'Prairieville', 'Metairie', 'Chalmette', 'Ruston', 'Hammond', 'Sulphur'],
+  //     'Maine': ['Portland', 'Lewiston', 'Bangor', 'South Portland', 'Auburn', 'Biddeford', 'Sanford', 'Saco', 'Augusta', 'Westbrook', 'Waterville', 'Presque Isle', 'Brunswick', 'Scarborough', 'Gorham', 'Windham', 'Bath', 'Old Town', 'Caribou', 'Kennebunk'],
+  //     'Maryland': ['Baltimore', 'Columbia', 'Germantown', 'Silver Spring', 'Waldorf', 'Glen Burnie', 'Frederick', 'Ellicott City', 'Dundalk', 'Rockville', 'Bethesda', 'Gaithersburg', 'Bowie', 'Hagerstown', 'Annapolis', 'Towson', 'Salisbury', 'Carney', 'Parkville', 'Potomac'],
+  //     'Massachusetts': ['Boston', 'Worcester', 'Springfield', 'Cambridge', 'Lowell', 'Brockton', 'Quincy', 'Lynn', 'New Bedford', 'Fall River', 'Newton', 'Lawrence', 'Somerville', 'Framingham', 'Haverhill', 'Waltham', 'Malden', 'Brookline', 'Plymouth', 'Medford', 'Taunton', 'Revere', 'Peabody', 'Methuen', 'Barnstable', 'Pittsfield', 'Attleboro', 'Everett', 'Salem', 'Westfield'],
+  //     'Michigan': ['Detroit', 'Grand Rapids', 'Warren', 'Sterling Heights', 'Ann Arbor', 'Lansing', 'Flint', 'Dearborn', 'Livonia', 'Clinton', 'Canton', 'Westland', 'Troy', 'Farmington Hills', 'Macomb', 'Kalamazoo', 'Shelby', 'Wyoming', 'Southfield', 'Rochester Hills', 'Taylor', 'St. Clair Shores', 'Pontiac', 'Royal Oak', 'Novi', 'Dearborn Heights', 'Battle Creek', 'Saginaw', 'Kentwood', 'East Lansing'],
+  //     'Minnesota': ['Minneapolis', 'St. Paul', 'Rochester', 'Duluth', 'Bloomington', 'Brooklyn Park', 'Plymouth', 'St. Cloud', 'Eagan', 'Woodbury', 'Maple Grove', 'Eden Prairie', 'Coon Rapids', 'Burnsville', 'Blaine', 'Lakeville', 'Minnetonka', 'Apple Valley', 'Edina', 'St. Louis Park'],
+  //     'Mississippi': ['Jackson', 'Gulfport', 'Southaven', 'Hattiesburg', 'Biloxi', 'Meridian', 'Tupelo', 'Olive Branch', 'Greenville', 'Horn Lake', 'Pearl', 'Clinton', 'Madison', 'Ridgeland', 'Starkville', 'Columbus', 'Vicksburg', 'Pascagoula', 'Brandon', 'Oxford'],
+  //     'Missouri': ['Kansas City', 'St. Louis', 'Springfield', 'Columbia', 'Independence', 'Lee\'s Summit', 'O\'Fallon', 'St. Joseph', 'St. Charles', 'Blue Springs', 'St. Peters', 'Florissant', 'Joplin', 'Chesterfield', 'Jefferson City', 'Cape Girardeau', 'Oakville', 'Wildwood', 'University City', 'Ballwin'],
+  //     'Montana': ['Billings', 'Missoula', 'Great Falls', 'Bozeman', 'Butte', 'Helena', 'Kalispell', 'Havre', 'Anaconda', 'Miles City', 'Belgrade', 'Livingston', 'Laurel', 'Whitefish', 'Lewistown', 'Sidney', 'Glendive', 'Columbia Falls', 'Polson', 'Hamilton'],
+  //     'Nebraska': ['Omaha', 'Lincoln', 'Bellevue', 'Grand Island', 'Kearney', 'Fremont', 'Hastings', 'Norfolk', 'Columbus', 'Papillion', 'North Platte', 'La Vista', 'Scottsbluff', 'South Sioux City', 'Beatrice', 'Lexington', 'Alliance', 'Gering', 'Blair', 'York'],
+  //     'Nevada': ['Las Vegas', 'Henderson', 'Reno', 'North Las Vegas', 'Sparks', 'Carson City', 'Fernley', 'Elko', 'Mesquite', 'Boulder City', 'Fallon', 'Winnemucca', 'West Wendover', 'Ely', 'Yerington', 'Carlin', 'Lovelock', 'Wells', 'Caliente', 'Tonopah'],
+  //     'New Hampshire': ['Manchester', 'Nashua', 'Concord', 'Derry', 'Rochester', 'Salem', 'Dover', 'Merrimack', 'Londonderry', 'Hudson', 'Keene', 'Bedford', 'Portsmouth', 'Goffstown', 'Laconia', 'Hampton', 'Milford', 'Durham', 'Exeter', 'Windham'],
+  //     'New Jersey': ['Newark', 'Jersey City', 'Paterson', 'Elizabeth', 'Edison', 'Woodbridge', 'Lakewood', 'Toms River', 'Hamilton', 'Trenton', 'Clifton', 'Camden', 'Brick', 'Cherry Hill', 'Passaic', 'Union City', 'Old Bridge', 'Bayonne', 'Franklin', 'Vineland', 'North Bergen', 'Union', 'Piscataway', 'New Brunswick', 'Jackson', 'Wayne', 'Irvington', 'Parsippany-Troy Hills', 'Howell', 'Perth Amboy'],
+  //     'New Mexico': ['Albuquerque', 'Las Cruces', 'Rio Rancho', 'Santa Fe', 'Roswell', 'Farmington', 'Clovis', 'Hobbs', 'Alamogordo', 'Carlsbad', 'Gallup', 'Deming', 'Los Alamos', 'Chaparral', 'Sunland Park', 'Las Vegas', 'Portales', 'Artesia', 'Lovington', 'Silver City'],
+  //     'New York': ['New York City', 'Buffalo', 'Rochester', 'Albany', 'Syracuse', 'Yonkers', 'Bronx', 'Brooklyn', 'Manhattan', 'Queens', 'Staten Island', 'New Rochelle', 'Mount Vernon', 'Schenectady', 'Utica', 'White Plains', 'Hempstead', 'Troy', 'Niagara Falls', 'Binghamton', 'Freeport', 'Valley Stream', 'Long Beach', 'Spring Valley', 'Rome', 'North Tonawanda', 'Jamestown', 'Poughkeepsie', 'Ithaca', 'Middletown'],
+  //     'North Carolina': ['Charlotte', 'Raleigh', 'Greensboro', 'Durham', 'Winston-Salem', 'Fayetteville', 'Cary', 'Wilmington', 'High Point', 'Concord', 'Greenville', 'Asheville', 'Gastonia', 'Jacksonville', 'Chapel Hill', 'Rocky Mount', 'Burlington', 'Huntersville', 'Wilson', 'Kannapolis'],
+  //     'North Dakota': ['Fargo', 'Bismarck', 'Grand Forks', 'Minot', 'West Fargo', 'Williston', 'Dickinson', 'Mandan', 'Jamestown', 'Wahpeton', 'Devils Lake', 'Valley City', 'Grafton', 'Rugby', 'Beulah', 'Watford City', 'Lincoln', 'Horace', 'Casselton', 'Lisbon'],
+  //     'Ohio': ['Columbus', 'Cleveland', 'Cincinnati', 'Toledo', 'Akron', 'Dayton', 'Parma', 'Canton', 'Youngstown', 'Lorain', 'Hamilton', 'Springfield', 'Kettering', 'Elyria', 'Lakewood', 'Cuyahoga Falls', 'Middletown', 'Euclid', 'Newark', 'Mansfield', 'Mentor', 'Beavercreek', 'Cleveland Heights', 'Strongsville', 'Dublin', 'Fairfield', 'Findlay', 'Warren', 'Lancaster', 'Lima'],
+  //     'Oklahoma': ['Oklahoma City', 'Tulsa', 'Norman', 'Broken Arrow', 'Edmond', 'Lawton', 'Moore', 'Midwest City', 'Enid', 'Stillwater', 'Muskogee', 'Bartlesville', 'Owasso', 'Shawnee', 'Yukon', 'Ardmore', 'Ponca City', 'Duncan', 'Del City', 'Sapulpa'],
+  //     'Oregon': ['Portland', 'Salem', 'Eugene', 'Gresham', 'Hillsboro', 'Beaverton', 'Bend', 'Medford', 'Springfield', 'Corvallis', 'Albany', 'Tigard', 'Lake Oswego', 'Keizer', 'Grants Pass', 'Oregon City', 'McMinnville', 'Redmond', 'Tualatin', 'West Linn'],
+  //     'Pennsylvania': ['Philadelphia', 'Pittsburgh', 'Allentown', 'Erie', 'Reading', 'Scranton', 'Bethlehem', 'Lancaster', 'Harrisburg', 'Altoona', 'York', 'State College', 'Wilkes-Barre', 'Chester', 'Williamsport', 'Easton', 'Lebanon', 'Hazleton', 'New Castle', 'Johnstown', 'McKeesport', 'Hermitage', 'Greensburg', 'Pottstown', 'Norristown', 'Monroeville', 'Plum', 'Bethel Park', 'Lower Merion', 'Abington'],
+  //     'Rhode Island': ['Providence', 'Warwick', 'Cranston', 'Pawtucket', 'East Providence', 'Woonsocket', 'Coventry', 'Cumberland', 'North Providence', 'South Kingstown', 'West Warwick', 'Johnston', 'North Kingstown', 'Newport', 'Bristol', 'Westerly', 'Smithfield', 'Lincoln', 'Central Falls', 'Portsmouth'],
+  //     'South Carolina': ['Charleston', 'Columbia', 'North Charleston', 'Mount Pleasant', 'Rock Hill', 'Greenville', 'Summerville', 'Sumter', 'Goose Creek', 'Hilton Head Island', 'Florence', 'Spartanburg', 'Myrtle Beach', 'Aiken', 'Anderson', 'Greer', 'Mauldin', 'Greenwood', 'North Augusta', 'Easley'],
+  //     'South Dakota': ['Sioux Falls', 'Rapid City', 'Aberdeen', 'Brookings', 'Watertown', 'Mitchell', 'Yankton', 'Pierre', 'Huron', 'Spearfish', 'Vermillion', 'Brandon', 'Box Elder', 'Madison', 'Sturgis', 'Belle Fourche', 'Harrisburg', 'Tea', 'Dell Rapids', 'Lennox'],
+  //     'Tennessee': ['Nashville', 'Memphis', 'Knoxville', 'Chattanooga', 'Clarksville', 'Murfreesboro', 'Franklin', 'Johnson City', 'Jackson', 'Bartlett', 'Hendersonville', 'Kingsport', 'Collierville', 'Smyrna', 'Cleveland', 'Brentwood', 'Germantown', 'Columbia', 'Spring Hill', 'La Vergne'],
+  //     'Texas': ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Laredo', 'Lubbock', 'Garland', 'Irving', 'Amarillo', 'Grand Prairie', 'Brownsville', 'McKinney', 'Frisco', 'Pasadena', 'Mesquite', 'Killeen', 'McAllen', 'Waco', 'Carrollton', 'Denton', 'Midland', 'Abilene', 'Beaumont', 'Round Rock', 'Odessa', 'Wichita Falls', 'Richardson', 'Tyler', 'Lewisville', 'College Station', 'Pearland', 'San Angelo', 'Allen', 'League City', 'Sugar Land'],
+  //     'Utah': ['Salt Lake City', 'West Valley City', 'Provo', 'West Jordan', 'Orem', 'Sandy', 'Ogden', 'St. George', 'Layton', 'Taylorsville', 'South Jordan', 'Lehi', 'Logan', 'Murray', 'Draper', 'Bountiful', 'Riverton', 'Roy', 'Spanish Fork', 'Pleasant Grove'],
+  //     'Vermont': ['Burlington', 'South Burlington', 'Rutland', 'Barre', 'Montpelier', 'Winooski', 'St. Albans', 'Newport', 'Vergennes', 'Essex Junction', 'Hartford', 'Middlebury', 'Springfield', 'Bennington', 'Brattleboro', 'Colchester', 'Milton', 'Williston', 'St. Johnsbury', 'Shelburne'],
+  //     'Virginia': ['Virginia Beach', 'Norfolk', 'Chesapeake', 'Richmond', 'Newport News', 'Alexandria', 'Hampton', 'Roanoke', 'Portsmouth', 'Suffolk', 'Lynchburg', 'Harrisonburg', 'Leesburg', 'Charlottesville', 'Danville', 'Blacksburg', 'Manassas', 'Petersburg', 'Fredericksburg', 'Winchester'],
+  //     'Washington': ['Seattle', 'Spokane', 'Tacoma', 'Vancouver', 'Bellevue', 'Kent', 'Everett', 'Renton', 'Spokane Valley', 'Federal Way', 'Yakima', 'Kirkland', 'Bellingham', 'Kennewick', 'Auburn', 'Pasco', 'Marysville', 'Lakewood', 'Redmond', 'Shoreline', 'Richland', 'Sammamish', 'Burien', 'Olympia', 'Lacey', 'Edmonds', 'Bremerton', 'Puyallup', 'Lynnwood', 'Bothell'],
+  //     'West Virginia': ['Charleston', 'Huntington', 'Morgantown', 'Parkersburg', 'Wheeling', 'Weirton', 'Fairmont', 'Martinsburg', 'Beckley', 'Clarksburg', 'South Charleston', 'St. Albans', 'Vienna', 'Bluefield', 'Moundsville', 'Bridgeport', 'Dunbar', 'Oak Hill', 'Elkins', 'Princeton'],
+  //     'Wisconsin': ['Milwaukee', 'Madison', 'Green Bay', 'Kenosha', 'Racine', 'Appleton', 'Waukesha', 'Eau Claire', 'Oshkosh', 'Janesville', 'West Allis', 'La Crosse', 'Sheboygan', 'Wauwatosa', 'Fond du Lac', 'New Berlin', 'Wausau', 'Brookfield', 'Greenfield', 'Beloit'],
+  //     'Wyoming': ['Cheyenne', 'Casper', 'Laramie', 'Gillette', 'Rock Springs', 'Sheridan', 'Green River', 'Evanston', 'Riverton', 'Jackson', 'Cody', 'Rawlins', 'Lander', 'Torrington', 'Powell', 'Douglas', 'Worland', 'Buffalo', 'Newcastle', 'Wheatland']
+  //   },
+  //   'India': {
+  //     'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Nellore', 'Tirupati', 'Kakinada', 'Rajahmundry', 'Kadapa', 'Anantapur', 'Eluru', 'Ongole', 'Kurnool', 'Machilipatnam', 'Srikakulam', 'Vizianagaram', 'Chittoor', 'Bhimavaram', 'Tenali', 'Proddatur', 'Hindupur'],
+  //     'Arunachal Pradesh': ['Itanagar', 'Naharlagun', 'Pasighat', 'Namsai', 'Tezu', 'Tawang', 'Ziro', 'Bomdila', 'Seppa', 'Changlang', 'Along', 'Roing', 'Daporijo', 'Aalo', 'Khonsa'],
+  //     'Assam': ['Guwahati', 'Silchar', 'Dibrugarh', 'Jorhat', 'Nagaon', 'Tinsukia', 'Tezpur', 'Bongaigaon', 'Dhubri', 'Diphu', 'North Lakhimpur', 'Karimganj', 'Sivasagar', 'Goalpara', 'Barpeta', 'Golaghat', 'Haflong', 'Mangaldoi', 'Lumding', 'Hailakandi'],
+  //     'Bihar': ['Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Purnia', 'Darbhanga', 'Bihar Sharif', 'Arrah', 'Begusarai', 'Katihar', 'Munger', 'Chapra', 'Danapur', 'Saharsa', 'Hajipur', 'Sasaram', 'Dehri', 'Siwan', 'Motihari', 'Nawada'],
+  //     'Chhattisgarh': ['Raipur', 'Bhilai', 'Bilaspur', 'Korba', 'Durg', 'Rajnandgaon', 'Jagdalpur', 'Raigarh', 'Ambikapur', 'Mahasamund', 'Dhamtari', 'Chirmiri', 'Bhatapara', 'Dalli-Rajhara', 'Naila Janjgir', 'Tilda Newra', 'Mungeli', 'Manendragarh', 'Sakti', 'Kondagaon'],
+  //     'Goa': ['Panaji', 'Margao', 'Vasco da Gama', 'Mapusa', 'Ponda', 'Bicholim', 'Curchorem', 'Sanquelim', 'Cuncolim', 'Valpoi', 'Pernem', 'Quepem', 'Canacona', 'Sanguem', 'Aldona'],
+  //     'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar', 'Jamnagar', 'Gandhinagar', 'Junagadh', 'Gandhidham', 'Anand', 'Navsari', 'Morbi', 'Nadiad', 'Surendranagar', 'Bharuch', 'Mehsana', 'Bhuj', 'Porbander', 'Palanpur', 'Valsad', 'Vapi', 'Godhra', 'Bhavnagar', 'Ankleshwar', 'Botad', 'Amreli', 'Deesa', 'Jetpur', 'Gondal', 'Veraval'],
+  //     'Haryana': ['Faridabad', 'Gurgaon', 'Rohtak', 'Hisar', 'Panipat', 'Karnal', 'Sonipat', 'Yamunanagar', 'Panchkula', 'Bhiwani', 'Ambala', 'Sirsa', 'Bahadurgarh', 'Jind', 'Thanesar', 'Kaithal', 'Rewari', 'Palwal', 'Pundri', 'Kosli'],
+  //     'Himachal Pradesh': ['Shimla', 'Dharamshala', 'Solan', 'Mandi', 'Kullu', 'Palampur', 'Baddi', 'Nahan', 'Una', 'Hamirpur', 'Kangra', 'Bilaspur', 'Chamba', 'Sundernagar', 'Jogindernagar', 'Manali', 'Nalagarh', 'Parwanoo', 'Arki', 'Rampur'],
+  //     'Jharkhand': ['Ranchi', 'Jamshedpur', 'Dhanbad', 'Bokaro', 'Deoghar', 'Phusro', 'Hazaribagh', 'Giridih', 'Ramgarh', 'Medininagar', 'Chirkunda', 'Jharia', 'Chaibasa', 'Dumka', 'Sahibganj', 'Ghatshila', 'Godda', 'Koderma', 'Lohardaga', 'Pakur'],
+  //     'Karnataka': ['Bangalore', 'Mysore', 'Mangalore', 'Hubli', 'Belgaum', 'Gulbarga', 'Bellary', 'Davangere', 'Tumkur', 'Shimoga', 'Bijapur', 'Bidar', 'Raichur', 'Hassan', 'Udupi', 'Mandya', 'Chitradurga', 'Kolar', 'Bagalkot', 'Gadag', 'Hospet', 'Karwar', 'Ranebennur', 'Chikmagalur', 'Sirsi', 'Bhadravati', 'Dharwad', 'Haveri', 'Yadgir', 'Koppal'],
+  //     'Kerala': ['Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Thrissur', 'Kollam', 'Palakkad', 'Alappuzha', 'Malappuram', 'Kannur', 'Kasaragod', 'Kottayam', 'Pathanamthitta', 'Idukki', 'Wayanad', 'Thalassery', 'Ponnani', 'Vatakara', 'Kanhangad', 'Payyanur', 'Koyilandy', 'Parappanangadi', 'Kalamassery', 'Neyyattinkara', 'Kayamkulam', 'Nedumangad', 'Kannur', 'Tirur', 'Kottakkal', 'Manjeri', 'Changanassery'],
+  //     'Madhya Pradesh': ['Bhopal', 'Indore', 'Jabalpur', 'Gwalior', 'Ujjain', 'Sagar', 'Dewas', 'Satna', 'Ratlam', 'Rewa', 'Katni', 'Singrauli', 'Burhanpur', 'Khandwa', 'Morena', 'Bhind', 'Chhindwara', 'Guna', 'Shivpuri', 'Vidisha', 'Damoh', 'Mandsaur', 'Khargone', 'Neemuch', 'Pithampur', 'Hoshangabad', 'Itarsi', 'Sehore', 'Betul', 'Seoni'],
+  //     'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Thane', 'Aurangabad', 'Solapur', 'Kalyan-Dombivli', 'Vasai-Virar', 'Navi Mumbai', 'Amravati', 'Kolhapur', 'Sangli', 'Jalgaon', 'Akola', 'Latur', 'Dhule', 'Ahmednagar', 'Chandrapur', 'Parbhani', 'Ichalkaranji', 'Jalna', 'Ambernath', 'Bhiwandi', 'Panvel', 'Mira-Bhayandar', 'Ulhasnagar', 'Malegaon', 'Nanded', 'Satara', 'Wardha', 'Yavatmal', 'Bid', 'Gondia', 'Beed', 'Osmanabad'],
+  //     'Manipur': ['Imphal', 'Thoubal', 'Bishnupur', 'Churachandpur', 'Kakching', 'Ukhrul', 'Senapati', 'Tamenglong', 'Jiribam', 'Moreh', 'Mayang Imphal', 'Yairipok', 'Wangjing', 'Andro', 'Nambol'],
+  //     'Meghalaya': ['Shillong', 'Tura', 'Nongstoin', 'Jowai', 'Baghmara', 'Williamnagar', 'Nongpoh', 'Mairang', 'Resubelpara', 'Mawkyrwat', 'Ampati', 'Cherrapunji', 'Mairang', 'Khliehriat', 'Nongstoin'],
+  //     'Mizoram': ['Aizawl', 'Lunglei', 'Champhai', 'Serchhip', 'Kolasib', 'Saiha', 'Lawngtlai', 'Mamit', 'Hnahthial', 'Saitual', 'Khawzawl', 'Biate', 'Darlawn', 'Thenzawl', 'North Vanlaiphai'],
+  //     'Nagaland': ['Kohima', 'Dimapur', 'Mokokchung', 'Tuensang', 'Wokha', 'Zunheboto', 'Phek', 'Mon', 'Kiphire', 'Longleng', 'Peren', 'Chumukedima', 'Pfutsero', 'Tuli', 'Mangkolemba'],
+  //     'Odisha': ['Bhubaneswar', 'Cuttack', 'Rourkela', 'Berhampur', 'Sambalpur', 'Puri', 'Balasore', 'Bhadrak', 'Baripada', 'Jharsuguda', 'Jeypore', 'Bargarh', 'Balangir', 'Rayagada', 'Bhawanipatna', 'Dhenkanal', 'Barbil', 'Kendrapara', 'Sunabeda', 'Paradip', 'Angul', 'Jatani', 'Talcher', 'Titlagarh', 'Phulbani'],
+  //     'Punjab': ['Ludhiana', 'Amritsar', 'Jalandhar', 'Patiala', 'Bathinda', 'Mohali', 'Hoshiarpur', 'Batala', 'Pathankot', 'Moga', 'Abohar', 'Malerkotla', 'Khanna', 'Phagwara', 'Muktsar', 'Barnala', 'Firozpur', 'Kapurthala', 'Zirakpur', 'Kot Kapura', 'Faridkot', 'Sunam', 'Jagraon', 'Morinda', 'Gurdaspur'],
+  //     'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Alwar', 'Bharatpur', 'Bhilwara', 'Sikar', 'Pali', 'Sri Ganganagar', 'Tonk', 'Kishangarh', 'Beawar', 'Hanumangarh', 'Chittorgarh', 'Churu', 'Jhunjhunu', 'Barmer', 'Bundi', 'Nagaur', 'Sawai Madhopur', 'Makrana', 'Sujangarh', 'Lachhmangarh', 'Rajsamand', 'Mount Abu', 'Pushkar', 'Nathdwara'],
+  //     'Sikkim': ['Gangtok', 'Namchi', 'Gyalshing', 'Mangan', 'Rangpo', 'Singtam', 'Jorethang', 'Nayabazar', 'Melli', 'Ravangla', 'Pelling', 'Rongli', 'Yuksom', 'Lachung', 'Lachen'],
+  //     'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Vellore', 'Erode', 'Thoothukudi', 'Thanjavur', 'Dindigul', 'Ranipet', 'Sivakasi', 'Karur', 'Udhagamandalam', 'Hosur', 'Nagercoil', 'Kanchipuram', 'Kumbakonam', 'Tiruppur', 'Avadi', 'Tambaram', 'Cuddalore', 'Pollachi', 'Rajapalayam', 'Gudiyatham', 'Vaniyambadi', 'Ambur', 'Nagapattinam', 'Arakkonam', 'Pudukkottai', 'Neyveli', 'Palani', 'Vriddhachalam', 'Kanyakumari'],
+  //     'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad', 'Khammam', 'Karimnagar', 'Ramagundam', 'Mahbubnagar', 'Nalgonda', 'Adilabad', 'Suryapet', 'Siddipet', 'Miryalaguda', 'Jagtial', 'Mancherial', 'Nirmal', 'Kothagudem', 'Bodhan', 'Palwancha', 'Mandamarri', 'Koratla', 'Sircilla', 'Tandur', 'Sangareddy', 'Vikarabad', 'Wanaparthy', 'Bhongir', 'Gadwal', 'Kamareddy', 'Bellampalle', 'Nagarkurnool'],
+  //     'Tripura': ['Agartala', 'Udaipur', 'Dharmanagar', 'Kailashahar', 'Ambassa', 'Belonia', 'Khowai', 'Teliamura', 'Sabroom', 'Sonamura', 'Kumarghat', 'Bishramganj', 'Ranirbazar', 'Kamalpur', 'Amarpur'],
+  //     'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Varanasi', 'Agra', 'Noida', 'Meerut', 'Allahabad', 'Ghaziabad', 'Bareilly', 'Aligarh', 'Moradabad', 'Saharanpur', 'Gorakhpur', 'Firozabad', 'Jhansi', 'Muzaffarnagar', 'Mathura', 'Rampur', 'Shahjahanpur', 'Farrukhabad', 'Ayodhya', 'Mau', 'Hapur', 'Etawah', 'Mirzapur', 'Bulandshahr', 'Sambhal', 'Amroha', 'Hardoi', 'Fatehpur', 'Raebareli', 'Orai', 'Sitapur', 'Bahraich', 'Modinagar', 'Unnao', 'Jaunpur', 'Lakhimpur', 'Hathras', 'Banda', 'Pilibhit', 'Barabanki', 'Khurja', 'Gonda', 'Mainpuri', 'Lalitpur', 'Etah', 'Deoria', 'Budaun', 'Bijnor'],
+  //     'Uttarakhand': ['Dehradun', 'Haridwar', 'Roorkee', 'Haldwani', 'Rudrapur', 'Kashipur', 'Rishikesh', 'Ramnagar', 'Pithoragarh', 'Jaspur', 'Manglaur', 'Nainital', 'Pauri', 'Almora', 'Srinagar', 'Tehri', 'Kotdwara', 'Mussoorie', 'Champawat', 'Bageshwar', 'Rudraprayag', 'Uttarkashi', 'Vikasnagar', 'Clement Town', 'Khatima'],
+  //     'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Asansol', 'Siliguri', 'Bardhaman', 'Malda', 'Baharampur', 'Habra', 'Kharagpur', 'Shantipur', 'Dankuni', 'Dhulian', 'Ranaghat', 'Haldia', 'Raiganj', 'Krishnanagar', 'Nabadwip', 'Medinipur', 'Jalpaiguri', 'Balurghat', 'Basirhat', 'Bankura', 'Chakdaha', 'Darjeeling', 'Alipurduar', 'Purulia', 'Jangipur', 'Bolpur', 'Bangaon'],
+  //     'Delhi': ['New Delhi', 'Central Delhi', 'North Delhi', 'South Delhi', 'East Delhi', 'West Delhi', 'North East Delhi', 'North West Delhi', 'South East Delhi', 'South West Delhi', 'Shahdara']
+  //   },
+  //   'United Kingdom': {
+  //     'England': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Sheffield', 'Bristol', 'Newcastle'],
+  //     'Scotland': ['Edinburgh', 'Glasgow', 'Aberdeen', 'Dundee', 'Inverness', 'Perth', 'Stirling'],
+  //     'Wales': ['Cardiff', 'Swansea', 'Newport', 'Wrexham', 'Barry', 'Merthyr Tydfil'],
+  //     'Northern Ireland': ['Belfast', 'Derry', 'Lisburn', 'Newry', 'Armagh']
+  //   },
+  //   'Canada': {
+  //     'Alberta': ['Calgary', 'Edmonton', 'Red Deer', 'Lethbridge', 'St. Albert'],
+  //     'British Columbia': ['Vancouver', 'Victoria', 'Surrey', 'Burnaby', 'Richmond', 'Kelowna'],
+  //     'Manitoba': ['Winnipeg', 'Brandon', 'Steinbach', 'Thompson', 'Portage la Prairie'],
+  //     'New Brunswick': ['Fredericton', 'Moncton', 'Saint John', 'Dieppe', 'Miramichi'],
+  //     'Newfoundland and Labrador': ['St. John\'s', 'Mount Pearl', 'Corner Brook', 'Conception Bay South', 'Grand Falls-Windsor'],
+  //     'Nova Scotia': ['Halifax', 'Dartmouth', 'Sydney', 'Truro', 'New Glasgow'],
+  //     'Ontario': ['Toronto', 'Ottawa', 'Mississauga', 'Hamilton', 'London', 'Kitchener', 'Windsor'],
+  //     'Prince Edward Island': ['Charlottetown', 'Summerside', 'Stratford', 'Cornwall', 'Montague'],
+  //     'Quebec': ['Montreal', 'Quebec City', 'Laval', 'Gatineau', 'Longueuil', 'Sherbrooke'],
+  //     'Saskatchewan': ['Saskatoon', 'Regina', 'Prince Albert', 'Moose Jaw', 'Swift Current']
+  //   },
+  //   'Australia': {
+  //     'Australian Capital Territory': ['Canberra', 'Queanbeyan', 'Gungahlin', 'Tuggeranong', 'Belconnen'],
+  //     'New South Wales': ['Sydney', 'Newcastle', 'Wollongong', 'Central Coast', 'Maitland', 'Wagga Wagga'],
+  //     'Northern Territory': ['Darwin', 'Alice Springs', 'Palmerston', 'Katherine', 'Nhulunbuy'],
+  //     'Queensland': ['Brisbane', 'Gold Coast', 'Cairns', 'Townsville', 'Toowoomba', 'Mackay'],
+  //     'South Australia': ['Adelaide', 'Mount Gambier', 'Whyalla', 'Murray Bridge', 'Port Augusta'],
+  //     'Tasmania': ['Hobart', 'Launceston', 'Devonport', 'Burnie', 'Kingston'],
+  //     'Victoria': ['Melbourne', 'Geelong', 'Ballarat', 'Bendigo', 'Shepparton', 'Mildura'],
+  //     'Western Australia': ['Perth', 'Mandurah', 'Bunbury', 'Kalgoorlie', 'Geraldton']
+  //   },
+  //   'Germany': {
+  //     'Bavaria': ['Munich', 'Nuremberg', 'Augsburg', 'Regensburg', 'Ingolstadt'],
+  //     'Berlin': ['Berlin'],
+  //     'Baden-Württemberg': ['Stuttgart', 'Mannheim', 'Karlsruhe', 'Freiburg', 'Heidelberg'],
+  //     'North Rhine-Westphalia': ['Cologne', 'Dortmund', 'Essen', 'Düsseldorf', 'Duisburg'],
+  //     'Hamburg': ['Hamburg'],
+  //     'Hesse': ['Frankfurt', 'Wiesbaden', 'Kassel', 'Darmstadt', 'Offenbach']
+  //   },
+  //   'France': {
+  //     'Île-de-France': ['Paris', 'Boulogne-Billancourt', 'Argenteuil', 'Montreuil', 'Versailles'],
+  //     'Provence-Alpes-Côte d\'Azur': ['Marseille', 'Nice', 'Toulon', 'Aix-en-Provence', 'Avignon'],
+  //     'Auvergne-Rhône-Alpes': ['Lyon', 'Grenoble', 'Villeurbanne', 'Saint-Étienne', 'Clermont-Ferrand'],
+  //     'Occitanie': ['Toulouse', 'Montpellier', 'Nîmes', 'Perpignan', 'Béziers'],
+  //     'Nouvelle-Aquitaine': ['Bordeaux', 'Limoges', 'Poitiers', 'La Rochelle', 'Pau'],
+  //     'Brittany': ['Rennes', 'Brest', 'Quimper', 'Lorient', 'Vannes']
+  //   },
+  //   'China': {
+  //     'Beijing': ['Beijing'],
+  //     'Shanghai': ['Shanghai'],
+  //     'Guangdong': ['Guangzhou', 'Shenzhen', 'Dongguan', 'Foshan', 'Zhuhai'],
+  //     'Zhejiang': ['Hangzhou', 'Ningbo', 'Wenzhou', 'Shaoxing', 'Taizhou'],
+  //     'Jiangsu': ['Nanjing', 'Suzhou', 'Wuxi', 'Changzhou', 'Xuzhou'],
+  //     'Sichuan': ['Chengdu', 'Mianyang', 'Deyang', 'Nanchong', 'Yibin']
+  //   },
+  //   'Japan': {
+  //     'Tokyo': ['Tokyo', 'Setagaya', 'Nerima', 'Ota', 'Edogawa'],
+  //     'Osaka': ['Osaka', 'Sakai', 'Higashiosaka', 'Hirakata', 'Toyonaka'],
+  //     'Kyoto': ['Kyoto'],
+  //     'Hokkaido': ['Sapporo', 'Asahikawa', 'Hakodate', 'Kushiro', 'Obihiro'],
+  //     'Aichi': ['Nagoya', 'Toyota', 'Okazaki', 'Ichinomiya', 'Kasugai']
+  //   },
+  //   'Brazil': {
+  //     'São Paulo': ['São Paulo', 'Campinas', 'São José dos Campos', 'Ribeirão Preto', 'Santos'],
+  //     'Rio de Janeiro': ['Rio de Janeiro', 'Niterói', 'Duque de Caxias', 'Nova Iguaçu', 'Belford Roxo'],
+  //     'Minas Gerais': ['Belo Horizonte', 'Uberlândia', 'Contagem', 'Juiz de Fora', 'Betim'],
+  //     'Bahia': ['Salvador', 'Feira de Santana', 'Vitória da Conquista', 'Camaçari', 'Itabuna'],
+  //     'Paraná': ['Curitiba', 'Londrina', 'Maringá', 'Ponta Grossa', 'Cascavel']
+  //   },
+  //   'Mexico': {
+  //     'Mexico City': ['Mexico City'],
+  //     'Jalisco': ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Tonalá', 'Puerto Vallarta'],
+  //     'Nuevo León': ['Monterrey', 'Guadalupe', 'San Nicolás de los Garza', 'Apodaca', 'Santa Catarina'],
+  //     'Puebla': ['Puebla', 'Tehuacán', 'San Martín Texmelucan', 'Atlixco', 'Cholula'],
+  //     'Guanajuato': ['León', 'Irapuato', 'Celaya', 'Salamanca', 'Guanajuato']
+  //   },
+  //   'Italy': {
+  //     'Lazio': ['Rome', 'Latina', 'Guidonia Montecelio', 'Fiumicino', 'Aprilia'],
+  //     'Lombardy': ['Milan', 'Brescia', 'Monza', 'Bergamo', 'Como'],
+  //     'Campania': ['Naples', 'Salerno', 'Giugliano in Campania', 'Torre del Greco', 'Pozzuoli'],
+  //     'Sicily': ['Palermo', 'Catania', 'Messina', 'Syracuse', 'Marsala'],
+  //     'Veneto': ['Venice', 'Verona', 'Padua', 'Vicenza', 'Treviso']
+  //   },
+  //   'Spain': {
+  //     'Madrid': ['Madrid', 'Móstoles', 'Alcalá de Henares', 'Fuenlabrada', 'Leganés'],
+  //     'Catalonia': ['Barcelona', 'Hospitalet de Llobregat', 'Badalona', 'Terrassa', 'Sabadell'],
+  //     'Andalusia': ['Seville', 'Málaga', 'Córdoba', 'Granada', 'Jerez de la Frontera'],
+  //     'Valencia': ['Valencia', 'Alicante', 'Elche', 'Castellón de la Plana', 'Torrevieja'],
+  //     'Basque Country': ['Bilbao', 'Vitoria-Gasteiz', 'San Sebastián', 'Barakaldo', 'Getxo']
+  //   },
+  //   'South Africa': {
+  //     'Gauteng': ['Johannesburg', 'Pretoria', 'Soweto', 'Benoni', 'Boksburg'],
+  //     'Western Cape': ['Cape Town', 'Stellenbosch', 'Paarl', 'George', 'Worcester'],
+  //     'KwaZulu-Natal': ['Durban', 'Pietermaritzburg', 'Newcastle', 'Richards Bay', 'Ladysmith'],
+  //     'Eastern Cape': ['Port Elizabeth', 'East London', 'Mthatha', 'Grahamstown', 'King William\'s Town']
+  //   },
+  //   'Argentina': {
+  //     'Buenos Aires': ['Buenos Aires', 'La Plata', 'Mar del Plata', 'Bahía Blanca', 'Quilmes'],
+  //     'Córdoba': ['Córdoba', 'Villa María', 'Río Cuarto', 'San Francisco', 'Villa Carlos Paz'],
+  //     'Santa Fe': ['Rosario', 'Santa Fe', 'Rafaela', 'Reconquista', 'Venado Tuerto'],
+  //     'Mendoza': ['Mendoza', 'Godoy Cruz', 'Las Heras', 'Maipú', 'San Rafael']
+  //   },
+  //   'Russia': {
+  //     'Moscow': ['Moscow'],
+  //     'Saint Petersburg': ['Saint Petersburg'],
+  //     'Moscow Oblast': ['Balashikha', 'Khimki', 'Podolsk', 'Korolev', 'Mytishchi'],
+  //     'Krasnodar Krai': ['Krasnodar', 'Sochi', 'Novorossiysk', 'Armavir', 'Yeysk'],
+  //     'Sverdlovsk Oblast': ['Yekaterinburg', 'Nizhny Tagil', 'Kamensk-Uralsky', 'Pervouralsk', 'Serov']
+  //   },
+  //   'Netherlands': {
+  //     'North Holland': ['Amsterdam', 'Haarlem', 'Zaanstad', 'Haarlemmermeer', 'Alkmaar'],
+  //     'South Holland': ['Rotterdam', 'The Hague', 'Leiden', 'Dordrecht', 'Zoetermeer'],
+  //     'North Brabant': ['Eindhoven', 'Tilburg', 'Breda', 's-Hertogenbosch', 'Helmond'],
+  //     'Utrecht': ['Utrecht', 'Amersfoort', 'Veenendaal', 'Nieuwegein', 'Zeist']
+  //   },
+  //   'Switzerland': {
+  //     'Zurich': ['Zurich', 'Winterthur', 'Uster', 'Dübendorf', 'Dietikon'],
+  //     'Bern': ['Bern', 'Biel/Bienne', 'Thun', 'Köniz', 'Burgdorf'],
+  //     'Geneva': ['Geneva', 'Vernier', 'Lancy', 'Meyrin', 'Carouge'],
+  //     'Vaud': ['Lausanne', 'Yverdon-les-Bains', 'Montreux', 'Renens', 'Nyon']
+  //   },
+  //   'Sweden': {
+  //     'Stockholm': ['Stockholm', 'Huddinge', 'Sollentuna', 'Haninge', 'Botkyrka'],
+  //     'Västra Götaland': ['Gothenburg', 'Borås', 'Mölndal', 'Trollhättan', 'Uddevalla'],
+  //     'Skåne': ['Malmö', 'Helsingborg', 'Lund', 'Kristianstad', 'Landskrona'],
+  //     'Uppsala': ['Uppsala', 'Enköping', 'Håbo', 'Älvkarleby', 'Östhammar']
+  //   },
+  //   'Norway': {
+  //     'Oslo': ['Oslo'],
+  //     'Viken': ['Drammen', 'Fredrikstad', 'Sarpsborg', 'Lillestrøm', 'Moss'],
+  //     'Vestland': ['Bergen', 'Stavanger', 'Sandnes', 'Haugesund', 'Ålesund'],
+  //     'Trøndelag': ['Trondheim', 'Steinkjer', 'Namsos', 'Levanger', 'Verdal']
+  //   },
+  //   'Denmark': {
+  //     'Capital Region': ['Copenhagen', 'Frederiksberg', 'Gentofte', 'Gladsaxe', 'Herlev'],
+  //     'Central Denmark': ['Aarhus', 'Randers', 'Horsens', 'Viborg', 'Silkeborg'],
+  //     'Southern Denmark': ['Odense', 'Esbjerg', 'Vejle', 'Kolding', 'Sønderborg'],
+  //     'Zealand': ['Roskilde', 'Næstved', 'Køge', 'Slagelse', 'Holbæk']
+  //   },
+  //   'Poland': {
+  //     'Masovian': ['Warsaw', 'Radom', 'Płock', 'Siedlce', 'Ostrołęka'],
+  //     'Lesser Poland': ['Kraków', 'Tarnów', 'Nowy Sącz', 'Oświęcim', 'Chrzanów'],
+  //     'Greater Poland': ['Poznań', 'Kalisz', 'Konin', 'Piła', 'Ostrów Wielkopolski'],
+  //     'Silesian': ['Katowice', 'Częstochowa', 'Sosnowiec', 'Gliwice', 'Zabrze']
+  //   },
+  //   'Turkey': {
+  //     'Istanbul': ['Istanbul'],
+  //     'Ankara': ['Ankara'],
+  //     'Izmir': ['Izmir', 'Karşıyaka', 'Bornova', 'Konak', 'Buca'],
+  //     'Antalya': ['Antalya', 'Alanya', 'Manavgat', 'Kemer', 'Side'],
+  //     'Bursa': ['Bursa', 'Osmangazi', 'Nilüfer', 'Yıldırım', 'Gemlik']
+  //   },
+  //   'Saudi Arabia': {
+  //     'Riyadh': ['Riyadh', 'Al Kharj', 'Ad Diriyah', 'Dawadmi', 'Al Majma\'ah'],
+  //     'Makkah': ['Mecca', 'Jeddah', 'Taif', 'Rabigh', 'Al Qunfudhah'],
+  //     'Eastern Province': ['Dammam', 'Dhahran', 'Khobar', 'Jubail', 'Al Ahsa'],
+  //     'Madinah': ['Medina', 'Yanbu', 'Al Ula', 'Khaybar', 'Badr']
+  //   },
+  //   'United Arab Emirates': {
+  //     'Dubai': ['Dubai'],
+  //     'Abu Dhabi': ['Abu Dhabi', 'Al Ain', 'Zayed City', 'Ruwais', 'Liwa Oasis'],
+  //     'Sharjah': ['Sharjah', 'Kalba', 'Khor Fakkan', 'Dibba Al-Hisn', 'Dhaid'],
+  //     'Ajman': ['Ajman'],
+  //     'Ras Al Khaimah': ['Ras Al Khaimah']
+  //   },
+  //   'New Zealand': {
+  //     'Auckland': ['Auckland', 'Manukau', 'North Shore', 'Waitakere', 'Papakura'],
+  //     'Wellington': ['Wellington', 'Lower Hutt', 'Upper Hutt', 'Porirua', 'Kapiti Coast'],
+  //     'Canterbury': ['Christchurch', 'Timaru', 'Ashburton', 'Rangiora', 'Kaiapoi'],
+  //     'Waikato': ['Hamilton', 'Taupo', 'Tokoroa', 'Cambridge', 'Te Awamutu']
+  //   },
+  //   'Singapore': {
+  //     'Central Region': ['Singapore City', 'Bukit Timah', 'Marina Bay', 'Orchard', 'Novena'],
+  //     'East Region': ['Bedok', 'Tampines', 'Pasir Ris', 'Changi', 'Simei'],
+  //     'North Region': ['Yishun', 'Sembawang', 'Woodlands', 'Admiralty', 'Marsiling'],
+  //     'West Region': ['Jurong', 'Clementi', 'Boon Lay', 'Choa Chu Kang', 'Bukit Batok']
+  //   },
+  //   'Malaysia': {
+  //     'Kuala Lumpur': ['Kuala Lumpur'],
+  //     'Selangor': ['Shah Alam', 'Petaling Jaya', 'Subang Jaya', 'Klang', 'Ampang'],
+  //     'Penang': ['George Town', 'Butterworth', 'Bukit Mertajam', 'Balik Pulau', 'Kepala Batas'],
+  //     'Johor': ['Johor Bahru', 'Muar', 'Batu Pahat', 'Kluang', 'Segamat'],
+  //     'Sabah': ['Kota Kinabalu', 'Sandakan', 'Tawau', 'Lahad Datu', 'Keningau']
+  //   },
+  //   'Indonesia': {
+  //     'Jakarta': ['Jakarta'],
+  //     'West Java': ['Bandung', 'Bekasi', 'Depok', 'Bogor', 'Cirebon'],
+  //     'East Java': ['Surabaya', 'Malang', 'Kediri', 'Probolinggo', 'Pasuruan'],
+  //     'Central Java': ['Semarang', 'Surakarta', 'Salatiga', 'Pekalongan', 'Tegal'],
+  //     'Bali': ['Denpasar', 'Ubud', 'Sanur', 'Kuta', 'Seminyak']
+  //   },
+  //   'Thailand': {
+  //     'Bangkok': ['Bangkok'],
+  //     'Chiang Mai': ['Chiang Mai', 'San Kamphaeng', 'Hang Dong', 'Mae Rim', 'Doi Saket'],
+  //     'Phuket': ['Phuket', 'Patong', 'Kata', 'Karon', 'Kamala'],
+  //     'Chonburi': ['Pattaya', 'Chonburi', 'Si Racha', 'Bang Lamung', 'Sattahip']
+  //   },
+  //   'Philippines': {
+  //     'Metro Manila': ['Manila', 'Quezon City', 'Makati', 'Pasig', 'Taguig'],
+  //     'Cebu': ['Cebu City', 'Mandaue', 'Lapu-Lapu', 'Talisay', 'Toledo'],
+  //     'Davao': ['Davao City', 'Tagum', 'Panabo', 'Digos', 'Mati'],
+  //     'Calabarzon': ['Antipolo', 'Calamba', 'Bacoor', 'San Pedro', 'Biñan']
+  //   },
+  //   'Vietnam': {
+  //     'Hanoi': ['Hanoi'],
+  //     'Ho Chi Minh City': ['Ho Chi Minh City'],
+  //     'Da Nang': ['Da Nang'],
+  //     'Hai Phong': ['Hai Phong'],
+  //     'Can Tho': ['Can Tho']
+  //   },
+  //   'South Korea': {
+  //     'Seoul': ['Seoul', 'Gangnam', 'Gangbuk', 'Mapo', 'Songpa'],
+  //     'Busan': ['Busan'],
+  //     'Incheon': ['Incheon'],
+  //     'Daegu': ['Daegu'],
+  //     'Daejeon': ['Daejeon']
+  //   },
+  //   'Egypt': {
+  //     'Cairo': ['Cairo', 'Giza', 'Helwan', 'Shubra El Kheima', '6th of October City'],
+  //     'Alexandria': ['Alexandria', 'Borg El Arab', 'Abu Qir', 'El Montaza', 'Miami'],
+  //     'Giza': ['Giza', 'Dokki', 'Mohandessin', 'Agouza', 'Imbaba'],
+  //     'Qalyubia': ['Benha', 'Qalyub', 'Shubra al Khaymah', 'Khanka', 'Kafr Shukr']
+  //   },
+  //   'Nigeria': {
+  //     'Lagos': ['Lagos', 'Ikeja', 'Lekki', 'Victoria Island', 'Ikoyi'],
+  //     'Kano': ['Kano'],
+  //     'Abuja': ['Abuja'],
+  //     'Ibadan': ['Ibadan'],
+  //     'Port Harcourt': ['Port Harcourt']
+  //   },
+  //   'Kenya': {
+  //     'Nairobi': ['Nairobi', 'Westlands', 'Kilimani', 'Kasarani', 'Embakasi'],
+  //     'Mombasa': ['Mombasa'],
+  //     'Kisumu': ['Kisumu'],
+  //     'Nakuru': ['Nakuru'],
+  //     'Eldoret': ['Eldoret']
+  //   }
+  // }
+
+  // Duplicate synchronous handlers removed — the async handlers that call fetchCountries/fetchStates/fetchCities above are used instead.
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -213,7 +661,7 @@ export default function UploadProperty() {
           city: formData.city,
           state: formData.state,
           zipCode: formData.zipCode,
-          country: 'USA'
+          country: formData.country
         },
         images: uploadedImages,
         instagram: formData.instagram || null,
@@ -463,30 +911,184 @@ export default function UploadProperty() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="city" className="form-label">City *</label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="e.g., New York"
-                    className="form-input"
-                    required
-                  />
+                  <label htmlFor="country" className="form-label">
+                    <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Country *
+                  </label>
+                  <div className="searchable-dropdown">
+                    <input
+                      type="text"
+                      className="form-input searchable-input"
+                      placeholder="Search or select country..."
+                      value={countrySearch || formData.country}
+                      onChange={(e) => {
+                        setCountrySearch(e.target.value)
+                        setShowCountryDropdown(true)
+                      }}
+                      onFocus={() => setShowCountryDropdown(true)}
+                      required={!formData.country}
+                    />
+                    {showCountryDropdown && (
+                      <div className="dropdown-list">
+                        <div className="dropdown-header">
+                          <span className="dropdown-title">Select Country</span>
+                          <button
+                            type="button"
+                            className="dropdown-close"
+                            onClick={() => {
+                              setShowCountryDropdown(false)
+                              setCountrySearch('')
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                        {loadingLocations ? (
+                          <div className="dropdown-item" style={{ textAlign: 'center', color: '#667eea' }}>
+                            Loading countries...
+                          </div>
+                        ) : (
+                          countries
+                            .filter(country => 
+                              country.name.toLowerCase().includes(countrySearch.toLowerCase())
+                            )
+                            .map(country => (
+                              <div
+                                key={country.iso2}
+                                className={`dropdown-item ${formData.country === country.name ? 'selected' : ''}`}
+                                onClick={() => {
+                                  handleCountryChange({ target: { value: country.name } })
+                                  setCountrySearch('')
+                                  setShowCountryDropdown(false)
+                                }}
+                              >
+                                {country.name}
+                              </div>
+                            ))
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="state" className="form-label">State</label>
-                  <input
-                    type="text"
-                    id="state"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="e.g., NY"
-                    className="form-input"
-                  />
+                  <label htmlFor="state" className="form-label">State *</label>
+                  <div className="searchable-dropdown">
+                    <input
+                      type="text"
+                      className="form-input searchable-input"
+                      placeholder={!formData.country ? "Select country first..." : "Search or select state..."}
+                      value={stateSearch || formData.state}
+                      onChange={(e) => {
+                        setStateSearch(e.target.value)
+                        setShowStateDropdown(true)
+                      }}
+                      onFocus={() => formData.country && setShowStateDropdown(true)}
+                      disabled={!formData.country}
+                      required={!formData.state}
+                    />
+                    {showStateDropdown && formData.country && (
+                      <div className="dropdown-list">
+                        <div className="dropdown-header">
+                          <span className="dropdown-title">Select State/Province</span>
+                          <button
+                            type="button"
+                            className="dropdown-close"
+                            onClick={() => {
+                              setShowStateDropdown(false)
+                              setStateSearch('')
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                        {loadingLocations ? (
+                          <div className="dropdown-item" style={{ textAlign: 'center', color: '#667eea' }}>
+                            Loading states...
+                          </div>
+                        ) : (
+                          availableStates
+                            .filter(state => 
+                              state.name.toLowerCase().includes(stateSearch.toLowerCase())
+                            )
+                            .map(state => (
+                              <div
+                                key={state.iso2}
+                                className={`dropdown-item ${formData.state === state.name ? 'selected' : ''}`}
+                                onClick={() => {
+                                  handleStateChange({ target: { value: state.name } })
+                                  setStateSearch('')
+                                  setShowStateDropdown(false)
+                                }}
+                              >
+                                {state.name}
+                              </div>
+                            ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="city" className="form-label">City *</label>
+                  <div className="searchable-dropdown">
+                    <input
+                      type="text"
+                      className="form-input searchable-input"
+                      placeholder={!formData.state ? "Select state first..." : "Search or select city..."}
+                      value={citySearch || formData.city}
+                      onChange={(e) => {
+                        setCitySearch(e.target.value)
+                        setShowCityDropdown(true)
+                      }}
+                      onFocus={() => formData.state && setShowCityDropdown(true)}
+                      disabled={!formData.state}
+                      required={!formData.city}
+                    />
+                    {showCityDropdown && formData.state && (
+                      <div className="dropdown-list">
+                        <div className="dropdown-header">
+                          <span className="dropdown-title">Select City</span>
+                          <button
+                            type="button"
+                            className="dropdown-close"
+                            onClick={() => {
+                              setShowCityDropdown(false)
+                              setCitySearch('')
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                        {loadingLocations ? (
+                          <div className="dropdown-item" style={{ textAlign: 'center', color: '#667eea' }}>
+                            Loading cities...
+                          </div>
+                        ) : (
+                          availableCities
+                            .filter(city => 
+                              city.name.toLowerCase().includes(citySearch.toLowerCase())
+                            )
+                            .map(city => (
+                              <div
+                                key={city.id || city.name}
+                                className={`dropdown-item ${formData.city === city.name ? 'selected' : ''}`}
+                                onClick={() => {
+                                  handleCityChange({ target: { value: city.name } })
+                                  setCitySearch('')
+                                  setShowCityDropdown(false)
+                                }}
+                              >
+                                {city.name}
+                              </div>
+                            ))
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="form-group">
