@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { fetchCountries, fetchStates, fetchCities } from '../services/locationService'
 import './UploadProperty.css'
@@ -9,14 +9,12 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 export default function UploadProperty() {
   const navigate = useNavigate()
   const auth = useAuth()
-  const [searchParams] = useSearchParams()
-  const editPropertyId = searchParams.get('edit')
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
-    propertyType: '',
+    type: '',
     address: '',
     country: '',
     state: '',
@@ -38,7 +36,6 @@ export default function UploadProperty() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
-
   const [availableStates, setAvailableStates] = useState([])
   const [availableCities, setAvailableCities] = useState([])
   
@@ -55,77 +52,6 @@ export default function UploadProperty() {
   const [showCountryDropdown, setShowCountryDropdown] = useState(false)
   const [showStateDropdown, setShowStateDropdown] = useState(false)
   const [showCityDropdown, setShowCityDropdown] = useState(false)
-
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [existingImages, setExistingImages] = useState([])
-
-  // Load property data if editing
-  useEffect(() => {
-    if (editPropertyId && auth.token) {
-      loadPropertyData(editPropertyId)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editPropertyId, auth.token])
-
-  const loadPropertyData = async (propertyId) => {
-    try {
-      setLoading(true)
-      const response = await fetch(`${API_URL}/api/properties/${propertyId}`, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        const property = data.property
-
-        // Check if user is the owner
-        if (property.ownerId !== auth.user.id) {
-          setError('You are not authorized to edit this property')
-          setTimeout(() => navigate('/properties'), 2000)
-          return
-        }
-
-        setIsEditMode(true)
-        setFormData({
-          title: property.title || '',
-          description: property.description || '',
-          price: property.price || '',
-          propertyType: property.propertyType || '',
-          address: property.address?.street || '',
-          city: property.address?.city || '',
-          state: property.address?.state || '',
-          zipCode: property.address?.zipCode || '',
-          beds: property.beds || '0',
-          baths: property.baths || '0',
-          area: property.area || '0',
-          yearBuilt: property.yearBuilt || '',
-          amenities: property.amenities || [],
-          images: [],
-          featured: property.featured || false,
-          instagram: property.instagram || '',
-          youtube: property.youtube || ''
-        })
-
-        // Store existing images
-        if (property.images && property.images.length > 0) {
-          setExistingImages(property.images)
-          setPreviewImages(property.images.map(img => img.url))
-        }
-      } else {
-        setError('Failed to load property data')
-        setTimeout(() => navigate('/properties'), 2000)
-      }
-    } catch (err) {
-      console.error('Error loading property:', err)
-      setError('Failed to load property data')
-      setTimeout(() => navigate('/properties'), 2000)
-    } finally {
-      setLoading(false)
-    }
-  }
-
 
   // Verify authentication on mount
   useEffect(() => {
@@ -281,6 +207,82 @@ export default function UploadProperty() {
     }))
   }
 
+  // const handleInputChange = (e) => {
+  //   },
+  //   'India': {
+  //   },
+  //   'United Kingdom': {
+  //   },
+  //   'Canada': {
+  //   },
+  //   'Australia': {
+  //   },
+  //   'Germany': {
+  //   },
+  //   'France': {
+  //   },
+  //   'China': {
+  //   },
+  //   'Japan': {
+  //   },
+  //   'Brazil': {
+  //   },
+  //   'Mexico': {
+  //   },
+  //   'Italy': {
+  //   },
+  //   'Spain': {
+  //   },
+  //   'South Africa': {
+  //   },
+  //   'Argentina': {
+  //   },
+  //   'Russia': {
+  //   },
+  //   'Netherlands': {
+  //   },
+  //   'Switzerland': {
+  //   },
+  //   'Sweden': {
+  //   },
+  //   'Norway': {
+  //   },
+  //   'Denmark': {
+  //   },
+  //   'Poland': {
+  //   },
+  //   'Turkey': {
+  //   },
+  //   'Saudi Arabia': {
+  //   },
+  //   'United Arab Emirates': {
+  //   },
+  //   'New Zealand': {
+  //   },
+  //   'Singapore': {
+  //   },
+  //   'Malaysia': {
+  //   },
+  //   'Indonesia': {
+  //   },
+  //   'Thailand': {
+  //   },
+  //   'Philippines': {
+  //   },
+  //   'Vietnam': {
+  //   },
+  //   'South Korea': {
+  //   },
+  //   'Egypt': {
+  //   },
+  //   'Nigeria': {
+  //   },
+  //   'Kenya': {
+  //   }
+  // }
+
+  // Duplicate synchronous handlers removed — the async handlers that call fetchCountries/fetchStates/fetchCities above are used instead.
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData(prev => ({
@@ -345,24 +347,6 @@ export default function UploadProperty() {
   }
 
   const nextStep = () => {
-    // Validate required fields for each step
-    if (currentStep === 1) {
-      if (!formData.title || !formData.propertyType || !formData.description) {
-        setError('Please fill in all required fields (Title, Property Type, and Description)')
-        return
-      }
-    } else if (currentStep === 2) {
-      if (!formData.price || !formData.address || !formData.city) {
-        setError('Please fill in all required fields (Price, Address, and City)')
-        return
-      }
-    } else if (currentStep === 3) {
-      // Step 3 is now optional since these fields don't exist in the backend yet
-      // You can skip validation or make it informational only
-    }
-    
-    setError(null) // Clear any previous errors
-    
     if (currentStep < 4) {
       setCurrentStep(prev => prev + 1)
     }
@@ -389,7 +373,7 @@ export default function UploadProperty() {
     setError(null)
 
     try {
-      // Step 1: Upload new images to Cloudinary (if any)
+      // Step 1: Upload images to Cloudinary
       let uploadedImages = []
       
       if (formData.images.length > 0) {
@@ -423,12 +407,11 @@ export default function UploadProperty() {
         uploadedImages = imageData.images
       }
 
-      // Step 2: Prepare property data
+      // Step 2: Create property with Cloudinary URLs
       const propertyData = {
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
-        propertyType: formData.propertyType,
         address: {
           street: formData.address,
           city: formData.city,
@@ -436,21 +419,13 @@ export default function UploadProperty() {
           zipCode: formData.zipCode,
           country: formData.country
         },
-        // In edit mode, keep existing images if no new ones uploaded
-        images: uploadedImages.length > 0 ? uploadedImages : (isEditMode ? existingImages : []),
+        images: uploadedImages,
         instagram: formData.instagram || null,
         youtube: formData.youtube || null
       }
 
-      // Step 3: Create or update property
-      const url = isEditMode 
-        ? `${API_URL}/api/properties/${editPropertyId}`
-        : `${API_URL}/api/auth/properties`
-      
-      const method = isEditMode ? 'PUT' : 'POST'
-
-      const response = await fetch(url, {
-        method: method,
+      const response = await fetch(`${API_URL}/api/auth/properties`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -469,11 +444,11 @@ export default function UploadProperty() {
           setTimeout(() => navigate('/signin'), 2000)
           return
         }
-        throw new Error(data.message || `Failed to ${isEditMode ? 'update' : 'create'} property`)
+        throw new Error(data.message || 'Failed to create property')
       }
 
       setSuccess(true)
-      console.log(`Property ${isEditMode ? 'updated' : 'created'}:`, data.property)
+      console.log('Property created:', data.property)
       
       // Redirect to property listing after 2 seconds
       setTimeout(() => {
@@ -481,8 +456,8 @@ export default function UploadProperty() {
       }, 2000)
 
     } catch (err) {
-      console.error(`Error ${isEditMode ? 'updating' : 'creating'} property:`, err)
-      setError(err.message || `Failed to ${isEditMode ? 'update' : 'upload'} property. Please try again.`)
+      console.error('Error creating property:', err)
+      setError(err.message || 'Failed to upload property. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -491,15 +466,13 @@ export default function UploadProperty() {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
-        return formData.title && formData.description && formData.propertyType
+        return formData.title && formData.description && formData.type
       case 2:
         return formData.price && formData.address && formData.city
       case 3:
-        // Make step 3 optional since these fields don't exist in the backend yet
-        return true
+        return formData.beds && formData.baths && formData.area
       case 4:
-        // In edit mode, allow existing images; in create mode, require new images
-        return isEditMode ? (formData.images.length > 0 || existingImages.length > 0) : formData.images.length > 0
+        return formData.images.length > 0
       default:
         return false
     }
@@ -510,12 +483,8 @@ export default function UploadProperty() {
       {/* Header */}
       <div className="upload-header">
         <div className="upload-header-content">
-          <h1 className="upload-title">{isEditMode ? 'Edit Your Property' : 'List Your Property'}</h1>
-          <p className="upload-subtitle">
-            {isEditMode 
-              ? 'Update your property information' 
-              : 'Share your property with thousands of potential buyers'}
-          </p>
+          <h1 className="upload-title">List Your Property</h1>
+          <p className="upload-subtitle">Share your property with thousands of potential buyers</p>
         </div>
       </div>
 
@@ -525,7 +494,7 @@ export default function UploadProperty() {
           <svg className="notification-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p>Property {isEditMode ? 'updated' : 'uploaded'} successfully! Redirecting...</p>
+          <p>Property uploaded successfully! Redirecting...</p>
         </div>
       )}
 
@@ -595,16 +564,16 @@ export default function UploadProperty() {
                 </div>
 
                 <div className="form-group full-width">
-                  <label htmlFor="propertyType" className="form-label">
+                  <label htmlFor="type" className="form-label">
                     <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                     Property Type *
                   </label>
                   <select
-                    id="propertyType"
-                    name="propertyType"
-                    value={formData.propertyType}
+                    id="type"
+                    name="type"
+                    value={formData.type}
                     onChange={handleInputChange}
                     className="form-select"
                     required
@@ -898,7 +867,7 @@ export default function UploadProperty() {
           {currentStep === 3 && (
             <div className="form-step" key="step3">
               <h2 className="step-title">Property Details</h2>
-              <p className="step-description">Provide additional details about your property (optional)</p>
+              <p className="step-description">Provide specific details about your property</p>
 
               <div className="form-grid">
                 <div className="form-group">
@@ -906,7 +875,7 @@ export default function UploadProperty() {
                     <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    Bedrooms (Optional)
+                    Bedrooms *
                   </label>
                   <input
                     type="number"
@@ -917,6 +886,7 @@ export default function UploadProperty() {
                     placeholder="e.g., 3"
                     className="form-input"
                     min="0"
+                    required
                   />
                 </div>
 
@@ -925,7 +895,7 @@ export default function UploadProperty() {
                     <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21v6H3V3h7.5z" />
                     </svg>
-                    Bathrooms (Optional)
+                    Bathrooms *
                   </label>
                   <input
                     type="number"
@@ -937,6 +907,7 @@ export default function UploadProperty() {
                     className="form-input"
                     min="0"
                     step="0.5"
+                    required
                   />
                 </div>
 
@@ -945,7 +916,7 @@ export default function UploadProperty() {
                     <svg className="label-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                     </svg>
-                    Area (sqft) (Optional)
+                    Area (sqft) *
                   </label>
                   <input
                     type="number"
@@ -956,6 +927,7 @@ export default function UploadProperty() {
                     placeholder="e.g., 2500"
                     className="form-input"
                     min="0"
+                    required
                   />
                 </div>
 
@@ -1150,14 +1122,14 @@ export default function UploadProperty() {
                 {loading ? (
                   <>
                     <div className="button-spinner" />
-                    {isEditMode ? 'Updating...' : 'Uploading...'}
+                    Uploading...
                   </>
                 ) : (
                   <>
                     <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    {isEditMode ? 'Update Property' : 'Submit Property'}
+                    Submit Property
                   </>
                 )}
               </button>
