@@ -207,6 +207,11 @@ export default function UploadProperty() {
     }))
   }
 
+  // const handleInputChange = (e) => {
+  // }
+
+  // Duplicate synchronous handlers removed — the async handlers that call fetchCountries/fetchStates/fetchCities above are used instead.
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData(prev => ({
