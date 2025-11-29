@@ -155,7 +155,6 @@ export default function Profile() {
 
       if (response.ok) {
         const data = await response.json()
-        // Update auth context with new user data
         auth.login({ ...auth.user, ...data.user }, auth.token)
         setIsEditing(false)
         alert('Profile updated successfully!')
@@ -171,11 +170,6 @@ export default function Profile() {
     }
   }
 
-  const handleRemoveProperty = (propertyId) => {
-    // Add logic to remove saved property
-    console.log('Remove property:', propertyId)
-  }
-
   const handlePasswordChange = (e) => {
     const { name, value } = e.target
     setPasswordData(prev => ({ ...prev, [name]: value }))
@@ -184,7 +178,6 @@ export default function Profile() {
   const handleChangePassword = async (e) => {
     e.preventDefault()
     
-    // Validation
     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
       alert('Please fill in all password fields')
       return
@@ -234,23 +227,18 @@ export default function Profile() {
   const handleAvatarUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file')
         return
       }
-
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('Image size should be less than 5MB')
         return
       }
 
-      // Create a preview URL
       const reader = new FileReader()
       reader.onloadend = () => {
         setAvatarImage(reader.result)
-        // Persist avatar in auth context so it survives refresh (stored in localStorage)
         try {
           if (auth && auth.login) {
             const updatedUser = { ...auth.user, avatar: reader.result }
@@ -259,7 +247,6 @@ export default function Profile() {
         } catch (err) {
           console.warn('Failed to update auth context with avatar', err)
         }
-        console.log('Avatar updated in context/localStorage')
         alert('Profile photo updated successfully!')
       }
       reader.readAsDataURL(file)
@@ -376,11 +363,68 @@ export default function Profile() {
                 <div className="tab-content">
                   <div className="content-header">
                     <h2 className="content-title">Account Overview</h2>
-                    <p className="content-subtitle">Manage your profile and preferences</p>
+                    <p className="content-subtitle">Welcome back! Here's what's happening with your account</p>
                   </div>
 
+                  {/* Statistics Cards */}
+                  <div className="stats-cards-grid">
+                    <div className="stat-card">
+                      <div className="stat-card-icon" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </div>
+                      <div className="stat-card-content">
+                        <h3 className="stat-card-number">{savedProperties.length}</h3>
+                        <p className="stat-card-label">Saved Properties</p>
+                        <span className="stat-card-trend positive">+2 this week</span>
+                      </div>
+                    </div>
+
+                    <div className="stat-card">
+                      <div className="stat-card-icon" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </div>
+                      <div className="stat-card-content">
+                        <h3 className="stat-card-number">12</h3>
+                        <p className="stat-card-label">Properties Viewed</p>
+                        <span className="stat-card-trend neutral">This month</span>
+                      </div>
+                    </div>
+
+                    <div className="stat-card">
+                      <div className="stat-card-icon" style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'}}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                      </div>
+                      <div className="stat-card-content">
+                        <h3 className="stat-card-number">5</h3>
+                        <p className="stat-card-label">Active Inquiries</p>
+                        <span className="stat-card-trend positive">2 responses</span>
+                      </div>
+                    </div>
+
+                    <div className="stat-card">
+                      <div className="stat-card-icon" style={{background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'}}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="stat-card-content">
+                        <h3 className="stat-card-number">87%</h3>
+                        <p className="stat-card-label">Profile Complete</p>
+                        <span className="stat-card-trend neutral">Add phone</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Overview Grid */}
                   <div className="overview-grid">
-                    {/* Personal Information Card */}
+                    {/* Personal Information */}
                     <div className="info-card">
                       <div className="card-header">
                         <h3 className="card-title">Personal Information</h3>
@@ -484,8 +528,63 @@ export default function Profile() {
                       </div>
                     </div>
 
-                    {/* Quick Actions Card */}
+                    {/* Recent Activity */}
                     <div className="info-card">
+                      <div className="card-header">
+                        <h3 className="card-title">Recent Activity</h3>
+                        <Link to="#" onClick={() => setActiveTab('activity')} className="view-all-link">
+                          View all →
+                        </Link>
+                      </div>
+                      <div className="card-body">
+                        <div className="mini-activity-list">
+                          {recentActivity.slice(0, 3).map((item, index) => (
+                            <div key={index} className="mini-activity-item">
+                              <div className="mini-activity-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                              <div className="mini-activity-content">
+                                <p className="mini-activity-text">{item.action}</p>
+                                {item.property && <span className="mini-activity-property">{item.property}</span>}
+                                <span className="mini-activity-time">{item.date}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Saved Properties Preview */}
+                    <div className="info-card full-width">
+                      <div className="card-header">
+                        <h3 className="card-title">Recently Saved Properties</h3>
+                        <Link to="#" onClick={() => setActiveTab('saved')} className="view-all-link">
+                          View all →
+                        </Link>
+                      </div>
+                      <div className="card-body">
+                        <div className="mini-properties-grid">
+                          {savedProperties.slice(0, 2).map(property => (
+                            <div key={property.id} className="mini-property-card">
+                              <img src={property.image} alt={property.title} className="mini-property-image" />
+                              <div className="mini-property-info">
+                                <h4 className="mini-property-title">{property.title}</h4>
+                                <p className="mini-property-location">{property.location}</p>
+                                <p className="mini-property-price">{property.price}</p>
+                                <Link to={`/properties/${property.id}`} className="mini-view-btn">
+                                  View Details →
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="info-card full-width">
                       <div className="card-header">
                         <h3 className="card-title">Quick Actions</h3>
                       </div>
@@ -509,6 +608,14 @@ export default function Profile() {
                             </svg>
                             Explore Loans
                           </Link>
+
+                          {/* THIS is the "Messages" button that was in your stash */}
+                          <Link to="/messages" className="action-btn">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Messages
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -516,7 +623,7 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Saved Properties Tab */}
+              {/* Saved Properties */}
               {activeTab === 'saved' && (
                 <div className="tab-content">
                   <div className="content-header">

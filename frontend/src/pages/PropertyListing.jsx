@@ -59,7 +59,7 @@ export default function PropertyListing() {
 
   // Filter and sort properties (includes search)
   const filteredProperties = properties
-    .filter(property => filterType === 'All' || property.propertyType === filterType)
+    .filter(property => filterType === 'All' || property.type === filterType)
     .filter(property => {
       if (!searchQuery || searchQuery.trim() === '') return true
       const q = searchQuery.toLowerCase()
@@ -68,7 +68,7 @@ export default function PropertyListing() {
         (property.address?.city && property.address.city.toLowerCase().includes(q)) ||
         (property.address?.state && property.address.state.toLowerCase().includes(q)) ||
         (property.address?.street && property.address.street.toLowerCase().includes(q)) ||
-        (property.propertyType && property.propertyType.toLowerCase().includes(q)) ||
+        (property.type && property.type.toLowerCase().includes(q)) ||
         (property.owner?.username && property.owner.username.toLowerCase().includes(q))
       )
     })
