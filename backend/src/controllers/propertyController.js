@@ -154,6 +154,9 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, phone, location, bio, avatar } = req.body
+    
+    console.log('Updating profile for user:', req.user.id)
+    console.log('Update data:', { firstName, lastName, phone, location, bio, avatar: avatar ? 'present' : 'null' })
 
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
@@ -180,13 +183,18 @@ const updateProfile = async (req, res) => {
       }
     })
 
+    console.log('Profile updated successfully')
     res.status(200).json({ 
       message: 'Profile updated successfully',
       user: updatedUser 
     })
   } catch (error) {
     console.error('Update profile error:', error)
-    res.status(500).json({ message: 'Internal server error' })
+    console.error('Error details:', error.message)
+    res.status(500).json({ 
+      message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    })
   }
 }
 

@@ -39,6 +39,17 @@ export default function Profile() {
   useEffect(() => {
     if (!auth.user) navigate('/signin')
     else {
+      // Initialize with auth data immediately
+      setUserInfo(prev => ({
+        ...prev,
+        firstName: auth.user.firstName || '',
+        lastName: auth.user.lastName || '',
+        email: auth.user.email || '',
+        memberSince: auth.user.createdAt 
+          ? new Date(auth.user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+          : 'Recently'
+      }))
+      
       loadProfile()
       fetchFavorites()
       fetchActivity()
@@ -155,11 +166,22 @@ export default function Profile() {
 
       if (response.ok) {
         const data = await response.json()
+        // Update auth context with new user data
         auth.login({ ...auth.user, ...data.user }, auth.token)
+        // Update local state
+        setUserInfo(prev => ({
+          ...prev,
+          firstName: data.user.firstName || '',
+          lastName: data.user.lastName || '',
+          phone: data.user.phone || '',
+          location: data.user.location || '',
+          bio: data.user.bio || ''
+        }))
         setIsEditing(false)
         alert('Profile updated successfully!')
       } else {
         const error = await response.json()
+        console.error('Update error:', error)
         alert(error.message || 'Failed to update profile')
       }
     } catch (error) {
@@ -425,18 +447,21 @@ export default function Profile() {
                   {/* Overview Grid */}
                   <div className="overview-grid">
                     {/* Personal Information */}
-                    <div className="info-card">
-                      <div className="card-header">
-                        <h3 className="card-title">Personal Information</h3>
-                        <button 
-                          className="edit-btn"
-                          onClick={() => setIsEditing(!isEditing)}
-                        >
-                          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          {isEditing ? 'Cancel' : 'Edit'}
-                        </button>
+                    <div className="info-card full-width">
+                      <div className="section-header-stacked">
+                        <h2 className="section-title">Personal Information</h2>
+                        <p className="section-subtitle">Manage your personal details and profile information</p>
+                        {!isEditing && (
+                          <button
+                            className="edit-btn-header"
+                            onClick={() => setIsEditing(true)}
+                          >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit Profile
+                          </button>
+                        )}
                       </div>
                       <div className="card-body">
                         {isEditing ? (
@@ -497,12 +522,16 @@ export default function Profile() {
                                 rows="3"
                               />
                             </div>
-                            <button className="save-btn" onClick={handleSaveProfile}>
-                              Save Changes
+                            <button 
+                              className="save-btn" 
+                              onClick={handleSaveProfile}
+                              disabled={saving}
+                            >
+                              {saving ? 'Saving...' : 'Save Changes'}
                             </button>
                           </div>
                         ) : (
-                          <div className="info-list">
+                          <div className="info-grid">
                             <div className="info-item">
                               <span className="info-label">Name</span>
                               <span className="info-value">{userInfo.firstName} {userInfo.lastName}</span>
@@ -513,80 +542,80 @@ export default function Profile() {
                             </div>
                             <div className="info-item">
                               <span className="info-label">Phone</span>
-                              <span className="info-value">{userInfo.phone}</span>
+                              <span className="info-value">{userInfo.phone || 'Not provided'}</span>
                             </div>
                             <div className="info-item">
                               <span className="info-label">Location</span>
-                              <span className="info-value">{userInfo.location}</span>
+                              <span className="info-value">{userInfo.location || 'Not provided'}</span>
                             </div>
-                            <div className="info-item">
+                            <div className="info-item info-item-full">
                               <span className="info-label">Bio</span>
-                              <span className="info-value">{userInfo.bio}</span>
+                              <span className="info-value">{userInfo.bio || 'No bio added yet'}</span>
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Recent Activity */}
-                    <div className="info-card">
-                      <div className="card-header">
-                        <h3 className="card-title">Recent Activity</h3>
-                        <Link to="#" onClick={() => setActiveTab('activity')} className="view-all-link">
-                          View all →
-                        </Link>
-                      </div>
-                      <div className="card-body">
-                        <div className="mini-activity-list">
-                          {recentActivity.slice(0, 3).map((item, index) => (
-                            <div key={index} className="mini-activity-item">
-                              <div className="mini-activity-icon">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                              </div>
-                              <div className="mini-activity-content">
-                                <p className="mini-activity-text">{item.action}</p>
-                                {item.property && <span className="mini-activity-property">{item.property}</span>}
-                                <span className="mini-activity-time">{item.date}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Saved Properties Preview */}
                     <div className="info-card full-width">
-                      <div className="card-header">
-                        <h3 className="card-title">Recently Saved Properties</h3>
-                        <Link to="#" onClick={() => setActiveTab('saved')} className="view-all-link">
+                      <div className="section-header-stacked">
+                        <h2 className="section-title">Recently Saved Properties</h2>
+                        <p className="section-subtitle">Properties you've bookmarked for later</p>
+                        <Link to="#" onClick={() => setActiveTab('saved')} className="view-all-link-large">
                           View all →
                         </Link>
                       </div>
                       <div className="card-body">
-                        <div className="mini-properties-grid">
-                          {savedProperties.slice(0, 2).map(property => (
-                            <div key={property.id} className="mini-property-card">
-                              <img src={property.image} alt={property.title} className="mini-property-image" />
-                              <div className="mini-property-info">
-                                <h4 className="mini-property-title">{property.title}</h4>
-                                <p className="mini-property-location">{property.location}</p>
-                                <p className="mini-property-price">{property.price}</p>
-                                <Link to={`/properties/${property.id}`} className="mini-view-btn">
-                                  View Details →
-                                </Link>
+                        {loadingFavorites ? (
+                          <div className="loading-state">
+                            <div className="spinner"></div>
+                            <p>Loading properties...</p>
+                          </div>
+                        ) : savedProperties.length > 0 ? (
+                          <div className="mini-properties-grid">
+                            {savedProperties.slice(0, 2).map(property => (
+                              <div key={property.id} className="mini-property-card">
+                                <img src={property.property?.images?.[0]?.url || property.image} alt={property.property?.title || property.title} className="mini-property-image" />
+                                <div className="mini-property-info">
+                                  <h4 className="mini-property-title">{property.property?.title || property.title}</h4>
+                                  <p className="mini-property-location">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{width: '16px', height: '16px', display: 'inline', marginRight: '4px'}}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    {property.property?.address?.city || property.location}
+                                  </p>
+                                  <p className="mini-property-price">${property.property?.price || property.price}</p>
+                                  <Link to={`/properties/${property.propertyId || property.id}`} className="mini-view-btn">
+                                    View Details →
+                                  </Link>
+                                </div>
                               </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="empty-state">
+                            <div className="empty-state-icon">
+                              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                              </svg>
                             </div>
-                          ))}
-                        </div>
+                            <p className="empty-state-text">No saved properties yet</p>
+                            <p className="empty-state-subtext">Save properties you like to view them here</p>
+                            <Link to="/properties" className="empty-state-btn">
+                              Browse Properties
+                            </Link>
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     {/* Quick Actions */}
                     <div className="info-card full-width">
-                      <div className="card-header">
-                        <h3 className="card-title">Quick Actions</h3>
+                      <div className="section-header">
+                        <h2 className="section-title">Quick Actions</h2>
+                        <p className="section-subtitle">Explore features and manage your listings</p>
                       </div>
                       <div className="card-body">
                         <div className="quick-actions">
