@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const prisma = require('../utils/db')
+const https = require('https')
 
 
 const signup = async (req, res) => {
@@ -362,14 +363,14 @@ const getPropertyById = async (req, res) => {
 
 const createProperty = async (req, res) => {
   try {
-    const { title, description, price, type, address, images } = req.body
+    const { title, description, price, propertyType, address, images } = req.body
 
     const property = await prisma.property.create({
       data: {
         title,
         description,
         price,
-        type,
+        propertyType,
         ownerId: req.user.id,
         address: address ? {
           create: {
@@ -414,7 +415,7 @@ const createProperty = async (req, res) => {
 const updateProperty = async (req, res) => {
   try {
     const { id } = req.params
-    const { title, description, price, type, address } = req.body
+    const { title, description, price, propertyType, address, images } = req.body
 
     const property = await prisma.property.findUnique({
       where: { id }
@@ -428,13 +429,14 @@ const updateProperty = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this property' })
     }
 
+    // Update property with new data
     const updatedProperty = await prisma.property.update({
       where: { id },
       data: {
         title,
         description,
         price,
-        type,
+        propertyType,
         address: address ? {
           upsert: {
             create: {
@@ -442,14 +444,14 @@ const updateProperty = async (req, res) => {
               city: address.city,
               state: address.state,
               zipCode: address.zipCode,
-              country: address.country
+              country: address.country || 'USA'
             },
             update: {
               street: address.street,
               city: address.city,
               state: address.state,
               zipCode: address.zipCode,
-              country: address.country
+              country: address.country || 'USA'
             }
           }
         } : undefined
@@ -466,6 +468,45 @@ const updateProperty = async (req, res) => {
         }
       }
     })
+
+    // Update images if provided
+    if (images && Array.isArray(images) && images.length > 0) {
+      // Delete old images
+      await prisma.propertyImage.deleteMany({
+        where: { propertyId: id }
+      })
+
+      // Create new images
+      await prisma.propertyImage.createMany({
+        data: images.map((img, index) => ({
+          propertyId: id,
+          url: img.url,
+          order: img.order || index,
+          isPrimary: img.isPrimary || index === 0
+        }))
+      })
+
+      // Fetch updated property with new images
+      const finalProperty = await prisma.property.findUnique({
+        where: { id },
+        include: {
+          address: true,
+          images: true,
+          owner: {
+            select: {
+              id: true,
+              username: true,
+              email: true
+            }
+          }
+        }
+      })
+
+      return res.status(200).json({
+        message: 'Property updated successfully',
+        property: finalProperty
+      })
+    }
 
     res.status(200).json({
       message: 'Property updated successfully',
@@ -493,6 +534,49 @@ const deleteProperty = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to delete this property' })
     }
 
+    // Delete related records first to avoid foreign key constraint errors
+    // Delete in order: messages -> conversations -> favorites -> inquiries -> features -> images -> address -> property
+    
+    // 1. Delete all messages in conversations related to this property
+    await prisma.message.deleteMany({
+      where: {
+        conversation: {
+          propertyId: id
+        }
+      }
+    })
+
+    // 2. Delete all conversations related to this property
+    await prisma.conversation.deleteMany({
+      where: { propertyId: id }
+    })
+
+    // 3. Delete all favorites related to this property
+    await prisma.favorite.deleteMany({
+      where: { propertyId: id }
+    })
+
+    // 4. Delete all inquiries related to this property
+    await prisma.inquiry.deleteMany({
+      where: { propertyId: id }
+    })
+
+    // 5. Delete all property features
+    await prisma.propertyFeature.deleteMany({
+      where: { propertyId: id }
+    })
+
+    // 6. Delete all property images
+    await prisma.propertyImage.deleteMany({
+      where: { propertyId: id }
+    })
+
+    // 7. Delete address
+    await prisma.address.deleteMany({
+      where: { propertyId: id }
+    })
+
+    // 8. Finally delete the property
     await prisma.property.delete({
       where: { id }
     })
@@ -835,6 +919,87 @@ const getUserActivity = async (req, res) => {
   }
 }
 
+// Get nearby places using Google Places API
+const getNearbyPlaces = async (req, res) => {
+  try {
+    const { lat, lng, type } = req.body
+
+    if (!lat || !lng || !type) {
+      return res.status(400).json({ 
+        message: 'Missing required parameters: lat, lng, type' 
+      })
+    }
+
+    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyASycx1StIiq7RK8SBa-5GfdLOMUkO78DU'
+    
+    // Call Google Places Nearby Search API using https module
+    const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=50000&type=${type}&key=${GOOGLE_MAPS_API_KEY}`
+
+    // Use https module to make request
+    const data = await new Promise((resolve, reject) => {
+      https.get(placesUrl, (response) => {
+        let data = ''
+        response.on('data', (chunk) => {
+          data += chunk
+        })
+        response.on('end', () => {
+          try {
+            resolve(JSON.parse(data))
+          } catch (e) {
+            reject(e)
+          }
+        })
+      }).on('error', (err) => {
+        reject(err)
+      })
+    })
+
+    if (data.status === 'REQUEST_DENIED') {
+      return res.status(500).json({ 
+        message: 'Google API access denied',
+        error: data.error_message 
+      })
+    }
+
+    if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+      return res.json({ 
+        name: 'Not found', 
+        distance: 'N/A', 
+        address: '' 
+      })
+    }
+
+    // Get the closest place (first result is usually closest)
+    const place = data.results[0]
+    
+    // Calculate distance using Haversine formula
+    const placeLat = place.geometry.location.lat
+    const placeLng = place.geometry.location.lng
+    
+    const R = 3959 // Earth's radius in miles
+    const dLat = (placeLat - lat) * Math.PI / 180
+    const dLng = (placeLng - lng) * Math.PI / 180
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat * Math.PI / 180) * Math.cos(placeLat * Math.PI / 180) *
+              Math.sin(dLng / 2) * Math.sin(dLng / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    const distance = R * c
+    
+    res.json({
+      name: place.name,
+      distance: `${distance.toFixed(1)} miles`,
+      address: place.vicinity || ''
+    })
+
+  } catch (error) {
+    console.error('Error fetching nearby places:', error)
+    res.status(500).json({ 
+      message: 'Error fetching nearby places',
+      error: error.message 
+    })
+  }
+}
+
 module.exports = {
   signup,
   login,
@@ -852,6 +1017,7 @@ module.exports = {
   addFavorite,
   removeFavorite,
   getUserActivity,
+  getNearbyPlaces,
   adminGetAllProperties,
   adminApproveProperty,
   adminDeleteProperty,

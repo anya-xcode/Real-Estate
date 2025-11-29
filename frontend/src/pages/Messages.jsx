@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import './Messages.css'
 
 export default function Messages() {
+  const [searchParams] = useSearchParams()
   const [conversations, setConversations] = useState([])
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [messages, setMessages] = useState([])
@@ -16,7 +17,28 @@ export default function Messages() {
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-  const loadConversations = useCallback(async () => {
+  // Define loadMessages first so it can be used in loadConversations
+  const loadMessages = useCallback(async (conversationId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat/conversations/${conversationId}/messages`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setMessages(data.messages || [])
+      } else {
+        setMessages([])
+      }
+    } catch (err) {
+      console.error('Load messages error:', err)
+      setMessages([])
+    }
+  }, [API_BASE_URL, auth.token])
+
+  const loadConversations = useCallback(async (autoSelect = false) => {
     try {
       setError('')
       
@@ -29,6 +51,21 @@ export default function Messages() {
       if (response.ok) {
         const data = await response.json()
         setConversations(data.conversations || [])
+        
+        // Auto-select conversation from URL parameter only on initial load
+        if (autoSelect) {
+          const conversationIdFromUrl = searchParams.get('conversationId')
+          
+          if (conversationIdFromUrl && data.conversations) {
+            const conv = data.conversations.find(c => c.id === conversationIdFromUrl)
+            
+            if (conv) {
+              setSelectedConversation(conv)
+              // Load messages for this conversation
+              loadMessages(conversationIdFromUrl)
+            }
+          }
+        }
       } else {
         const data = await response.json()
         setError(data.message || 'Failed to load conversations')
@@ -39,14 +76,14 @@ export default function Messages() {
     } finally {
       setInitialLoad(false)
     }
-  }, [auth.token, API_BASE_URL])
+  }, [auth.token, API_BASE_URL, searchParams, loadMessages])
 
   useEffect(() => {
     if (!auth.user) {
       navigate('/signin')
       return
     }
-    loadConversations()
+    loadConversations(true) // Pass true to enable auto-selection
   }, [auth.user, navigate, loadConversations])
 
   // Poll for new conversations every 5 seconds
@@ -54,7 +91,7 @@ export default function Messages() {
     if (!auth.user) return
 
     const interval = setInterval(() => {
-      loadConversations()
+      loadConversations(false) // Don't auto-select during polling
     }, 5000)
 
     return () => clearInterval(interval)
@@ -84,26 +121,6 @@ export default function Messages() {
     const interval = setInterval(pollMessages, 3000)
     return () => clearInterval(interval)
   }, [selectedConversation, auth.token, API_BASE_URL])
-
-  const loadMessages = async (conversationId) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/chat/conversations/${conversationId}/messages`, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setMessages(data.messages || [])
-      } else {
-        setMessages([])
-      }
-    } catch (err) {
-      console.error('Load messages error:', err)
-      setMessages([])
-    }
-  }
 
   const selectConversation = (conversation) => {
     setSelectedConversation(conversation)
@@ -293,32 +310,9 @@ export default function Messages() {
                        getOtherUser(selectedConversation)?.email || 'User'}
                     </h3>
                     <p className="chat-property-name">
-                      About: {selectedConversation.property?.title || 'Property'}
+                      Conversation
                     </p>
                   </div>
-                </div>
-                <button
-                  className="view-property-btn"
-                  onClick={() => navigate(`/property/${selectedConversation.propertyId}`)}
-                >
-                  View Property
-                </button>
-              </div>
-
-              {/* Property Preview */}
-              <div className="property-preview-bar">
-                <img 
-                  src={selectedConversation.property?.images?.[0]?.url || 'https://via.placeholder.com/60'}
-                  alt={selectedConversation.property?.title}
-                  className="property-preview-image"
-                />
-                <div className="property-preview-info">
-                  <p className="property-preview-title">{selectedConversation.property?.title}</p>
-                  <p className="property-preview-price">
-                    {selectedConversation.property?.price 
-                      ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(Number(selectedConversation.property.price))
-                      : 'Price available on request'}
-                  </p>
                 </div>
               </div>
 

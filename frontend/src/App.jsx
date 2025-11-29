@@ -60,7 +60,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/upload" element={<UploadProperty />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/upload-property" element={<UploadProperty />} />
             <Route path="/schedule-viewing" element={<ScheduleViewing />} />
             <Route path="/make-offer" element={<MakeOffer />} />
             <Route path="/property/:id" element={<PropertyDetails />} />

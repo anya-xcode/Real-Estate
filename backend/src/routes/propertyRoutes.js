@@ -18,6 +18,7 @@ const {
   addFavorite,
   removeFavorite,
   getUserActivity,
+  getNearbyPlaces,
   adminGetAllProperties,
   adminApproveProperty,
   adminDeleteProperty,
@@ -117,6 +118,9 @@ router.get('/properties/:id', getPropertyById);
 router.post('/properties', authMiddleware, createProperty);
 router.put('/properties/:id', authMiddleware, updateProperty);
 router.delete('/properties/:id', authMiddleware, deleteProperty);
+
+// Nearby Places Route (public - no auth required)
+router.post('/nearby-places', getNearbyPlaces);
 
 // Admin Routes
 router.get('/admin/properties', adminMiddleware, adminGetAllProperties);
