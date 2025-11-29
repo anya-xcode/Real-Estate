@@ -4,7 +4,9 @@ const passport = require('passport');
 const { 
   signup, 
   login, 
-  getProfile, 
+  getProfile,
+  updateProfile,
+  changePassword,
   googleCallback, 
   googleFailure,
   getAllProperties,
@@ -12,6 +14,10 @@ const {
   createProperty,
   updateProperty,
   deleteProperty,
+  getUserFavorites,
+  addFavorite,
+  removeFavorite,
+  getUserActivity,
   adminGetAllProperties,
   adminApproveProperty,
   adminDeleteProperty,
@@ -67,6 +73,12 @@ const validateLogin = [
 router.post('/signup', validateSignup, signup);
 router.post('/login', validateLogin, login);
 router.get('/profile', authMiddleware, getProfile);
+router.put('/profile', authMiddleware, updateProfile);
+router.post('/change-password', authMiddleware, changePassword);
+router.get('/favorites', authMiddleware, getUserFavorites);
+router.post('/favorites', authMiddleware, addFavorite);
+router.delete('/favorites/:id', authMiddleware, removeFavorite);
+router.get('/activity', authMiddleware, getUserActivity);
 
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

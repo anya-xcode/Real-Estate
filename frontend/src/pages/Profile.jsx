@@ -7,25 +7,21 @@ import './Profile.css'
 export default function Profile() {
   const auth = useAuth()
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (!auth.user) navigate('/signin')
-  }, [auth.user, navigate])
-
-  if (!auth.user) return null
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [isEditing, setIsEditing] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [avatarImage, setAvatarImage] = useState(auth.user?.avatar || null)
   
   const [userInfo, setUserInfo] = useState({
-    firstName: auth.user?.firstName || 'John',
-    lastName: auth.user?.lastName || 'Doe',
-    email: auth.user?.email || 'john.doe@example.com',
-    phone: '+91 98765 43210',
-    location: 'Mumbai, Maharashtra',
-    bio: 'Looking for a 3BHK apartment in Mumbai suburbs',
-    memberSince: 'January 2024'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    location: '',
+    bio: '',
+    memberSince: ''
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -33,52 +29,146 @@ export default function Profile() {
     newPassword: '',
     confirmPassword: ''
   })
+  
+  const [savedProperties, setSavedProperties] = useState([])
+  const [recentActivity, setRecentActivity] = useState([])
+  const [loadingFavorites, setLoadingFavorites] = useState(true)
 
-  // Mock saved properties
-  const savedProperties = [
-    {
-      id: 1,
-      title: 'Modern Family House',
-      price: '$1,250,000',
-      location: 'Springfield',
-      image: 'https://media.architecturaldigest.com/photos/55e78c2fcd709ad62e8feef9/16:9/w_656,h_369,c_limit/dam-images-resources-2012-01-modern-family-sets-modern-family-01-jay-gloria-pritchett.jpg',
-      savedDate: '2024-10-15'
-    },
-    {
-      id: 2,
-      title: 'Downtown Apartment',
-      price: '$560,000',
-      location: 'Metropolis',
-      image: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=60',
-      savedDate: '2024-10-20'
-    },
-    {
-      id: 3,
-      title: 'Luxury Penthouse',
-      price: '$2,980,000',
-      location: 'Uptown',
-      image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=60',
-      savedDate: '2024-11-01'
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+
+  useEffect(() => {
+    if (!auth.user) navigate('/signin')
+    else {
+      loadProfile()
+      fetchFavorites()
+      fetchActivity()
     }
-  ]
+  }, [auth.user, navigate])
 
-  // Mock recent activity
-  const recentActivity = [
-    { action: 'Saved property', property: 'Luxury Penthouse', date: '2 days ago' },
-    { action: 'Viewed property', property: 'Downtown Apartment', date: '5 days ago' },
-    { action: 'Contacted agent', property: 'Modern Family House', date: '1 week ago' },
-    { action: 'Updated profile', property: null, date: '2 weeks ago' }
-  ]
+  const loadProfile = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUserInfo({
+          firstName: data.user.firstName || '',
+          lastName: data.user.lastName || '',
+          email: data.user.email || '',
+          phone: data.user.phone || '',
+          location: data.user.location || '',
+          bio: data.user.bio || '',
+          memberSince: new Date(data.user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        })
+        if (data.user.avatar) {
+          setAvatarImage(data.user.avatar)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchFavorites = async () => {
+    try {
+      setLoadingFavorites(true)
+      const response = await fetch(`${API_BASE_URL}/api/favorites`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setSavedProperties(data.favorites || [])
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error)
+    } finally {
+      setLoadingFavorites(false)
+    }
+  }
+
+  const fetchActivity = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/activity`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setRecentActivity(data.activity || [])
+      }
+    } catch (error) {
+      console.error('Error fetching activity:', error)
+    }
+  }
+
+  const handleRemoveFavorite = async (favoriteId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/favorites/${favoriteId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+      if (response.ok) {
+        setSavedProperties(prev => prev.filter(fav => fav.id !== favoriteId))
+      }
+    } catch (error) {
+      console.error('Error removing favorite:', error)
+    }
+  }
+
+  if (!auth.user) return null
+  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setUserInfo(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSaveProfile = () => {
-    setIsEditing(false)
-    // Add API call to save profile
-    alert('Profile updated successfully!')
+  const handleSaveProfile = async () => {
+    setSaving(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
+        },
+        body: JSON.stringify({
+          firstName: userInfo.firstName,
+          lastName: userInfo.lastName,
+          phone: userInfo.phone,
+          location: userInfo.location,
+          bio: userInfo.bio,
+          avatar: avatarImage
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Update auth context with new user data
+        auth.login({ ...auth.user, ...data.user }, auth.token)
+        setIsEditing(false)
+        alert('Profile updated successfully!')
+      } else {
+        const error = await response.json()
+        alert(error.message || 'Failed to update profile')
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      alert('Failed to update profile. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleRemoveProperty = (propertyId) => {
@@ -91,7 +181,7 @@ export default function Profile() {
     setPasswordData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault()
     
     // Validation
@@ -110,17 +200,35 @@ export default function Profile() {
       return
     }
 
-    // Add API call to change password
-    console.log('Changing password...')
-    alert('Password changed successfully!')
-    
-    // Reset form
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    })
-    setIsChangingPassword(false)
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      })
+
+      if (response.ok) {
+        alert('Password changed successfully!')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+        setIsChangingPassword(false)
+      } else {
+        const error = await response.json()
+        alert(error.message || 'Failed to change password')
+      }
+    } catch (error) {
+      console.error('Error changing password:', error)
+      alert('Failed to change password. Please try again.')
+    }
   }
 
   const handleAvatarUpload = (e) => {
@@ -401,12 +509,6 @@ export default function Profile() {
                             </svg>
                             Explore Loans
                           </Link>
-                          <Link to="/contact" className="action-btn">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            Contact Agent
-                          </Link>
                         </div>
                       </div>
                     </div>
@@ -423,30 +525,42 @@ export default function Profile() {
                   </div>
 
                   <div className="saved-properties-grid">
-                    {savedProperties.map(property => (
-                      <div key={property.id} className="saved-property-card">
-                        <div className="property-image-wrapper">
-                          <img src={property.image} alt={property.title} />
-                          <button 
-                            className="remove-btn"
-                            onClick={() => handleRemoveProperty(property.id)}
-                          >
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                        </div>
-                        <div className="property-details">
-                          <h3 className="property-title">{property.title}</h3>
-                          <p className="property-location">{property.location}</p>
-                          <p className="property-price">{property.price}</p>
-                          <p className="saved-date">Saved on {new Date(property.savedDate).toLocaleDateString()}</p>
-                          <Link to={`/properties/${property.id}`} className="view-property-btn">
-                            View Details
-                          </Link>
-                        </div>
+                    {loadingFavorites ? (
+                      <div style={{ textAlign: 'center', padding: '2rem', gridColumn: '1 / -1' }}>Loading favorites...</div>
+                    ) : savedProperties.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '2rem', gridColumn: '1 / -1', color: '#666' }}>
+                        <p>No saved properties yet</p>
+                        <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Properties you favorite will appear here</p>
                       </div>
-                    ))}
+                    ) : (
+                      savedProperties.map(favorite => (
+                        <div key={favorite.id} className="saved-property-card">
+                          <div className="property-image-wrapper">
+                            <img 
+                              src={favorite.property.images?.[0]?.url || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                              alt={favorite.property.title} 
+                            />
+                            <button 
+                              className="remove-btn"
+                              onClick={() => handleRemoveFavorite(favorite.id)}
+                            >
+                              <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                          <div className="property-details">
+                            <h3 className="property-title">{favorite.property.title}</h3>
+                            <p className="property-location">{favorite.property.address?.city || 'Location not specified'}</p>
+                            <p className="property-price">${favorite.property.price?.toLocaleString() || 'N/A'}</p>
+                            <p className="saved-date">Saved on {new Date(favorite.createdAt).toLocaleDateString()}</p>
+                            <Link to={`/property/${favorite.property.id}`} className="view-property-btn">
+                              View Details
+                            </Link>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
@@ -460,20 +574,32 @@ export default function Profile() {
                   </div>
 
                   <div className="activity-list">
-                    {recentActivity.map((item, index) => (
-                      <div key={index} className="activity-item">
-                        <div className="activity-icon">
-                          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                        <div className="activity-details">
-                          <p className="activity-action">{item.action}</p>
-                          {item.property && <p className="activity-property">{item.property}</p>}
-                          <p className="activity-date">{item.date}</p>
-                        </div>
+                    {recentActivity.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                        <p>No recent activity</p>
+                        <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Your recent actions will appear here</p>
                       </div>
-                    ))}
+                    ) : (
+                      recentActivity.map((item, index) => (
+                        <div key={index} className="activity-item">
+                          <div className="activity-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <div className="activity-details">
+                            <p className="activity-action">
+                              {item.action === 'favorite_added' ? 'Saved property' :
+                               item.action === 'message_sent' ? 'Sent message' :
+                               item.action === 'property_viewed' ? 'Viewed property' :
+                               item.action}
+                            </p>
+                            {item.propertyTitle && <p className="activity-property">{item.propertyTitle}</p>}
+                            <p className="activity-date">{new Date(item.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
