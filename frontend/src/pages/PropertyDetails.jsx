@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import './PropertyDetails.css'
 import Footer from '../components/Footer'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
@@ -202,6 +204,249 @@ export default function PropertyDetails() {
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
   }, [isFullscreen])
+
+  // Helper function to load image as data URL (for PDF)
+  const loadImageAsDataURL = (url) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas')
+          canvas.width = img.width
+          canvas.height = img.height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0)
+          const dataURL = canvas.toDataURL('image/jpeg', 0.7)
+          resolve(dataURL)
+        } catch (err) {
+          console.error('Canvas error:', err)
+          resolve(null)
+        }
+      }
+      
+      img.onerror = () => {
+        console.log('Image load error')
+        resolve(null)
+      }
+      
+      // Set timeout
+      setTimeout(() => resolve(null), 5000)
+      
+      img.src = url
+    })
+  }
+
+  // PDF Download Function
+  const downloadPropertyPDF = async () => {
+    try {
+      const doc = new jsPDF()
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      let yPos = 20
+
+      // Helper function to add text with word wrap
+      const addText = (text, x, y, maxWidth, fontSize = 12) => {
+        doc.setFontSize(fontSize)
+        const lines = doc.splitTextToSize(text || '', maxWidth)
+        doc.text(lines, x, y)
+        return y + (lines.length * fontSize * 0.5)
+      }
+
+      // Header with property title
+      doc.setFillColor(41, 128, 185)
+      doc.rect(0, 0, pageWidth, 30, 'F')
+      doc.setTextColor(255, 255, 255)
+      doc.setFontSize(20)
+      doc.setFont(undefined, 'bold')
+      doc.text(property.title || 'Property Details', pageWidth / 2, 20, { align: 'center' })
+
+      // Reset text color
+      doc.setTextColor(0, 0, 0)
+      doc.setFont(undefined, 'normal')
+      yPos = 40
+
+      // Property Image (first image) - Skip image if CORS issue
+      let imageAdded = false
+      if (propertyImages[0] && !propertyImages[0].includes('placeholder')) {
+        try {
+          // Try to load and add image
+          const imgData = await loadImageAsDataURL(propertyImages[0])
+          if (imgData) {
+            const img = new Image()
+            img.src = imgData
+            await new Promise((resolve) => {
+              img.onload = () => {
+                try {
+                  const imgWidth = 170
+                  const imgHeight = (img.height / img.width) * imgWidth
+                  const xPos = (pageWidth - imgWidth) / 2
+                  
+                  if (imgHeight < pageHeight - yPos - 40) {
+                    doc.addImage(imgData, 'JPEG', xPos, yPos, imgWidth, imgHeight)
+                    yPos += imgHeight + 10
+                    imageAdded = true
+                  }
+                } catch (err) {
+                  console.log('Skipping image due to error:', err.message)
+                }
+                resolve()
+              }
+              img.onerror = () => resolve()
+            })
+          }
+        } catch (err) {
+          console.log('Could not load image, continuing without it:', err.message)
+        }
+      }
+
+      // If image wasn't added, add some spacing
+      if (!imageAdded) {
+        yPos += 5
+      }
+
+      // Price
+      doc.setFontSize(18)
+      doc.setFont(undefined, 'bold')
+      doc.setTextColor(41, 128, 185)
+      yPos = addText(`$${property.price?.toLocaleString() || 'N/A'}`, 15, yPos, pageWidth - 30, 18)
+      yPos += 5
+
+      // Property Type
+      doc.setFontSize(12)
+      doc.setTextColor(100, 100, 100)
+      doc.setFont(undefined, 'italic')
+      yPos = addText(property.propertyType || 'Property', 15, yPos, pageWidth - 30, 12)
+      yPos += 10
+
+      // Address
+      doc.setTextColor(0, 0, 0)
+      doc.setFont(undefined, 'bold')
+      doc.text('Location:', 15, yPos)
+      doc.setFont(undefined, 'normal')
+      yPos = addText(getAddressString(), 15, yPos + 5, pageWidth - 30)
+      yPos += 10
+
+      // Check if we need a new page
+      if (yPos > pageHeight - 60) {
+        doc.addPage()
+        yPos = 20
+      }
+
+      // Description
+      if (property.description) {
+        doc.setFont(undefined, 'bold')
+        doc.text('Description:', 15, yPos)
+        yPos += 7
+        doc.setFont(undefined, 'normal')
+        yPos = addText(property.description, 15, yPos, pageWidth - 30)
+        yPos += 10
+      }
+
+      // Check if we need a new page
+      if (yPos > pageHeight - 60) {
+        doc.addPage()
+        yPos = 20
+      }
+
+      // Property Details Table
+      doc.setFont(undefined, 'bold')
+      doc.text('Property Details:', 15, yPos)
+      yPos += 5
+
+      const tableData = []
+      
+      // Add available details - with better null checks
+      if (property.beds && property.beds !== '0') tableData.push(['Bedrooms', String(property.beds)])
+      if (property.baths && property.baths !== '0') tableData.push(['Bathrooms', String(property.baths)])
+      if (property.area && property.area !== '0') tableData.push(['Area', `${property.area} sqft`])
+      if (property.yearBuilt) tableData.push(['Year Built', String(property.yearBuilt)])
+      if (property.propertyType) tableData.push(['Property Type', String(property.propertyType)])
+
+      if (tableData.length > 0) {
+        try {
+          doc.autoTable({
+            startY: yPos,
+            head: [['Feature', 'Details']],
+            body: tableData,
+            theme: 'striped',
+            headStyles: { fillColor: [41, 128, 185] },
+            margin: { left: 15, right: 15 },
+            styles: { fontSize: 10 }
+          })
+          yPos = doc.lastAutoTable.finalY + 10
+        } catch (tableErr) {
+          console.error('Error adding table:', tableErr)
+          // Skip table and continue
+          yPos += 10
+        }
+      }
+
+      // Amenities
+      if (property.amenities && property.amenities.length > 0) {
+        if (yPos > pageHeight - 60) {
+          doc.addPage()
+          yPos = 20
+        }
+        
+        doc.setFont(undefined, 'bold')
+        doc.text('Amenities:', 15, yPos)
+        yPos += 7
+        doc.setFont(undefined, 'normal')
+        
+        const amenitiesText = property.amenities.join(', ')
+        yPos = addText(amenitiesText, 15, yPos, pageWidth - 30)
+        yPos += 10
+      }
+
+      // Owner Information
+      if (property.owner) {
+        if (yPos > pageHeight - 40) {
+          doc.addPage()
+          yPos = 20
+        }
+
+        doc.setFont(undefined, 'bold')
+        doc.text('Contact Information:', 15, yPos)
+        yPos += 7
+        doc.setFont(undefined, 'normal')
+        
+        const ownerName = property.owner.firstName && property.owner.lastName 
+          ? `${property.owner.firstName} ${property.owner.lastName}`
+          : property.owner.username || 'Property Owner'
+        
+        yPos = addText(`Name: ${ownerName}`, 15, yPos, pageWidth - 30)
+        if (property.owner.email) {
+          yPos = addText(`Email: ${property.owner.email}`, 15, yPos, pageWidth - 30)
+        }
+      }
+
+      // Footer
+      const footerY = pageHeight - 15
+      doc.setFontSize(8)
+      doc.setTextColor(150, 150, 150)
+      doc.text('Generated on ' + new Date().toLocaleDateString(), pageWidth / 2, footerY, { align: 'center' })
+
+      // Save the PDF
+      const fileName = `${(property.title || 'property').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_details.pdf`
+      doc.save(fileName)
+      
+      console.log('PDF generated successfully')
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        property: {
+          title: property?.title,
+          hasImages: propertyImages?.length > 0,
+          imageUrl: propertyImages?.[0]
+        }
+      })
+      alert('Failed to generate PDF. Please try again.')
+    }
+  }
 
   // Get address string from address object or fallback
   const getAddressString = () => {
@@ -513,6 +758,21 @@ export default function PropertyDetails() {
 
           {/* Action Buttons */}
           <div className="property-details-actions">
+            {/* Download PDF Button - Always visible */}
+            <button
+              className="action-button-details download-pdf-details"
+              onClick={downloadPropertyPDF}
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white'
+              }}
+            >
+              <svg className="action-icon-details" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download PDF
+            </button>
+
             {/* Show Edit/Delete buttons if user is the owner */}
             {auth?.user && property?.ownerId === auth.user.id ? (
               <>
