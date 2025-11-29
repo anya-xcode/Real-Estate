@@ -5,10 +5,12 @@ export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [properties, setProperties] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [filter, setFilter] = useState('all'); // all, pending, approved, denied
+  const [activeTab, setActiveTab] = useState('properties'); // properties, reviews
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -43,6 +45,8 @@ export default function Admin() {
         const data = await response.json();
         setProperties(data.properties);
         setIsAuthenticated(true);
+        // Also fetch reviews
+        fetchReviews(password);
       } else {
         const data = await response.json();
         setError(data.message || 'Invalid admin password');
@@ -159,11 +163,87 @@ export default function Admin() {
     }
   };
 
+  const fetchReviews = async (adminPassword) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reviews/all`, {
+        headers: {
+          'x-admin-password': adminPassword || sessionStorage.getItem('adminPassword')
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setReviews(data.reviews);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    }
+  };
+
+  const handleApproveReview = async (reviewId) => {
+    const adminPassword = sessionStorage.getItem('adminPassword');
+    if (!adminPassword) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}/approve`, {
+        method: 'PATCH',
+        headers: {
+          'x-admin-password': adminPassword
+        }
+      });
+
+      if (response.ok) {
+        setSuccessMessage('Review approved successfully');
+        fetchReviews(adminPassword);
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to approve review');
+      }
+    } catch (err) {
+      console.error('Approve error:', err);
+      setError('Failed to connect to server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm('Are you sure you want to delete this review?')) return;
+
+    const adminPassword = sessionStorage.getItem('adminPassword');
+    if (!adminPassword) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-password': adminPassword
+        }
+      });
+
+      if (response.ok) {
+        setSuccessMessage('Review deleted successfully');
+        fetchReviews(adminPassword);
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Failed to delete review');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      setError('Failed to connect to server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     sessionStorage.removeItem('adminPassword');
     setIsAuthenticated(false);
     setPassword('');
     setProperties([]);
+    setReviews([]);
     setShowChangePassword(false);
   };
 
@@ -299,7 +379,7 @@ export default function Admin() {
   return (
     <div className="admin-container">
       <div className="admin-header">
-        <h1>Property Management</h1>
+        <h1>Admin Panel</h1>
         <div className="admin-header-actions">
           <button onClick={() => setShowChangePassword(true)} className="change-password-btn">
             Change Password
@@ -310,6 +390,22 @@ export default function Admin() {
 
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
+
+      {/* Tab Navigation */}
+      <div className="admin-tabs">
+        <button 
+          className={activeTab === 'properties' ? 'active' : ''} 
+          onClick={() => setActiveTab('properties')}
+        >
+          Property Management
+        </button>
+        <button 
+          className={activeTab === 'reviews' ? 'active' : ''} 
+          onClick={() => setActiveTab('reviews')}
+        >
+          Reviews Management
+        </button>
+      </div>
 
       {/* Change Password Modal */}
       {showChangePassword && (
@@ -379,26 +475,28 @@ export default function Admin() {
         </div>
       )}
 
-      <div className="admin-stats">
-        <div className="stat-card">
-          <h3>{stats.total}</h3>
-          <p>Total Properties</p>
-        </div>
-        <div className="stat-card pending">
-          <h3>{stats.pending}</h3>
-          <p>Pending</p>
-        </div>
-        <div className="stat-card approved">
-          <h3>{stats.approved}</h3>
-          <p>Approved</p>
-        </div>
-        <div className="stat-card denied">
-          <h3>{stats.denied}</h3>
-          <p>Denied</p>
-        </div>
-      </div>
+      {activeTab === 'properties' && (
+        <>
+          <div className="admin-stats">
+            <div className="stat-card">
+              <h3>{stats.total}</h3>
+              <p>Total Properties</p>
+            </div>
+            <div className="stat-card pending">
+              <h3>{stats.pending}</h3>
+              <p>Pending</p>
+            </div>
+            <div className="stat-card approved">
+              <h3>{stats.approved}</h3>
+              <p>Approved</p>
+            </div>
+            <div className="stat-card denied">
+              <h3>{stats.denied}</h3>
+              <p>Denied</p>
+            </div>
+          </div>
 
-      <div className="filter-tabs">
+          <div className="filter-tabs">
         <button 
           className={filter === 'all' ? 'active' : ''} 
           onClick={() => setFilter('all')}
@@ -509,6 +607,108 @@ export default function Admin() {
           </table>
         )}
       </div>
+        </>
+      )}
+
+      {activeTab === 'reviews' && (
+        <>
+          <div className="admin-stats">
+            <div className="stat-card">
+              <h3>{reviews.length}</h3>
+              <p>Total Reviews</p>
+            </div>
+            <div className="stat-card approved">
+              <h3>{reviews.filter(r => r.isApproved).length}</h3>
+              <p>Approved</p>
+            </div>
+            <div className="stat-card pending">
+              <h3>{reviews.filter(r => !r.isApproved).length}</h3>
+              <p>Pending</p>
+            </div>
+          </div>
+
+          {loading && <div className="loading-spinner">Loading...</div>}
+
+          <div className="reviews-table">
+            {reviews.length === 0 ? (
+              <div className="no-properties">No reviews found</div>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reviews.map((review) => (
+                    <tr key={review.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <img 
+                            src={review.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.name)}&background=667eea&color=fff&size=40`}
+                            alt={review.name}
+                            style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                          />
+                          <span>{review.name}</span>
+                        </div>
+                      </td>
+                      <td>{review.role}</td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                          {[...Array(review.rating)].map((_, i) => (
+                            <span key={i} style={{ color: '#fbbf24' }}>★</span>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ maxWidth: '300px' }}>
+                        <div style={{ 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis', 
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical'
+                        }}>
+                          {review.text}
+                        </div>
+                      </td>
+                      <td>{new Date(review.createdAt).toLocaleDateString()}</td>
+                      <td>
+                        <span className={review.isApproved ? 'status-badge approved' : 'status-badge pending'}>
+                          {review.isApproved ? 'Approved' : 'Pending'}
+                        </span>
+                      </td>
+                      <td className="actions-cell">
+                        {!review.isApproved && (
+                          <button
+                            onClick={() => handleApproveReview(review.id)}
+                            className="action-btn approve-btn"
+                            disabled={loading}
+                          >
+                            Approve
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDeleteReview(review.id)}
+                          className="action-btn delete-btn"
+                          disabled={loading}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

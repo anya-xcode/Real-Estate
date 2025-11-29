@@ -5,6 +5,7 @@ const session = require('express-session');
 const passport = require('./config/passport');
 const propertyRoutes = require('./routes/propertyRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -36,6 +37,7 @@ app.use(passport.session());
 app.use('/api/auth', propertyRoutes);
 app.use('/api', propertyRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api', reviewRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -1514,6 +1514,92 @@
   text-align: left;
 }
 
+/* Add Review Button */
+.add-review-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  text-decoration: none;
+}
+
+.add-review-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.add-review-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Loading States */
+.testimonials-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.testimonials-loading p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* No Reviews State */
+.no-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  background: #f9fafb;
+  border-radius: 16px;
+  border: 2px dashed #e5e7eb;
+}
+
+.no-reviews svg {
+  width: 64px;
+  height: 64px;
+  color: #9ca3af;
+}
+
+.no-reviews p {
+  color: #6b7280;
+  font-size: 1.05rem;
+  text-align: center;
+  max-width: 400px;
+}
+
 /* Section Header */
 .section-header {
   text-align: left;
