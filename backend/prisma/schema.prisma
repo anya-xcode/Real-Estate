@@ -42,6 +42,9 @@ model Property {
   updatedAt          DateTime          @updatedAt
   verificationStatus String            @default("pending") @db.VarChar(20)
   propertyType       String?           @db.VarChar(50)
+
+  instagram          String?           @db.VarChar(100)
+  youtube            String?           @db.VarChar(100)
   address            Address?
   conversations      Conversation[]
   favorites          Favorite[]
