@@ -37,12 +37,11 @@ model Property {
   title              String?           @db.VarChar(255)
   description        String?           @db.Text
   price              Decimal?          @db.Decimal(12, 2)
+  propertyType       String?           @db.VarChar(50)
+  verificationStatus String            @default("pending") @db.VarChar(20)
   ownerId            String?
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
-  verificationStatus String            @default("pending") @db.VarChar(20)
-  propertyType       String?           @db.VarChar(50)
-
   instagram          String?           @db.VarChar(100)
   youtube            String?           @db.VarChar(100)
   address            Address?

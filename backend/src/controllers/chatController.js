@@ -311,7 +311,22 @@ const getUserConversations = async (req, res) => {
       }
     });
 
-    res.status(200).json({ conversations });
+    // Group conversations by the other user (remove duplicates with same user)
+    const uniqueConversations = [];
+    const seenUsers = new Set();
+
+    for (const conv of conversations) {
+      // Determine who the "other user" is
+      const otherUserId = conv.buyerId === userId ? conv.sellerId : conv.buyerId;
+      
+      // Only include the first (most recent) conversation with each unique user
+      if (!seenUsers.has(otherUserId)) {
+        seenUsers.add(otherUserId);
+        uniqueConversations.push(conv);
+      }
+    }
+
+    res.status(200).json({ conversations: uniqueConversations });
   } catch (error) {
     console.error('Get user conversations error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -370,8 +385,121 @@ const getConversationMessages = async (req, res) => {
   }
 };
 
+// Get or create a conversation with a specific user (seller)
+const getOrCreateConversationByUser = async (req, res) => {
+  try {
+    const { userId } = req.params; // The seller's user ID
+    const currentUserId = req.user.id;
+    const { propertyId } = req.body; // Optional property context
+
+    // Don't allow users to message themselves
+    if (currentUserId === userId) {
+      return res.status(400).json({ message: 'Cannot create conversation with yourself' });
+    }
+
+    // Check if conversation already exists between these two users
+    // Find the MOST RECENT conversation (same logic as getUserConversations)
+    let conversation = await prisma.conversation.findFirst({
+      where: {
+        OR: [
+          { buyerId: currentUserId, sellerId: userId },
+          { buyerId: userId, sellerId: currentUserId }
+        ]
+      },
+      include: {
+        property: {
+          include: {
+            images: { take: 1 }
+          }
+        },
+        buyer: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            firstName: true,
+            lastName: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            firstName: true,
+            lastName: true
+          }
+        },
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1
+        }
+      },
+      orderBy: {
+        lastMessageAt: 'desc'  // Get the most recent conversation
+      }
+    });
+
+    // If no conversation exists, create one
+    if (!conversation) {
+      // Determine who is buyer and who is seller
+      const buyerId = currentUserId;
+      const sellerId = userId;
+
+      // If propertyId is provided, use it; otherwise, find a property owned by the seller
+      let propertyIdToUse = propertyId;
+      if (!propertyIdToUse) {
+        const sellerProperty = await prisma.property.findFirst({
+          where: { ownerId: sellerId }
+        });
+        propertyIdToUse = sellerProperty?.id;
+      }
+
+      conversation = await prisma.conversation.create({
+        data: {
+          buyerId,
+          sellerId,
+          propertyId: propertyIdToUse
+        },
+        include: {
+          property: {
+            include: {
+              images: { take: 1 }
+            }
+          },
+          buyer: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              firstName: true,
+              lastName: true
+            }
+          },
+          seller: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              firstName: true,
+              lastName: true
+            }
+          },
+          messages: true
+        }
+      });
+    }
+
+    res.status(200).json({ conversation });
+  } catch (error) {
+    console.error('Get or create conversation by user error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getOrCreateConversation,
+  getOrCreateConversationByUser,
   sendMessage,
   getUserConversations,
   getConversationMessages

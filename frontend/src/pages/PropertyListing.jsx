@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import PropertyCard from '../components/PropertyCard'
-import ChatPanel from '../components/ChatPanel'
 import Footer from '../components/Footer'
 import './PropertyListing.css'
+import useAuth from '../hooks/useAuth'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
 export default function PropertyListing() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const auth = useAuth()
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedProperty, setSelectedProperty] = useState(null)
-  const [isChatOpen, setIsChatOpen] = useState(false)
   const [filterType, setFilterType] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
   const [searchQuery, setSearchQuery] = useState('')
@@ -59,7 +59,7 @@ export default function PropertyListing() {
 
   // Filter and sort properties (includes search)
   const filteredProperties = properties
-    .filter(property => filterType === 'All' || property.type === filterType)
+    .filter(property => filterType === 'All' || property.propertyType === filterType)
     .filter(property => {
       if (!searchQuery || searchQuery.trim() === '') return true
       const q = searchQuery.toLowerCase()
@@ -68,7 +68,7 @@ export default function PropertyListing() {
         (property.address?.city && property.address.city.toLowerCase().includes(q)) ||
         (property.address?.state && property.address.state.toLowerCase().includes(q)) ||
         (property.address?.street && property.address.street.toLowerCase().includes(q)) ||
-        (property.type && property.type.toLowerCase().includes(q)) ||
+        (property.propertyType && property.propertyType.toLowerCase().includes(q)) ||
         (property.owner?.username && property.owner.username.toLowerCase().includes(q))
       )
     })
@@ -83,9 +83,43 @@ export default function PropertyListing() {
       return 0
     })
 
-  const handleConnectClick = (property) => {
-    setSelectedProperty(property)
-    setIsChatOpen(true)
+  const handleConnectClick = async (property) => {
+    if (!auth.user) {
+      navigate('/signin')
+      return
+    }
+
+    // Don't allow users to message themselves
+    if (property.ownerId === auth.user.id) {
+      alert('You cannot message yourself!')
+      return
+    }
+
+    try {
+      // Create or get conversation with property owner by ownerId
+      const response = await fetch(`${API_URL}/api/chat/conversations/user/${property.ownerId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${auth.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          propertyId: property.id
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Navigate to messages page with the conversation ID
+        navigate(`/messages?conversationId=${data.conversation.id}`)
+      } else {
+        const data = await response.json()
+        alert(data.message || 'Failed to start conversation. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error starting conversation:', error)
+      alert('Failed to connect. Please try again.')
+    }
   }
 
   // Loading state
@@ -270,13 +304,6 @@ export default function PropertyListing() {
           )}
         </div>
       </section>
-
-      {/* Chat Panel */}
-      <ChatPanel
-        isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
-        property={selectedProperty}
-      />
 
       {/* Footer */}
       <Footer />

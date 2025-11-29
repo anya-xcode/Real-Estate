@@ -377,8 +377,55 @@ export default function PropertyCard({ property, index, onConnectClick }) {
               </svg>
               More Info
             </button>
-            {/* Only show Connect button if user is not the owner */}
-            {(!auth?.user || auth.user.id !== property.ownerId) && (
+            {/* Show Edit/Delete buttons if user is the owner */}
+            {auth?.user && auth.user.id === property.ownerId ? (
+              <>
+                <button 
+                  className="action-button edit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(`/upload-property?edit=${property.id}`)
+                  }}
+                >
+                  <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button 
+                  className="action-button delete"
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    if (window.confirm('Are you sure you want to delete this property?')) {
+                      try {
+                        const response = await fetch(`${API_BASE_URL}/api/properties/${property.id}`, {
+                          method: 'DELETE',
+                          headers: {
+                            'Authorization': `Bearer ${auth.token}`
+                          }
+                        })
+                        if (response.ok) {
+                          alert('Property deleted successfully')
+                          window.location.reload()
+                        } else {
+                          const data = await response.json()
+                          alert(data.message || 'Failed to delete property')
+                        }
+                      } catch (error) {
+                        console.error('Error deleting property:', error)
+                        alert('Failed to delete property')
+                      }
+                    }
+                  }}
+                >
+                  <svg className="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+              </>
+            ) : (
+              /* Only show Connect button if user is not the owner */
               <button 
                 className="action-button secondary"
                 onClick={() => onConnectClick(property)}

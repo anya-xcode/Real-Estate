@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   getOrCreateConversation,
+  getOrCreateConversationByUser,
   sendMessage,
   getUserConversations,
   getConversationMessages
@@ -14,6 +15,9 @@ router.use(authMiddleware);
 
 // Get or create conversation for a property
 router.get('/conversations/property/:propertyId', getOrCreateConversation);
+
+// Get or create conversation with a specific user (seller)
+router.post('/conversations/user/:userId', getOrCreateConversationByUser);
 
 // Get all conversations for current user
 router.get('/conversations', getUserConversations);
