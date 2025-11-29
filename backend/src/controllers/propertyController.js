@@ -354,13 +354,14 @@ const getPropertyById = async (req, res) => {
 
 const createProperty = async (req, res) => {
   try {
-    const { title, description, price, address, images } = req.body
+    const { title, description, price, type, address, images } = req.body
 
     const property = await prisma.property.create({
       data: {
         title,
         description,
         price,
+        type,
         ownerId: req.user.id,
         address: address ? {
           create: {
@@ -405,7 +406,7 @@ const createProperty = async (req, res) => {
 const updateProperty = async (req, res) => {
   try {
     const { id } = req.params
-    const { title, description, price, address } = req.body
+    const { title, description, price, type, address } = req.body
 
     const property = await prisma.property.findUnique({
       where: { id }
@@ -425,6 +426,7 @@ const updateProperty = async (req, res) => {
         title,
         description,
         price,
+        type,
         address: address ? {
           upsert: {
             create: {

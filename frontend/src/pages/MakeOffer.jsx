@@ -186,12 +186,12 @@ export default function MakeOffer() {
                       // convert entered amount to USD for comparison (assume property.price is in USD)
                       const enteredInUSD = convert(amount, inputCurrency, 'USD')
                       const pct = property.price > 0 ? (enteredInUSD / property.price) * 100 : 0
-                      const diff = pct - 100
-                      const sign = diff >= 0 ? '+' : '-'
-                      const absDiff = Math.abs(diff)
+                      const diff = enteredInUSD - property.price
+                      const diffPct = property.price > 0 ? (diff / property.price) * 100 : 0
+                      const sign = diffPct >= 0 ? '+' : ''
                       return (
-                        <span style={{marginLeft:12, color: diff>=0 ? '#059669' : '#b91c1c', fontWeight:700}}>
-                          {pct.toFixed(1)}% of listing ({sign}{absDiff.toFixed(1)}%)
+                        <span style={{marginLeft:12, color: diffPct>=0 ? '#059669' : '#b91c1c', fontWeight:700}}>
+                          {pct.toFixed(1)}% of listing ({sign}{diffPct.toFixed(1)}%)
                         </span>
                       )
                     } catch (err) { return null }
@@ -225,11 +225,11 @@ export default function MakeOffer() {
               try {
                 const enteredInUSD = convert(amount, inputCurrency, 'USD')
                 const pct = property.price > 0 ? (enteredInUSD / property.price) * 100 : 0
-                const diff = pct - 100
-                const sign = diff >= 0 ? '+' : '-'
-                const absDiff = Math.abs(diff)
+                const diff = enteredInUSD - property.price
+                const diffPct = property.price > 0 ? (diff / property.price) * 100 : 0
+                const sign = diffPct >= 0 ? '+' : ''
                 return (
-                  <p><strong>Relative to listing:</strong> {pct.toFixed(1)}% ({sign}{absDiff.toFixed(1)}%)</p>
+                  <p><strong>Relative to listing:</strong> {pct.toFixed(1)}% ({sign}{diffPct.toFixed(1)}%)</p>
                 )
               } catch (err) { return null }
             })()
