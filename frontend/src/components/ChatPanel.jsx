@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import useAuth from '../hooks/useAuth'
 import './ChatPanel.css'
 
@@ -180,11 +181,49 @@ export default function ChatPanel({ isOpen, onClose, property }) {
     return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
-  if (!isOpen || !property) return null
+  // Prevent body scroll when chat is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('chat-open')
+    } else {
+      document.body.classList.remove('chat-open')
+    }
+    
+    return () => {
+      document.body.classList.remove('chat-open')
+    }
+  }, [isOpen])
+
+  // Don't render anything if no property
+  if (!property) return null
 
   if (!auth.user) {
     return (
-      <div className={`chat-panel ${isOpen ? 'open' : ''}`}>
+      <>
+        <div 
+          className={`chat-overlay ${isOpen ? 'show' : ''}`}
+          onClick={onClose}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999
+          }}
+        />
+        <div 
+          className={`chat-panel ${isOpen ? 'open' : ''}`}
+          style={{
+            position: 'fixed',
+            top: 0,
+            bottom: 0,
+            right: isOpen ? 0 : '-450px',
+            width: '450px',
+            height: '100vh',
+            zIndex: 10000
+          }}
+        >
         <div className="chat-header">
           <h3>Please Sign In</h3>
           <button className="chat-close-button" onClick={onClose}>
@@ -197,14 +236,41 @@ export default function ChatPanel({ isOpen, onClose, property }) {
           <p>You need to be signed in to chat with property owners.</p>
         </div>
       </div>
+      </>
     )
   }
 
   const otherUser = getOtherUser() || property.owner
   const otherUserName = otherUser?.username || otherUser?.firstName || otherUser?.email || 'Property Owner'
 
-  return (
-    <div className={`chat-panel ${isOpen ? 'open' : ''}`}>
+  const chatContent = (
+    <>
+      {/* Overlay */}
+      <div 
+        className={`chat-overlay ${isOpen ? 'show' : ''}`}
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999
+        }}
+      />
+      
+      <div 
+        className={`chat-panel ${isOpen ? 'open' : ''}`}
+        style={{
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          right: isOpen ? 0 : '-450px',
+          width: '450px',
+          height: '100vh',
+          zIndex: 10000
+        }}
+      >
       {/* Chat Header */}
       <div className="chat-header">
         <div className="chat-header-info">
@@ -314,5 +380,8 @@ export default function ChatPanel({ isOpen, onClose, property }) {
         </div>
       </form>
     </div>
+    </>
   )
+
+  return createPortal(chatContent, document.body)
 }

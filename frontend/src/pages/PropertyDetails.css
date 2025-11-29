@@ -755,6 +755,30 @@
   box-shadow: 0 8px 20px rgba(5, 150, 105, 0.4);
 }
 
+.action-button-details.edit-details {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.action-button-details.edit-details:hover {
+  background: #059669;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.action-button-details.delete-details {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.action-button-details.delete-details:hover {
+  background: #dc2626;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
 .action-icon-details {
   width: 22px;
   height: 22px;
