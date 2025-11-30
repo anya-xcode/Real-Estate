@@ -1,6 +1,0 @@
-[build]
-builder = "node"
-
-[build.steps]
-build = "cd backend && npm install"
-start = "cd backend && npm start"
