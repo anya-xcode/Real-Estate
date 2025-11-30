@@ -46,7 +46,7 @@ export default function UploadProperty() {
   const [countries, setCountries] = useState([])
   const [loadingLocations, setLoadingLocations] = useState(false)
   const [selectedCountryCode, setSelectedCountryCode] = useState('')
-  const [selectedStateCode, setSelectedStateCode] = useState('')
+  const [ setSelectedStateCode] = useState('')
   
   // Search/filter states for dropdowns
   const [countrySearch, setCountrySearch] = useState('')
