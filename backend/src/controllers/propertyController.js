@@ -930,7 +930,7 @@ const getNearbyPlaces = async (req, res) => {
       })
     }
 
-    const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyASycx1StIiq7RK8SBa-5GfdLOMUkO78DU'
+    const GOOGLE_MAPS_API_KEY = process.env.VITE_GOOGLE_MAPS_API_KEY
     
     // Call Google Places Nearby Search API using https module
     const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=50000&type=${type}&key=${GOOGLE_MAPS_API_KEY}`
