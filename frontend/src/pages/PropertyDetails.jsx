@@ -21,7 +21,7 @@ export default function PropertyDetails() {
   const [nearbyPlaces, setNearbyPlaces] = useState([])
   const [loadingPlaces, setLoadingPlaces] = useState(false)
 
-  const GOOGLE_MAPS_API_KEY = 'AIzaSyASycx1StIiq7RK8SBa-5GfdLOMUkO78DU'
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
   // Fetch property if not passed via state
   useEffect(() => {

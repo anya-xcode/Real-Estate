@@ -30,7 +30,7 @@ Responsive UI with modern design
 ## Project Structure
 
 real-estate-website/
-├─ backend/         # Node.js + Express API, Prisma schema, auth, admin, messaging
+├─ backend/
 │   ├─ src/
 │   │   ├─ app.js
 │   │   ├─ routes/
