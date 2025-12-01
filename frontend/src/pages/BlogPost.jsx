@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { blogPosts } from '../data/blog';
+import { posts } from '../data/posts';
 import './BlogPost.css';
 
 const BlogPost = () => {
@@ -11,7 +11,7 @@ const BlogPost = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const foundPost = blogPosts.find(p => p.slug === slug);
+    const foundPost = posts.find(p => p.slug === slug);
     setPost(foundPost);
 
     if (foundPost) {

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { blogPosts, tags } from '../data/blog';
+import { posts, tags } from '../data/posts';
 import PostCard from '../components/PostCard';
 import SearchBar from '../components/SearchBar';
 import TagList from '../components/TagList';
@@ -13,7 +13,7 @@ const Blog = () => {
   const postsPerPage = 6;
 
   const filteredPosts = useMemo(() => {
-    return blogPosts.filter(post => {
+    return posts.filter(post => {
       const matchesSearch = !searchTerm || 
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -26,7 +26,7 @@ const Blog = () => {
     });
   }, [searchTerm, selectedTags]);
 
-  const featuredPosts = blogPosts.filter(post => post.featured);
+  const featuredPosts = posts.filter(post => post.featured);
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
   const currentPosts = filteredPosts.slice(
     (currentPage - 1) * postsPerPage,
