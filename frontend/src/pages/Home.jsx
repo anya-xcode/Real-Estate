@@ -14,6 +14,7 @@ export default function Home() {
 	const [loading, setLoading] = useState(true)
 	const [reviews, setReviews] = useState([])
 	const [loadingReviews, setLoadingReviews] = useState(true)
+	const [videoLoaded, setVideoLoaded] = useState(false)
 
 	const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
@@ -35,20 +36,22 @@ export default function Home() {
 						'#10b981', '#f59e0b', '#8b5cf6', '#ef4444'
 					]
 					
-					properties.forEach(property => {
-						if (property.address?.city) {
-							const city = property.address.city
-							if (!cityCounts[city]) {
-								cityCounts[city] = {
-									count: 0,
-									color: cityColors[Object.keys(cityCounts).length % cityColors.length],
-									listings: '0'
-								}
+				properties.forEach(property => {
+					if (property.address?.city) {
+						const city = property.address.city
+						const state = property.address.state || ''
+						if (!cityCounts[city]) {
+							cityCounts[city] = {
+								count: 0,
+								color: cityColors[Object.keys(cityCounts).length % cityColors.length],
+								listings: '0',
+								state: state
 							}
-							cityCounts[city].count++
-							cityCounts[city].listings = `${cityCounts[city].count}`
 						}
-					})
+						cityCounts[city].count++
+						cityCounts[city].listings = `${cityCounts[city].count}`
+					}
+				})
 					
 					setCityData(cityCounts)
 				}
@@ -145,6 +148,26 @@ export default function Home() {
 
 	return (
 		<div className="home-page">
+			{/* Full-Screen Professional Loader */}
+			{!videoLoaded && (
+				<div className="video-loader-overlay">
+					<div className="loader-content">
+						<div className="loader-logo">
+							<h1 className="loader-title">
+								<span className="text-gradient">RealEstate</span>
+							</h1>
+							<p className="loader-subtitle">Finding Your Dream Home</p>
+						</div>
+						<div className="loader-spinner">
+							<div className="spinner-ring"></div>
+							<div className="spinner-ring"></div>
+							<div className="spinner-ring"></div>
+						</div>
+						<p className="loader-text">Loading your experience...</p>
+					</div>
+				</div>
+			)}
+
 			{/* Hero Section with Video Background */}
 			<section className="hero-section-home">
 				<video
@@ -152,8 +175,10 @@ export default function Home() {
 					loop
 					muted
 					playsInline
+					preload="auto"
 					className="hero-video-bg"
-					poster=""
+					onLoadedData={() => setVideoLoaded(true)}
+					onCanPlayThrough={() => setVideoLoaded(true)}
 				>
 					<source src={homeVideo} type="video/mp4" />
 					Your browser does not support the video tag.

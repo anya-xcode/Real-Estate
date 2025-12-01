@@ -1,13 +1,50 @@
 import React, { useEffect, useRef, useState } from 'react'
 
+
+
 const GoogleMapWithMarkers = ({ cityData, onCityClick }) => {
   const mapRef = useRef(null)
   const googleMapRef = useRef(null)
   const markersRef = useRef([])
   const [mapError, setMapError] = useState(false)
+  const geocodeCache = useRef({})
 
-  // City coordinates
-  const getCityCoordinates = (cityName) => {
+  // Geocode city with state for accurate location
+  const geocodeCity = async (cityName, stateName) => {
+    const cacheKey = `${cityName},${stateName}`
+    
+    // Check cache first
+    if (geocodeCache.current[cacheKey]) {
+      return geocodeCache.current[cacheKey]
+    }
+    
+    // Try to use Geocoding API if available
+    if (window.google && window.google.maps && window.google.maps.Geocoder) {
+      try {
+        const geocoder = new window.google.maps.Geocoder()
+        const address = stateName ? `${cityName}, ${stateName}, India` : `${cityName}, India`
+        
+        const result = await new Promise((resolve, reject) => {
+          geocoder.geocode({ address }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              resolve({
+                lat: results[0].geometry.location.lat(),
+                lng: results[0].geometry.location.lng()
+              })
+            } else {
+              reject(new Error(`Geocoding failed: ${status}`))
+            }
+          })
+        })
+        
+        geocodeCache.current[cacheKey] = result
+        return result
+      } catch (error) {
+        console.warn(`Geocoding failed for ${cityName}, falling back to manual coordinates`, error)
+      }
+    }
+    
+    // Fallback to manual coordinates
     const cityLower = cityName.toLowerCase()
     
     const cityCoordinates = {
@@ -55,11 +92,14 @@ const GoogleMapWithMarkers = ({ cityData, onCityClick }) => {
     
     for (const [key, coords] of Object.entries(cityCoordinates)) {
       if (cityLower.includes(key) || key.includes(cityLower)) {
+        geocodeCache.current[cacheKey] = coords
         return coords
       }
     }
     
-    return { lat: 20.5937, lng: 78.9629 } // Center of India
+    const defaultCoords = { lat: 20.5937, lng: 78.9629 } // Center of India
+    geocodeCache.current[cacheKey] = defaultCoords
+    return defaultCoords
   }
 
   useEffect(() => {
@@ -78,7 +118,7 @@ const GoogleMapWithMarkers = ({ cityData, onCityClick }) => {
       }
 
       const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyASycx1StIiq7RK8SBa-5GfdLOMUkO78DU&v=weekly`
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAO7XF0yc7yLnX3u2Gb_yhaFYiMempfNC8&v=weekly`
       script.async = true
       script.defer = true
       script.onload = initializeMap
@@ -138,14 +178,14 @@ const GoogleMapWithMarkers = ({ cityData, onCityClick }) => {
       updateMarkers(map)
     }
 
-    const updateMarkers = (map) => {
+    const updateMarkers = async (map) => {
       // Clear existing markers
       markersRef.current.forEach(marker => marker.setMap(null))
       markersRef.current = []
 
       // Add new markers
-      Object.entries(cityData).forEach(([cityName, data]) => {
-        const coords = getCityCoordinates(cityName)
+      for (const [cityName, data] of Object.entries(cityData)) {
+        const coords = await geocodeCity(cityName, data.state || '')
         
         const marker = new window.google.maps.Marker({
           position: coords,
@@ -175,7 +215,7 @@ const GoogleMapWithMarkers = ({ cityData, onCityClick }) => {
         })
 
         markersRef.current.push(marker)
-      })
+      }
     }
 
     loadGoogleMaps()

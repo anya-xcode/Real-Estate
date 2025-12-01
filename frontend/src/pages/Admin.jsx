@@ -523,13 +523,21 @@ export default function Admin() {
         </button>
       </div>
 
-      {loading && <div className="loading-spinner">Loading...</div>}
-
-      <div className="properties-table">
-        {filteredProperties.length === 0 ? (
-          <div className="no-properties">No properties found</div>
-        ) : (
-          <table>
+      {loading ? (
+        <div className="loading-overlay">
+          <div className="spinner-container">
+            <div className="spinner-circle"></div>
+            <div className="spinner-circle"></div>
+            <div className="spinner-circle"></div>
+          </div>
+          <p className="loading-text">Loading...</p>
+        </div>
+      ) : (
+        <div className="properties-table">
+          {filteredProperties.length === 0 ? (
+            <div className="no-properties">No properties found</div>
+          ) : (
+            <table>
             <thead>
               <tr>
                 <th>Image</th>
@@ -607,6 +615,7 @@ export default function Admin() {
           </table>
         )}
       </div>
+      )}
         </>
       )}
 
@@ -627,13 +636,21 @@ export default function Admin() {
             </div>
           </div>
 
-          {loading && <div className="loading-spinner">Loading...</div>}
-
-          <div className="reviews-table">
-            {reviews.length === 0 ? (
-              <div className="no-properties">No reviews found</div>
-            ) : (
-              <table>
+          {loading ? (
+            <div className="loading-overlay">
+              <div className="spinner-container">
+                <div className="spinner-circle"></div>
+                <div className="spinner-circle"></div>
+                <div className="spinner-circle"></div>
+              </div>
+              <p className="loading-text">Loading...</p>
+            </div>
+          ) : (
+            <div className="reviews-table">
+              {reviews.length === 0 ? (
+                <div className="no-properties">No reviews found</div>
+              ) : (
+                <table>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -707,6 +724,7 @@ export default function Admin() {
               </table>
             )}
           </div>
+          )}
         </>
       )}
     </div>
