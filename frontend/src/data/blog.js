@@ -218,9 +218,9 @@ export const blogPosts = [
       <p>Evaluating a modern home's ROI requires looking beyond the purchase price. Consider all costs, potential appreciation, rental income, and tax benefits to make an informed decision. Remember, the best ROI comes from buying smart, maintaining well, and holding for the long term.</p>
     `,
     author: {
-      name: "Jessica Park",
+      name: "Marcus Thompson",
       bio: "Real estate investment advisor with expertise in property valuation and ROI analysis.",
-      email: "jessica.park@example.com",
+      email: "marcus.thompson@example.com",
       avatar: ""
     },
     publishedAt: "2025-03-15",
@@ -377,9 +377,9 @@ export const blogPosts = [
       <p>The best design choices for resale value balance current trends with timeless appeal. Focus on improvements that make your home move-in ready, energy-efficient, and emotionally appealing to the widest range of buyers. Remember: you're not designing for yourself, you're designing for your future buyer.</p>
     `,
     author: {
-      name: "Jessica Park",
+      name: "Elena Rodriguez",
       bio: "Interior design consultant specializing in home staging and value-boosting renovations.",
-      email: "jessica.park@example.com",
+      email: "elena.rodriguez@example.com",
       avatar: ""
     },
     publishedAt: "2025-03-15",
