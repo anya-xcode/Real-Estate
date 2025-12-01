@@ -1,19 +1,57 @@
-# Real-Estate (Sample)
+## Real-Estate Platform
 
-A small full‑stack Real Estate demo application (frontend + backend) built with React (Vite) and Node/Express using Prisma for data access. It demonstrates basic property listings, search UI, and authentication (email/password and Google OAuth).
+A full-stack real estate web application built with React (Vite) and Node.js/Express, using Prisma ORM and MySQL. It supports property listings, search, messaging, reviews, authentication (email/password & Google OAuth), admin management, and more.
 
-This README explains how to set up and run the project locally for development.
+## Table of Contents
 
-## Project structure (top-level)
+Features
+Project Structure
+Environment Variables
+Setup & Installation
+Authentication (Signup/Signin)
+Google OAuth
+Admin Panel
+Property Management
+Messaging & Reviews
+PDF Download
 
-- `backend/` — Node.js + Express API, Prisma schema, and auth routes
-- `frontend/` — React app (Vite) with pages, components and UI
+## Features
 
-## Quick start — prerequisites
+User signup/signin (email/password, Google OAuth)
+Admin login and property/review management
+Add, edit, delete property listings
+Upload property images (Cloudinary)
+Search, filter, and view properties
+Messaging system for buyers/sellers
+User reviews and ratings
+Download property details as PDF
+Responsive UI with modern design
 
-- Node.js (16+ recommended)
-- npm or yarn
-- A local database supported by Prisma (the project uses the `DATABASE_URL` env var). For local development you can use SQLite, Postgres, or MySQL depending on your `backend/prisma/schema.prisma` configuration.
+## Project Structure
+
+real-estate-website/
+├─ backend/         # Node.js + Express API, Prisma schema, auth, admin, messaging
+│   ├─ src/
+│   │   ├─ app.js
+│   │   ├─ routes/
+│   │   ├─ controllers/
+│   │   ├─ middlewares/
+│   │   ├─ config/
+│   ├─ prisma/
+│   │   ├─ schema.prisma
+│   │   ├─ migrations/
+├─ frontend/       
+│   ├─ src/
+│   │   ├─ pages/
+│   │   ├─ components/
+│   │   ├─ context/
+│   │   ├─ hooks/
+│   │   ├─ data/
+│   │   ├─ assets/
+│   ├─ public/
+│   ├─ vercel.json 
+├─ README.md
+├─ plan.txt
 
 ## Environment variables
 
@@ -23,69 +61,83 @@ backend/.env (example)
 
 ```
 PORT=5001
-DATABASE_URL="<your-database-url>"
-FRONTEND_URL=http://localhost:5173
+DATABASE_URL="mysql://<user>:<pass>@<host>:<port>/<db>"
+FRONTEND_URL="https://your-frontend-url"
 SESSION_SECRET="your_secret"
 JWT_SECRET="your_secret"
-GOOGLE_CLIENT_ID="your_id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-GOOGLE_CALLBACK_URL="http://localhost:5001/api/auth/google/callback"
+GOOGLE_CLIENT_ID="your_google_client_id"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
+GOOGLE_CALLBACK_URL="https://your-backend-url/api/auth/google/callback"
+CLOUDINARY_CLOUD_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_cloudinary_api_key"
+CLOUDINARY_API_SECRET="your_cloudinary_api_secret"
 ```
 
 frontend/.env (example)
 
 ```
-VITE_API_URL=http://localhost:5001
+VITE_API_URL="https://your-backend-url"
+VITE_APP_NAME="Real-Estate-Frontend"
 ```
 
-Notes:
+## Setup & Installation
+Prerequisites
+Node.js (16+)
+npm or yarn
+MySQL database (or Railway for cloud DB)
+Cloudinary account for image uploads
+Google Cloud project for OAuth
 
-- The Google OAuth redirect URI in the Google Cloud Console must match `GOOGLE_CALLBACK_URL` exactly.
-- Use `FRONTEND_URL` so the backend can redirect to the frontend after OAuth.
-
-## Install dependencies
-
-Install backend deps and generate the Prisma client (run from repo root):
-
+Backend
 ```bash
 cd backend
 npm install
-# If you changed the Prisma schema, run:
 npx prisma generate
-```
-
-Install frontend deps:
-
-```bash
-cd ../frontend
-npm install
-```
-
-## Run the app locally (development)
-
-1. Start the backend (from `backend/`):
-
-```bash
-cd backend
-# make sure your .env is configured
+npx prisma migrate deploy # or migrate dev for local
 npm run dev
 ```
 
-This runs the Express server (nodemon in dev) and Prisma client will use `DATABASE_URL`.
-
-2. Start the frontend (from `frontend/`):
-
+Frontend
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
 
-Visit the Vite URL printed in the terminal (commonly `http://localhost:5173`). The frontend uses `VITE_API_URL` to talk to the backend.
+## Admin Panel
+Please go to /admin route
+Admin Login: Enter admin password to access admin dashboard.
+
+Admin Features:
+View all properties and reviews
+Approve/deny property listings
+Delete properties/reviews
+Change admin password
+
+## Property Management
+Add/Edit Property:
+Multi-step form for property details, location, images, amenities
+Address fields: country, state, city (dynamic dropdowns)
+Upload images to Cloudinary
+Edit/Delete:
+Owners can edit or delete their properties
+Search/Filter:
+Search bar, filters by type, location, price
+
+## Messaging & Reviews
+Messaging:
+Buyers and sellers can chat about properties
+Reviews:
+Users can leave reviews and ratings for properties
+
+## PDF Download
+Download property details as PDF (with images) using jsPDF.
+Button available on property details page.
 
 
-## Project purpose
+## Deployment
+Frontend: Deploy to Vercel.
+Backend: Deploy to Render
 
-This project is a small demo to showcase a typical real‑estate listing app: a React-based frontend with search and listing UI, and a Node/Express backend that manages users, authentication (including Google OAuth), and property data via Prisma. It is intended as a starting point for a full product and as a learning/reference repository.
-
-
-
+## License
+MIT
