@@ -75,7 +75,7 @@ export const blogPosts = [
       email: "jessica.park@example.com",
       avatar: ""
     },
-    publishedAt: "2025-03-15",
+    publishedAt: "2025-02-08",
     readTime: "5 min read",
     tags: ["First-Time Buyers", "Home Buying Guide", "Real Estate Tips"],
     heroImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=80",
@@ -223,7 +223,7 @@ export const blogPosts = [
       email: "marcus.thompson@example.com",
       avatar: ""
     },
-    publishedAt: "2025-03-15",
+    publishedAt: "2024-10-22",
     readTime: "5 min read",
     tags: ["Property Investment", "Investment Tips", "Home Value Check"],
     heroImage: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=80",
@@ -382,7 +382,7 @@ export const blogPosts = [
       email: "elena.rodriguez@example.com",
       avatar: ""
     },
-    publishedAt: "2025-03-15",
+    publishedAt: "2024-06-05",
     readTime: "5 min read",
     tags: ["Home Staging", "Real Estate Tips", "Property Investment"],
     heroImage: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=80",
@@ -443,7 +443,7 @@ export const blogPosts = [
       email: "sarah.chen@example.com",
       avatar: ""
     },
-    publishedAt: "2024-01-15",
+    publishedAt: "2024-02-18",
     readTime: "8 min read",
     tags: ["First-Time Buyers", "Home Buying Guide", "Real Estate Tips"],
     heroImage: "",
@@ -516,7 +516,7 @@ export const blogPosts = [
       email: "michael.rodriguez@example.com",
       avatar: ""
     },
-    publishedAt: "2023-08-22",
+    publishedAt: "2023-10-11",
     readTime: "6 min read",
     tags: ["Property Investment", "Home Buying Mistakes", "Investment Tips"],
     heroImage: "",
@@ -607,7 +607,7 @@ export const blogPosts = [
       email: "jennifer.walsh@example.com",
       avatar: ""
     },
-    publishedAt: "2023-04-10",
+    publishedAt: "2023-06-27",
     readTime: "7 min read",
     tags: ["Home Inspection", "Home Buying", "Home Value Check"],
     heroImage: "",
@@ -727,7 +727,7 @@ export const blogPosts = [
       email: "david.kim@example.com",
       avatar: ""
     },
-    publishedAt: "2022-11-18",
+    publishedAt: "2023-02-03",
     readTime: "9 min read",
     tags: ["Neighborhood Research", "Area Check", "Home Buying"],
     heroImage: "",
@@ -834,7 +834,7 @@ export const blogPosts = [
       email: "lisa.thompson@example.com",
       avatar: ""
     },
-    publishedAt: "2022-07-05",
+    publishedAt: "2022-10-29",
     readTime: "8 min read",
     tags: ["Mortgage Rates", "Home Financing", "Loan Tips"],
     heroImage: "",
@@ -961,7 +961,7 @@ export const blogPosts = [
       email: "amanda.foster@example.com",
       avatar: ""
     },
-    publishedAt: "2022-02-14",
+    publishedAt: "2022-06-16",
     readTime: "10 min read",
     tags: ["Home Selling", "Home Staging", "Real Estate Marketing"],
     heroImage: "",
