@@ -79,11 +79,11 @@ export default function PropertyDetails() {
           
           // Fetch nearby places for each type
           for (const placeType of placeTypes) {
-            const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=10000&type=${placeType.type}&key=${GOOGLE_MAPS_API_KEY}`
+            // Note: Direct Google Places API URL - requires proxy/backend due to CORS
+            // const placesUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=10000&type=${placeType.type}&key=${GOOGLE_MAPS_API_KEY}`
             
             try {
-              // Need to use a proxy or backend for this due to CORS
-              // For now, let's use a simpler approach with Distance Matrix API
+              // Using backend proxy for nearby places
               const response = await fetch(`${API_URL}/api/nearby-places`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -123,6 +123,7 @@ export default function PropertyDetails() {
     if (property) {
       fetchNearbyPlaces()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [property])
 
   const formatPrice = (price) => {
@@ -207,7 +208,7 @@ export default function PropertyDetails() {
 
   // Helper function to load image as data URL (for PDF)
   const loadImageAsDataURL = (url) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
       
@@ -460,15 +461,17 @@ export default function PropertyDetails() {
     return property?.address || 'Address not available'
   }
 
-  // Agent avatar aspect detection
-  const [isAgentAvatarSquare, setIsAgentAvatarSquare] = useState(false)
-  const onAgentAvatarLoad = (e) => {
+  // Agent avatar aspect detection (kept for future use)
+  const [_isAgentAvatarSquare, setIsAgentAvatarSquare] = useState(false)
+  const _onAgentAvatarLoad = (e) => {
     try {
       const { naturalWidth: w, naturalHeight: h } = e.target
       if (!w || !h) return
       const ratio = w / h
       setIsAgentAvatarSquare(Math.abs(ratio - 1) <= 0.5)
-    } catch (err) {}
+    } catch {
+      // Silently fail - avatar will use fallback
+    }
   }
 
   if (loading) {

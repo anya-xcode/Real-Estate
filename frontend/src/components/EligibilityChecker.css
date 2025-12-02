@@ -123,3 +123,22 @@
     gap: 32px;
   }
 }
+
+@media (max-width: 480px) {
+  .eligibility-container {
+    padding: 16px;
+    gap: 24px;
+  }
+
+  .eligibility-result-content h3 {
+    font-size: 0.9rem;
+  }
+
+  .eligibility-amount {
+    font-size: 1.75rem;
+  }
+
+  .eligibility-label {
+    font-size: 0.85rem;
+  }
+}

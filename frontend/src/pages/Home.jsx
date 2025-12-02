@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import PropertyList from '../components/PropertyList'
 import GoogleMapWithMarkers from '../components/GoogleMapWithMarkers'
@@ -15,8 +15,30 @@ export default function Home() {
 	const [reviews, setReviews] = useState([])
 	const [loadingReviews, setLoadingReviews] = useState(true)
 	const [videoLoaded, setVideoLoaded] = useState(false)
+	const parallaxRef = useRef(null)
 
 	const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+
+	// Parallax scroll effect
+	useEffect(() => {
+		const handleScroll = () => {
+			if (parallaxRef.current) {
+				const scrolled = window.pageYOffset
+				const parallaxElement = parallaxRef.current
+				const rect = parallaxElement.getBoundingClientRect()
+				const elementTop = rect.top + scrolled
+				
+				// Only apply parallax when element is in viewport
+				if (scrolled + window.innerHeight > elementTop && scrolled < elementTop + rect.height) {
+					const offset = (scrolled - elementTop) * 0.5
+					parallaxElement.style.backgroundPositionY = `${offset}px`
+				}
+			}
+		}
+
+		window.addEventListener('scroll', handleScroll, { passive: true })
+		return () => window.removeEventListener('scroll', handleScroll)
+	}, [])
 
 	// Fetch properties and group by city
 	useEffect(() => {
@@ -366,7 +388,7 @@ export default function Home() {
 			</section>
 
 			{/* Features Section */}
-			<section id="why-choose-us" className="features-section">
+			<section id="why-choose-us" className="features-section" ref={parallaxRef}>
 				<div className="container">
 					<div className="section-header">
 						<h2 className="section-title">Why Choose Us</h2>

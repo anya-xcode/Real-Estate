@@ -29,8 +29,9 @@ function App() {
             <Link to="/properties" className="nav-link">Properties</Link>
             {auth.user && (
               <>
-                <Link to="/upload" className="nav-link">List Property</Link>
+                <Link to="/upload" className="nav-link">Upload</Link>
                 <Link to="/messages" className="nav-link">Messages</Link>
+                <Link to="/home-loans" className="nav-link">Loans</Link>
               </>
             )}
             {!auth.user ? (

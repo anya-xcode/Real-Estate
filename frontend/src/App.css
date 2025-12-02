@@ -49,6 +49,7 @@ main {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .nav-link {
@@ -57,6 +58,7 @@ main {
   font-size: 1rem;
   padding: 0.25rem 0.5rem;
   transition: color 200ms ease, transform 120ms ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -72,6 +74,8 @@ main {
   text-decoration: none;
   box-shadow: 0 10px 30px rgba(75,40,200,0.22);
   font-weight: 700;
+  border: none;
+  cursor: pointer;
 }
 
 .signup-link:hover {
@@ -81,4 +85,57 @@ main {
 
 button {
   font-family: inherit;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .app-header {
+    height: 60px;
+    padding: 0 1rem;
+  }
+
+  main {
+    padding-top: 60px;
+  }
+
+  .app-nav {
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.35rem;
+  }
+
+  .signup-link {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    height: 56px;
+    padding: 0 0.75rem;
+  }
+
+  main {
+    padding-top: 56px;
+  }
+
+  .app-nav {
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.25rem;
+  }
+
+  .signup-link {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
 }
