@@ -355,6 +355,79 @@ const googleFailure = (req, res) => {
 }
 
 // Property CRUD Controllers
+const getPropertyCountsByCity = async (req, res) => {
+  try {
+    // Get all properties with addresses
+    const properties = await prisma.property.findMany({
+      include: {
+        address: true
+      }
+    })
+
+    // Count properties for specific cities
+    const cities = ['Delhi/NCR', 'Mumbai', 'Bangalore', 'Hyderabad', 'Pune', 'Kolkata']
+    
+    const result = {}
+    
+    cities.forEach(city => {
+      const searchTerm = city.split('/')[0].toLowerCase()
+      
+      const count = properties.filter(property => {
+        const propertyCity = property.address?.city?.toLowerCase().trim() || ''
+        return propertyCity.includes(searchTerm)
+      }).length
+      
+      result[city] = count
+    })
+
+    res.status(200).json(result)
+  } catch (error) {
+    console.error('Get city counts error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const getStats = async (req, res) => {
+  try {
+    // Get total properties count
+    const totalProperties = await prisma.property.count()
+
+    // Get total users (customers) count
+    const totalUsers = await prisma.user.count()
+
+    // Get unique cities count
+    const properties = await prisma.property.findMany({
+      include: {
+        address: true
+      }
+    })
+    
+    const uniqueCities = new Set(
+      properties
+        .map(p => p.address?.city?.toLowerCase().trim())
+        .filter(city => city && city.length > 0)
+    )
+    const totalCities = uniqueCities.size
+
+    // Get total approved reviews count only
+    const totalReviews = await prisma.review.count({
+      where: {
+        isApproved: true
+      }
+    })
+
+    res.status(200).json({
+      totalProperties,
+      totalUsers,
+      totalCities,
+      totalReviews
+    })
+  } catch (error) {
+    console.error('Get stats error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 const getAllProperties = async (req, res) => {
   try {
     // Get query parameters
@@ -1109,6 +1182,8 @@ module.exports = {
   deleteAccount,
   googleCallback,
   googleFailure,
+  getPropertyCountsByCity,
+  getStats,
   getAllProperties,
   getPropertyById,
   createProperty,

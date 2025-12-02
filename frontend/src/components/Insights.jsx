@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { posts } from '../data/posts.js'
+import { posts } from '../data/posts'
 import './Insights.css'
 
 export default function Insights() {

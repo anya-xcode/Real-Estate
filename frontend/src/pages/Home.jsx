@@ -11,6 +11,13 @@ export default function Home() {
 	const [searchQuery, setSearchQuery] = useState('')
 	const [selectedCity, setSelectedCity] = useState(null)
 	const [cityData, setCityData] = useState({})
+	const [cityCounts, setCityCounts] = useState({})
+	const [stats, setStats] = useState({
+		totalProperties: 0,
+		totalUsers: 0,
+		totalCities: 0,
+		totalReviews: 0
+	})
 	const [loading, setLoading] = useState(true)
 	const [reviews, setReviews] = useState([])
 	const [loadingReviews, setLoadingReviews] = useState(true)
@@ -51,7 +58,7 @@ export default function Home() {
 					const properties = data.properties || []
 					
 					// Group properties by city
-					const cityCounts = {}
+					const cityCountsData = {}
 					const cityColors = [
 						'#667eea', '#f87171', '#34d399', '#fbbf24', 
 						'#a78bfa', '#fb923c', '#06b6d4', '#ec4899',
@@ -62,20 +69,20 @@ export default function Home() {
 					if (property.address?.city) {
 						const city = property.address.city
 						const state = property.address.state || ''
-						if (!cityCounts[city]) {
-							cityCounts[city] = {
+						if (!cityCountsData[city]) {
+							cityCountsData[city] = {
 								count: 0,
-								color: cityColors[Object.keys(cityCounts).length % cityColors.length],
+								color: cityColors[Object.keys(cityCountsData).length % cityColors.length],
 								listings: '0',
 								state: state
 							}
 						}
-						cityCounts[city].count++
-						cityCounts[city].listings = `${cityCounts[city].count}`
+						cityCountsData[city].count++
+						cityCountsData[city].listings = `${cityCountsData[city].count}`
 					}
 				})
 					
-					setCityData(cityCounts)
+					setCityData(cityCountsData)
 				}
 			} catch (error) {
 				console.error('Error fetching city data:', error)
@@ -85,6 +92,42 @@ export default function Home() {
 		}
 
 		fetchCityData()
+	}, [API_BASE_URL])
+
+	// Fetch city property counts for popular cities section
+	useEffect(() => {
+		const fetchCityCounts = async () => {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/properties/cities/counts`)
+				
+				if (response.ok) {
+					const data = await response.json()
+					setCityCounts(data)
+				}
+			} catch (error) {
+				console.error('Error fetching city counts:', error)
+			}
+		}
+
+		fetchCityCounts()
+	}, [API_BASE_URL])
+
+	// Fetch stats
+	useEffect(() => {
+		const fetchStats = async () => {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/stats`)
+				
+				if (response.ok) {
+					const data = await response.json()
+					setStats(data)
+				}
+			} catch (error) {
+				console.error('Error fetching stats:', error)
+			}
+		}
+
+		fetchStats()
 	}, [API_BASE_URL])
 
 	// Fetch reviews
@@ -116,11 +159,18 @@ export default function Home() {
 		}
 	}
 
-	const stats = [
-		{ number: '50K+', label: 'Happy Customers' },
-		{ number: '200K+', label: 'Properties Listed' },
-		{ number: '500+', label: 'Cities Covered' },
-		{ number: '1000+', label: 'Verified Agents' }
+	const formatNumber = (num) => {
+		if (num >= 1000) {
+			return `${Math.floor(num / 1000)}K+`
+		}
+		return num.toString()
+	}
+
+	const statsDisplay = [
+		{ number: formatNumber(stats.totalUsers), label: 'Happy Customers' },
+		{ number: formatNumber(stats.totalProperties), label: 'Properties Listed' },
+		{ number: formatNumber(stats.totalCities), label: 'Cities Covered' },
+		{ number: formatNumber(stats.totalReviews), label: 'Customer Reviews' }
 	]
 
 	const handleCityClick = (cityName) => {
@@ -245,7 +295,7 @@ export default function Home() {
 
 					{/* Quick Stats */}
 					<div className="stats-container">
-						{stats.map((stat, index) => (
+						{statsDisplay.map((stat, index) => (
 							<div key={index} className="stat-item">
 								<div className="stat-number">{stat.number}</div>
 								<div className="stat-label">{stat.label}</div>
@@ -274,33 +324,40 @@ export default function Home() {
 
 					<div className="cities-grid">
 						{[
-							{ name: 'Delhi/NCR', count: '50K+ Properties', img: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80' },
-							{ name: 'Mumbai', count: '45K+ Properties', img: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?auto=format&fit=crop&w=800&q=80' },
-							{ name: 'Bangalore', count: '40K+ Properties', img: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80' },
-							{ name: 'Hyderabad', count: '35K+ Properties', img: 'https://media.istockphoto.com/id/139385604/photo/beautiful-charminar-monument-in-hyderabad-india.jpg?s=612x612&w=0&k=20&c=Q21yScf4-DF5UP39f8N1WvGUqSrhSh-wLiTjgeuWfr8=' },
-							{ name: 'Pune', count: '30K+ Properties', img: 'https://media.istockphoto.com/id/1337466395/photo/shree-swaminarayan-temple-with-beautiful-blue-night-lighting-in-pune-india.jpg?s=612x612&w=0&k=20&c=8yqkvkpOTpV9MYJ9ZOmtPaHAHR_NUhSLC9vYrJkQ51M=' },
-							{ name: 'Kolkata', count: '25K+ Properties', img: 'https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80' }
-						].map((city, index) => (
-							<div key={index} className="city-card">
-								<div className="city-image-wrapper">
-									<img src={city.img} alt={city.name} className="city-image" />
-									<div className="city-overlay"></div>
+							{ name: 'Delhi/NCR', img: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80' },
+							{ name: 'Mumbai', img: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?auto=format&fit=crop&w=800&q=80' },
+							{ name: 'Bangalore', img: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80' },
+							{ name: 'Hyderabad', img: 'https://media.istockphoto.com/id/139385604/photo/beautiful-charminar-monument-in-hyderabad-india.jpg?s=612x612&w=0&k=20&c=Q21yScf4-DF5UP39f8N1WvGUqSrhSh-wLiTjgeuWfr8=' },
+							{ name: 'Pune', img: 'https://media.istockphoto.com/id/1337466395/photo/shree-swaminarayan-temple-with-beautiful-blue-night-lighting-in-pune-india.jpg?s=612x612&w=0&k=20&c=8yqkvkpOTpV9MYJ9ZOmtPaHAHR_NUhSLC9vYrJkQ51M=' },
+							{ name: 'Kolkata', img: 'https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=800&q=80' }
+						].map((city, index) => {
+							const count = cityCounts[city.name] || 0
+							const displayCount = count > 0 
+								? (count >= 1000 ? `${Math.floor(count / 1000)}K+` : `${count}`) 
+								: '0'
+							
+							return (
+								<div key={index} className="city-card">
+									<div className="city-image-wrapper">
+										<img src={city.img} alt={city.name} className="city-image" />
+										<div className="city-overlay"></div>
+									</div>
+									<div className="city-content">
+										<h3 className="city-name">{city.name}</h3>
+										<p className="city-count">{displayCount} {count === 1 ? 'Property' : 'Properties'}</p>
+										<button 
+											className="explore-city-btn"
+											onClick={() => navigate(`/properties?city=${encodeURIComponent(city.name)}`)}
+										>
+											Explore
+											<svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+											</svg>
+										</button>
+									</div>
 								</div>
-								<div className="city-content">
-									<h3 className="city-name">{city.name}</h3>
-									<p className="city-count">{city.count}</p>
-									<button 
-										className="explore-city-btn"
-										onClick={() => navigate(`/properties?city=${encodeURIComponent(city.name)}`)}
-									>
-										Explore
-										<svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-										</svg>
-									</button>
-								</div>
-							</div>
-						))}
+							)
+						})}
 					</div>
 				</div>
 			</section>
