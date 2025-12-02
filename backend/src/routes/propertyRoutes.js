@@ -7,6 +7,7 @@ const {
   getProfile,
   updateProfile,
   changePassword,
+  deleteAccount,
   googleCallback, 
   googleFailure,
   getAllProperties,
@@ -18,6 +19,7 @@ const {
   addFavorite,
   removeFavorite,
   getUserActivity,
+  getUserStats,
   getNearbyPlaces,
   adminGetAllProperties,
   adminApproveProperty,
@@ -76,10 +78,12 @@ router.post('/login', validateLogin, login);
 router.get('/profile', authMiddleware, getProfile);
 router.put('/profile', authMiddleware, updateProfile);
 router.post('/change-password', authMiddleware, changePassword);
+router.delete('/profile', authMiddleware, deleteAccount);
 router.get('/favorites', authMiddleware, getUserFavorites);
 router.post('/favorites', authMiddleware, addFavorite);
 router.delete('/favorites/:id', authMiddleware, removeFavorite);
 router.get('/activity', authMiddleware, getUserActivity);
+router.get('/stats', authMiddleware, getUserStats);
 
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
