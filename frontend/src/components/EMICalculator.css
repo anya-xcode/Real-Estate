@@ -180,3 +180,36 @@
     grid-column: auto;
   }
 }
+
+@media (max-width: 480px) {
+  .calculator-container {
+    padding: 16px;
+    gap: 24px;
+  }
+
+  .input-group label {
+    font-size: 0.85rem;
+  }
+
+  .input-with-symbol input {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+
+  .input-symbol {
+    font-size: 0.85rem;
+  }
+
+  .result-card-primary h3,
+  .result-card h4 {
+    font-size: 0.85rem;
+  }
+
+  .result-card-primary .amount {
+    font-size: 1.5rem;
+  }
+
+  .result-card .amount {
+    font-size: 1.1rem;
+  }
+}

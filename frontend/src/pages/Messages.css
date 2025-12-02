@@ -540,6 +540,7 @@
     grid-template-columns: 1fr;
     height: auto;
     min-height: 500px;
+    gap: 1rem;
   }
 
   .conversations-sidebar {
@@ -552,5 +553,182 @@
 
   .message-content {
     max-width: 80%;
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .chat-header {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .chat-user-name {
+    font-size: 1rem;
+    word-wrap: break-word;
+  }
+
+  .chat-property-name {
+    font-size: 0.8rem;
+  }
+
+  .property-preview-bar {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .property-preview-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .property-preview-title {
+    font-size: 0.85rem;
+  }
+
+  .property-preview-price {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .messages-page {
+    padding: 0.5rem;
+  }
+
+  .messages-container {
+    gap: 0.75rem;
+  }
+
+  .sidebar-header {
+    padding: 1rem;
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .conversations-count {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .conversation-item {
+    padding: 0.75rem 1rem;
+  }
+
+  .conversation-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .conversation-name {
+    font-size: 0.9rem;
+  }
+
+  .conversation-property {
+    font-size: 0.75rem;
+  }
+
+  .preview-text {
+    font-size: 0.8rem;
+  }
+
+  .chat-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .chat-user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .chat-user-name {
+    font-size: 0.95rem;
+  }
+
+  .view-property-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .property-preview-bar {
+    padding: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .property-preview-image {
+    width: 45px;
+    height: 45px;
+  }
+
+  .property-preview-title {
+    font-size: 0.8rem;
+  }
+
+  .property-preview-price {
+    font-size: 0.85rem;
+  }
+
+  .messages-area {
+    padding: 1rem;
+  }
+
+  .message {
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .message-content {
+    max-width: 85%;
+  }
+
+  .message-bubble {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .message-input-container {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .message-input {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .send-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .send-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .no-chat-selected svg {
+    width: 70px;
+    height: 70px;
+  }
+
+  .no-chat-selected h3 {
+    font-size: 1.25rem;
+  }
+
+  .no-chat-selected p {
+    font-size: 0.9rem;
   }
 }
