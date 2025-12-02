@@ -12,6 +12,8 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('overview')
   const [isEditing, setIsEditing] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
   const [avatarImage, setAvatarImage] = useState(auth.user?.avatar || null)
   
   const [userInfo, setUserInfo] = useState({
@@ -33,6 +35,11 @@ export default function Profile() {
   const [savedProperties, setSavedProperties] = useState([])
   const [recentActivity, setRecentActivity] = useState([])
   const [loadingFavorites, setLoadingFavorites] = useState(true)
+  const [userStats, setUserStats] = useState({
+    inquiries: 0,
+    propertyViews: 0,
+    conversations: 0
+  })
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 
@@ -53,6 +60,7 @@ export default function Profile() {
       loadProfile()
       fetchFavorites()
       fetchActivity()
+      fetchUserStats()
     }
   }, [auth.user, navigate])
 
@@ -121,6 +129,22 @@ export default function Profile() {
     }
   }
 
+  const fetchUserStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/stats`, {
+        headers: {
+          'Authorization': `Bearer ${auth.token}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setUserStats(data.stats || { inquiries: 0, propertyViews: 0, conversations: 0 })
+      }
+    } catch (error) {
+      console.error('Error fetching user stats:', error)
+    }
+  }
+
   const handleRemoveFavorite = async (favoriteId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/favorites/${favoriteId}`, {
@@ -135,6 +159,36 @@ export default function Profile() {
     } catch (error) {
       console.error('Error removing favorite:', error)
     }
+  }
+
+  // Calculate profile completion percentage
+  const calculateProfileCompletion = () => {
+    const fields = [
+      userInfo.firstName,
+      userInfo.lastName,
+      userInfo.email,
+      userInfo.phone,
+      userInfo.location,
+      userInfo.bio,
+      avatarImage
+    ]
+    const filledFields = fields.filter(field => field && field.trim() !== '').length
+    const percentage = Math.round((filledFields / fields.length) * 100)
+    return percentage
+  }
+
+  const getProfileCompletionMessage = () => {
+    const missingFields = []
+    if (!userInfo.firstName || !userInfo.firstName.trim()) missingFields.push('first name')
+    if (!userInfo.lastName || !userInfo.lastName.trim()) missingFields.push('last name')
+    if (!userInfo.phone || !userInfo.phone.trim()) missingFields.push('phone')
+    if (!userInfo.location || !userInfo.location.trim()) missingFields.push('location')
+    if (!userInfo.bio || !userInfo.bio.trim()) missingFields.push('bio')
+    if (!avatarImage) missingFields.push('avatar')
+
+    if (missingFields.length === 0) return 'Complete'
+    if (missingFields.length === 1) return `Add ${missingFields[0]}`
+    return `Add ${missingFields.slice(0, 2).join(', ')}`
   }
 
   if (!auth.user) return null
@@ -246,6 +300,33 @@ export default function Profile() {
     }
   }
 
+  const handleDeleteAccount = async () => {
+    try {
+      const body = auth.user?.provider === 'local' ? { password: deletePassword } : {}
+      
+      const response = await fetch(`${API_BASE_URL}/api/profile`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${auth.token}`
+        },
+        body: JSON.stringify(body)
+      })
+
+      if (response.ok) {
+        alert('Account deleted successfully')
+        auth.logout()
+        navigate('/')
+      } else {
+        const error = await response.json()
+        alert(error.message || 'Failed to delete account')
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      alert('Failed to delete account. Please try again.')
+    }
+  }
+
   const handleAvatarUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -319,11 +400,11 @@ export default function Profile() {
                 <span className="stat-label">Saved Properties</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">12</span>
+                <span className="stat-number">{userStats.propertyViews}</span>
                 <span className="stat-label">Properties Viewed</span>
               </div>
               <div className="stat-item">
-                <span className="stat-number">5</span>
+                <span className="stat-number">{userStats.inquiries}</span>
                 <span className="stat-label">Inquiries</span>
               </div>
             </div>
@@ -411,7 +492,7 @@ export default function Profile() {
                         </svg>
                       </div>
                       <div className="stat-card-content">
-                        <h3 className="stat-card-number">12</h3>
+                        <h3 className="stat-card-number">{userStats.propertyViews}</h3>
                         <p className="stat-card-label">Properties Viewed</p>
                         <span className="stat-card-trend neutral">This month</span>
                       </div>
@@ -424,9 +505,9 @@ export default function Profile() {
                         </svg>
                       </div>
                       <div className="stat-card-content">
-                        <h3 className="stat-card-number">5</h3>
+                        <h3 className="stat-card-number">{userStats.inquiries}</h3>
                         <p className="stat-card-label">Active Inquiries</p>
-                        <span className="stat-card-trend positive">2 responses</span>
+                        <span className="stat-card-trend positive">{userStats.conversations} conversations</span>
                       </div>
                     </div>
 
@@ -437,9 +518,9 @@ export default function Profile() {
                         </svg>
                       </div>
                       <div className="stat-card-content">
-                        <h3 className="stat-card-number">87%</h3>
+                        <h3 className="stat-card-number">{calculateProfileCompletion()}%</h3>
                         <p className="stat-card-label">Profile Complete</p>
-                        <span className="stat-card-trend neutral">Add phone</span>
+                        <span className="stat-card-trend neutral">{getProfileCompletionMessage()}</span>
                       </div>
                     </div>
                   </div>
@@ -834,7 +915,10 @@ export default function Profile() {
                       <p className="delete-warning">
                         Once you delete your account, there is no going back. Please be certain.
                       </p>
-                      <button className="settings-action-btn danger">
+                      <button 
+                        className="settings-action-btn danger"
+                        onClick={() => setShowDeleteModal(true)}
+                      >
                         Delete Account
                       </button>
                     </div>
@@ -845,6 +929,51 @@ export default function Profile() {
           </div>
         </div>
       </section>
+
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Delete Account</h2>
+            <p className="modal-warning">
+              Are you sure you want to delete your account? This action cannot be undone.
+              All your properties, favorites, and messages will be permanently deleted.
+            </p>
+            
+            {auth.user?.provider === 'local' && (
+              <div className="form-group">
+                <label>Enter your password to confirm:</label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="form-input"
+                />
+              </div>
+            )}
+            
+            <div className="modal-actions">
+              <button 
+                className="btn-cancel"
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setDeletePassword('')
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-delete"
+                onClick={handleDeleteAccount}
+                disabled={auth.user?.provider === 'local' && !deletePassword}
+              >
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

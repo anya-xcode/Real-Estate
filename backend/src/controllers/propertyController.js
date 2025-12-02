@@ -239,6 +239,73 @@ const changePassword = async (req, res) => {
   }
 }
 
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { password } = req.body
+
+    // Get user
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // If user has a password (not OAuth), verify it
+    if (user.password) {
+      if (!password) {
+        return res.status(400).json({ message: 'Password is required to delete account' })
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password)
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: 'Invalid password' })
+      }
+    }
+
+    // Delete user's data in transaction
+    await prisma.$transaction(async (tx) => {
+      // Delete user's inquiries
+      await tx.inquiry.deleteMany({
+        where: { userId: userId }
+      })
+
+      // Delete user's favorites
+      await tx.favorite.deleteMany({
+        where: { userId: userId }
+      })
+
+      // Delete conversations where user is buyer or seller
+      // This will cascade delete messages automatically
+      await tx.conversation.deleteMany({
+        where: { 
+          OR: [
+            { buyerId: userId },
+            { sellerId: userId }
+          ]
+        }
+      })
+
+      // Delete user's properties (this will cascade delete related data)
+      await tx.property.deleteMany({
+        where: { ownerId: userId }
+      })
+
+      // Finally, delete the user
+      await tx.user.delete({
+        where: { id: userId }
+      })
+    })
+
+    res.status(200).json({ message: 'Account deleted successfully' })
+  } catch (error) {
+    console.error('Delete account error:', error)
+    res.status(500).json({ message: 'Failed to delete account' })
+  }
+}
+
 const googleCallback = async (req, res) => {
   try {
     console.log('[googleCallback] Called');
@@ -919,6 +986,39 @@ const getUserActivity = async (req, res) => {
   }
 }
 
+// Get user statistics
+const getUserStats = async (req, res) => {
+  try {
+    const userId = req.user.id
+
+    // Count inquiries
+    const inquiriesCount = await prisma.inquiry.count({
+      where: { userId: userId }
+    })
+
+    // Count conversations (as a proxy for property views/interactions)
+    const conversationsCount = await prisma.conversation.count({
+      where: {
+        OR: [
+          { buyerId: userId },
+          { sellerId: userId }
+        ]
+      }
+    })
+
+    res.status(200).json({
+      stats: {
+        inquiries: inquiriesCount,
+        propertyViews: 0, // This would require tracking views in a separate table
+        conversations: conversationsCount
+      }
+    })
+  } catch (error) {
+    console.error('Get user stats error:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 // Get nearby places using Google Places API
 const getNearbyPlaces = async (req, res) => {
   try {
@@ -1006,6 +1106,7 @@ module.exports = {
   getProfile,
   updateProfile,
   changePassword,
+  deleteAccount,
   googleCallback,
   googleFailure,
   getAllProperties,
@@ -1017,6 +1118,7 @@ module.exports = {
   addFavorite,
   removeFavorite,
   getUserActivity,
+  getUserStats,
   getNearbyPlaces,
   adminGetAllProperties,
   adminApproveProperty,

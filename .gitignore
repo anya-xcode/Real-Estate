@@ -1,4 +1,8 @@
 # Ignore envs
 backend/.env
 frontend/.env
+backend/dist
+backend/generated/prisma
+backend/node_modules
 *.env
+frontend/node_modules

@@ -92,7 +92,7 @@ export default function Signin() {
             required
           />
           
-          <a href="#" className="forgot-password">Forget Your Password?</a>
+          
           
           <button type="submit" disabled={loading}>
             {loading ? 'Signing in…' : 'SIGN IN'}
