@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { blogPosts } from '../data/blog.js'
+import { posts } from '../data/posts.js'
 import './Insights.css'
 
 export default function Insights() {
@@ -20,11 +20,11 @@ export default function Insights() {
         </div>
 
         <div className="insights-grid">
-          {blogPosts.filter(post => post.featured).slice(0, 3).map((item, index) => (
+          {posts.filter(post => post.featured && post.heroImage).slice(0, 3).map((item, index) => (
             <Link key={item.id} to={`/blog/${item.slug}`} className="insight-card-link" style={{ animationDelay: `${index * 0.1}s` }}>
               <article className="insight-card">
                 <div className="insight-image-wrapper">
-                  <img src={item.heroImage} alt={item.title} className="insight-image" />
+                  {item.heroImage && <img src={item.heroImage} alt={item.title} className="insight-image" />}
                   <div className="insight-overlay"></div>
                   
                   {/* Category Badge */}
