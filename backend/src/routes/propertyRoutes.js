@@ -10,6 +10,8 @@ const {
   deleteAccount,
   googleCallback, 
   googleFailure,
+  getPropertyCountsByCity,
+  getStats,
   getAllProperties,
   getPropertyById,
   createProperty,
@@ -83,7 +85,7 @@ router.get('/favorites', authMiddleware, getUserFavorites);
 router.post('/favorites', authMiddleware, addFavorite);
 router.delete('/favorites/:id', authMiddleware, removeFavorite);
 router.get('/activity', authMiddleware, getUserActivity);
-router.get('/stats', authMiddleware, getUserStats);
+router.get('/stats/user', authMiddleware, getUserStats);
 
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -116,7 +118,11 @@ router.post('/upload-images', authMiddleware, upload.array('images', 10), (req, 
   }
 });
 
+// Public Stats Route (no auth required)
+router.get('/stats', getStats);
+
 // Property Routes
+router.get('/properties/cities/counts', getPropertyCountsByCity);
 router.get('/properties', getAllProperties);
 router.get('/properties/:id', getPropertyById);
 router.post('/properties', authMiddleware, createProperty);

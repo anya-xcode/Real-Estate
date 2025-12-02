@@ -13,6 +13,8 @@ import PropertyDetails from './pages/PropertyDetails'
 import Admin from './pages/Admin'
 import Messages from './pages/Messages'
 import AddReview from './pages/AddReview'
+import Blog from './pages/Blog'
+import BlogPost from './pages/BlogPost'
 import useAuth from './hooks/useAuth'
 import ScrollToTop from './components/ScrollToTop'
 import HomeLoans from './pages/HomeLoans'
@@ -65,6 +67,8 @@ function App() {
             <Route path="/signin" element={<Signin />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/home-loans" element={<HomeLoans />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
           </Routes>
         </main>
       </div>
