@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/db');
 
 // Submit a new review
 exports.submitReview = async (req, res) => {

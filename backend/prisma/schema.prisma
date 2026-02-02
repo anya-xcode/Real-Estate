@@ -1,9 +1,10 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma-client"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -52,7 +53,7 @@ model Property {
   features           PropertyFeature[]
   images             PropertyImage[]
 
-  @@index([ownerId], map: "properties_ownerId_fkey")
+  @@index([ownerId])
   @@map("properties")
 }
 
@@ -78,7 +79,7 @@ model PropertyImage {
   createdAt  DateTime @default(now())
   property   Property @relation(fields: [propertyId], references: [id])
 
-  @@index([propertyId], map: "property_images_propertyId_fkey")
+  @@index([propertyId])
   @@map("property_images")
 }
 
@@ -98,7 +99,7 @@ model PropertyFeature {
   property   Property @relation(fields: [propertyId], references: [id])
 
   @@unique([propertyId, featureId])
-  @@index([featureId], map: "property_features_featureId_fkey")
+  @@index([featureId])
   @@map("property_features")
 }
 
@@ -113,8 +114,8 @@ model Inquiry {
   property   Property @relation(fields: [propertyId], references: [id])
   user       User?    @relation(fields: [userId], references: [id])
 
-  @@index([propertyId], map: "inquiries_propertyId_fkey")
-  @@index([userId], map: "inquiries_userId_fkey")
+  @@index([propertyId])
+  @@index([userId])
   @@map("inquiries")
 }
 
@@ -127,7 +128,7 @@ model Favorite {
   user       User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, propertyId])
-  @@index([propertyId], map: "favorites_propertyId_fkey")
+  @@index([propertyId])
   @@map("favorites")
 }
 
@@ -154,8 +155,8 @@ model Conversation {
   messages      Message[]
 
   @@unique([propertyId, buyerId, sellerId])
-  @@index([buyerId], map: "conversations_buyerId_fkey")
-  @@index([sellerId], map: "conversations_sellerId_fkey")
+  @@index([buyerId])
+  @@index([sellerId])
   @@map("conversations")
 }
 
@@ -169,8 +170,8 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
-  @@index([conversationId], map: "messages_conversationId_fkey")
-  @@index([senderId], map: "messages_senderId_fkey")
+  @@index([conversationId])
+  @@index([senderId])
   @@map("messages")
 }
 
