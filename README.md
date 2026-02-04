@@ -1,56 +1,109 @@
 # Real Estate Platform
 
-A modern, full-stack real estate web application built with **React (Vite)** + **Node.js/Express**, powered by **Prisma ORM** and **MySQL**. Feature-rich platform for buying, selling, and renting properties with advanced search, interactive maps, messaging, reviews, loan tools, favorites, and more.
+A full-stack web application where users can find properties to buy, list their own properties for sale, and communicate directly with property owners. The platform also includes loan calculation tools, an interactive map to view property locations, and an admin panel for approving property listings.
 
-## Key Features
+---
 
-- User authentication: Email/password + Google OAuth login
-- Protected routes – Sign-in required to access most pages
-- Search properties by city & powerful filters (price, type, bedrooms, etc.)
-- Interactive Map View to discover properties (Leaflet/Google Maps)
-- Like / Favorite properties – Saved and displayed in user profile
-- User Profile page – Shows liked properties, own listings, and reviews
-- Loan Assistance Page with:
-  - EMI Calculator (calculate monthly installments)
-  - Loan Eligibility Checker (based on income, expenses, credit score)
-- Add/Edit/Delete property listings (multi-step form)
-- Upload property images (Cloudinary)
-- Messaging system between buyers and sellers
-- Reviews & Ratings system (with star rating + text)
-- Download property details as PDF (including images) using jsPDF
-- Fully functional Admin Dashboard
-- Responsive & modern UI
+## What This Website Does
 
-## Admin Dashboard
+- Buyers can browse and search properties listed on the platform
+- Property owners can upload properties they want to sell
+- Buyers can message property owners to ask questions
+- Users can calculate loan EMI and check loan eligibility
+- Properties are shown on a map based on their location
+- Admin approves or rejects properties before they become public
 
-**Route:** `/admin`  
-**Current Admin Password:** `270805`  
+---
+
+## Screenshots
+
+*(Screenshots for each page will be added below)*
+
+### Home Page
+<!-- Screenshot placeholder -->
+
+### Property Listings Page
+<!-- Screenshot placeholder -->
+
+### Property Detail Page
+<!-- Screenshot placeholder -->
+
+### User Profile Page
+<!-- Screenshot placeholder -->
+
+### Loan Page (EMI Calculator & Eligibility Checker)
+<!-- Screenshot placeholder -->
+
+### Admin Dashboard
+<!-- Screenshot placeholder -->
+
+---
+
+## Screen Recording
+
+*(A complete screen recording of the application will be added here)*
+
+<!-- Screen recording placeholder -->
+
+---
+
+## Features
+
+### User Features
+- User authentication using email/password and Google login
+- Browse properties available for purchase
+- Search properties by city and apply filters (price, bedrooms, property type, etc.)
+- View property locations on an interactive map
+- Like and save properties to the user profile
+- Upload properties for selling
+- Edit or delete own property listings
+- Message property owners directly
+- Add reviews and ratings
+- Download property details as a PDF
+- Loan tools:
+  - EMI Calculator
+  - Loan Eligibility Checker
+
+---
 
 ### Admin Features
-- Approve/Reject/Delete any property
-- Manage & delete reviews
-- View all users, messages, and activity
+
+**Admin Route:** `/admin`  
+**Admin Password:** `270805`
+
+- View all uploaded properties
+- Approve or reject property listings
+- Delete properties if required
+- Manage and delete user reviews
+- View users and messages
 - Change admin password
+
+---
 
 ## Tech Stack
 
-**Frontend**
-- React + Vite
-- React Router (with protected routes)
+### Frontend
+- React (Vite)
+- React Router
 - Axios
-- Leaflet or Google Maps API
-- jsPDF for PDF generation
-- Tailwind CSS / Custom styling
+- Tailwind CSS
+- Leaflet / Google Maps API
+- jsPDF
 
-**Backend**
-- Node.js + Express
+### Backend
+- Node.js
+- Express
 - Prisma ORM
 - MySQL
-- JWT + Session authentication
-- Google OAuth 2.0 (Passport.js)
+- JWT and session-based authentication
+- Google OAuth (Passport.js)
 - Cloudinary for image uploads
 
+---
+
 ## Project Structure
+
+
 
 ```
 real-estate-website/
