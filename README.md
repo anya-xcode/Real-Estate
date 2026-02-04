@@ -20,22 +20,24 @@ A full-stack web application where users can find properties to buy, list their 
 *(Screenshots for each page will be added below)*
 
 ### Home Page
-<!-- Screenshot placeholder -->
+<img width="1800" height="1048" alt="Screenshot 2026-02-04 at 7 54 58 PM" src="https://github.com/user-attachments/assets/68aa415a-6369-4c4e-9f4a-23f6e1a8234a" />
 
 ### Property Listings Page
-<!-- Screenshot placeholder -->
+<img width="1800" height="1044" alt="Screenshot 2026-02-04 at 7 56 17 PM" src="https://github.com/user-attachments/assets/6c58c5e1-765f-4da5-8505-f151b36ec744" />
 
 ### Property Detail Page
-<!-- Screenshot placeholder -->
+<img width="1799" height="1013" alt="Screenshot 2026-02-04 at 7 57 18 PM" src="https://github.com/user-attachments/assets/a6ade75a-88ff-4ec5-9522-777157ae8f51" />
 
 ### User Profile Page
-<!-- Screenshot placeholder -->
+<img width="1800" height="1036" alt="Screenshot 2026-02-04 at 7 57 47 PM" src="https://github.com/user-attachments/assets/6d532d87-4448-4a16-bfa3-3afd53918fe5" />
+
 
 ### Loan Page (EMI Calculator & Eligibility Checker)
-<!-- Screenshot placeholder -->
+<img width="1800" height="1048" alt="Screenshot 2026-02-04 at 7 58 04 PM" src="https://github.com/user-attachments/assets/f5e036b1-a041-413a-b134-c6c651ec121c" />
+
 
 ### Admin Dashboard
-<!-- Screenshot placeholder -->
+<img width="1800" height="1046" alt="Screenshot 2026-02-04 at 7 58 34 PM" src="https://github.com/user-attachments/assets/72ddef8d-7d8e-4e74-8e51-f2c7b2d27480" />
 
 ---
 
