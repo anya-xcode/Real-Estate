@@ -15,6 +15,12 @@ A full-stack web application where users can find properties to buy, list their 
 
 ---
 
+## Screen Recording
+
+[*(A complete screen recording of the application will be added here)*](https://drive.google.com/file/d/1xSRHgpBLsvIg557lrZQ4kiwTi3VeqCv-/view?usp=sharing)
+
+
+---
 ## Screenshots
 
 *(Screenshots for each page will be added below)*
@@ -38,14 +44,6 @@ A full-stack web application where users can find properties to buy, list their 
 
 ### Admin Dashboard
 <img width="1800" height="1046" alt="Screenshot 2026-02-04 at 7 58 34 PM" src="https://github.com/user-attachments/assets/72ddef8d-7d8e-4e74-8e51-f2c7b2d27480" />
-
----
-
-## Screen Recording
-
-*(A complete screen recording of the application will be added here)*
-
-<!-- Screen recording placeholder -->
 
 ---
 
