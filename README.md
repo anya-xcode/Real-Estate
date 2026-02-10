@@ -17,7 +17,7 @@ A full-stack web application where users can find properties to buy, list their 
 
 ## Screen Recording
 
-[*(A complete screen recording of the application will be added here)*](https://drive.google.com/file/d/1xSRHgpBLsvIg557lrZQ4kiwTi3VeqCv-/view?usp=sharing)
+[*(A complete screen recording of the application)*](https://drive.google.com/file/d/1xSRHgpBLsvIg557lrZQ4kiwTi3VeqCv-/view?usp=sharing)
 
 
 ---
